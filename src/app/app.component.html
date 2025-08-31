@@ -1,0 +1,23 @@
+<mat-toolbar color="primary" class="mat-elevation-z2">
+  <div class="brand">PH Salary & Loan Calculators</div>
+  <span class="spacer"></span>
+  <a mat-button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+  <a mat-button routerLink="/contributions" routerLinkActive="active">Contributions</a>
+  <a mat-button routerLink="/net-pay" routerLinkActive="active">Net Pay</a>
+  <a mat-button routerLink="/amortization" routerLinkActive="active">Amortization</a>
+</mat-toolbar>
+
+<section class="notice" *ngIf="showDisclaimer">
+  <div class="notice__inner">
+    <span>
+      Estimates only. Not official. Not financial advice. Calculations are for guidance and may not reflect latest tables. Please verify with official sources.
+    </span>
+    <button mat-raised-button color="accent" class="notice__dismiss" (click)="dismissDisclaimer()" aria-label="Dismiss disclaimer">Dismiss</button>
+  </div>
+</section>
+
+<main class="container">
+  <div [@routeAnimations]="prepareRoute(outlet)">
+    <router-outlet #outlet="outlet" />
+  </div>
+</main>

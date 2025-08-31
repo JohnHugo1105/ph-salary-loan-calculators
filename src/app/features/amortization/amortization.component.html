@@ -1,0 +1,63 @@
+<section>
+  <h1>Loan Amortization</h1>
+  <form [formGroup]="form" class="grid">
+    <mat-form-field appearance="outline">
+      <mat-label>Amount (₱)</mat-label>
+      <input matInput type="number" formControlName="amount" min="0" step="0.01" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Annual Rate (%)</mat-label>
+      <input matInput type="number" formControlName="annualRate" min="0" step="0.01" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Term (months)</mat-label>
+      <input matInput type="number" formControlName="months" min="1" step="1" />
+    </mat-form-field>
+  </form>
+
+  <mat-card>
+    <div><strong>Monthly Payment:</strong> <span class="accent-number">₱{{ schedule.payment | number:'1.2-2' }}</span></div>
+  </mat-card>
+
+  <div class="table-wrap" [@tableIn]>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Payment</th>
+          <th>Interest</th>
+          <th>Principal</th>
+          <th>Balance</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of pagedRows">
+          <td>{{ r.period }}</td>
+          <td>₱{{ r.payment | number:'1.2-2' }}</td>
+          <td>₱{{ r.interest | number:'1.2-2' }}</td>
+          <td>₱{{ r.principal | number:'1.2-2' }}</td>
+          <td>₱{{ r.balance | number:'1.2-2' }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="pager">
+      <div class="pager__left">
+        <button mat-stroked-button color="primary" (click)="first()" [disabled]="!canPrev()">First</button>
+        <button mat-stroked-button color="primary" (click)="prev()" [disabled]="!canPrev()">Prev</button>
+        <button mat-stroked-button color="primary" (click)="next()" [disabled]="!canNext()">Next</button>
+        <button mat-stroked-button color="primary" (click)="last()" [disabled]="!canNext()">Last</button>
+      </div>
+      <div class="pager__right">
+        <span>{{ startIndex + 1 }}–{{ endIndex }} of {{ totalRows }}</span>
+        <mat-form-field appearance="outline" class="pager__size">
+          <mat-label>Rows</mat-label>
+          <mat-select [value]="pageSize" (selectionChange)="setPageSize($event.value)">
+            <mat-option [value]="12">12</mat-option>
+            <mat-option [value]="24">24</mat-option>
+            <mat-option [value]="60">60</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+</section>

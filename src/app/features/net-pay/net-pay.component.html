@@ -1,0 +1,73 @@
+<section>
+  <h1>Salary Net Pay</h1>
+
+  <form [formGroup]="form" class="grid">
+    <mat-form-field appearance="outline">
+      <mat-label>Pay Frequency</mat-label>
+      <mat-select formControlName="payFrequency">
+        <mat-option value="monthly">Monthly</mat-option>
+        <mat-option value="semi-monthly">Semi-monthly</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Monthly Basic (₱)</mat-label>
+      <input matInput type="number" formControlName="monthlyBasic" min="0" step="0.01" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Allowances (₱)</mat-label>
+      <input matInput type="number" formControlName="allowances" min="0" step="0.01" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Overtime Hours</mat-label>
+      <input matInput type="number" formControlName="overtimeHours" min="0" step="0.01" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>OT Multiplier</mat-label>
+      <input matInput type="number" formControlName="overtimeMultiplier" min="1" step="0.01" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Days/Month</mat-label>
+      <input matInput type="number" formControlName="daysPerMonth" min="1" step="1" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Hours/Day</mat-label>
+      <input matInput type="number" formControlName="hoursPerDay" min="1" step="1" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Months Worked (13th)</mat-label>
+      <input matInput type="number" formControlName="monthsWorkedFor13th" min="0" max="12" step="1" />
+    </mat-form-field>
+  </form>
+
+  <div class="cards" [@cardsIn]>
+    <mat-card>
+      <h3>Gross (Monthly)</h3>
+      <div>Hourly rate: <span class="accent-number">₱{{ view.hourlyRate | number:'1.2-2' }}</span></div>
+      <div>Overtime pay: <span class="accent-number">₱{{ view.overtimePay | number:'1.2-2' }}</span></div>
+      <div><strong>Total:</strong> <span class="accent-number">₱{{ view.grossMonthly | number:'1.2-2' }}</span></div>
+    </mat-card>
+    <mat-card>
+      <h3>Contributions (Employee)</h3>
+      <div>SSS: <span class="accent-number">₱{{ view.contributions.sss.employee | number:'1.2-2' }}</span></div>
+      <div>PhilHealth: <span class="accent-number">₱{{ view.contributions.philhealth.employee | number:'1.2-2' }}</span></div>
+      <div>Pag-IBIG: <span class="accent-number">₱{{ view.contributions.pagibig.employee | number:'1.2-2' }}</span></div>
+      <div><strong>Total:</strong> <span class="accent-number">₱{{ view.contributions.totals.employee | number:'1.2-2' }}</span></div>
+    </mat-card>
+    <mat-card>
+      <h3>Tax & Net</h3>
+      <div>Gross ({{ view.payFrequency }}): <span class="accent-number">₱{{ view.grossPeriod | number:'1.2-2' }}</span></div>
+      <div>Contrib ({{ view.payFrequency }}): <span class="accent-number">₱{{ view.contribPeriod | number:'1.2-2' }}</span></div>
+      <div>Taxable ({{ view.payFrequency }}): <span class="accent-number">₱{{ view.taxablePeriod | number:'1.2-2' }}</span></div>
+      <div>Withholding tax: <span class="accent-number">₱{{ view.tax | number:'1.2-2' }}</span></div>
+      <div><strong>Net ({{ view.payFrequency }})</strong>: <span class="accent-number">₱{{ view.netPay | number:'1.2-2' }}</span></div>
+    </mat-card>
+    <mat-card>
+      <h3>13th Month</h3>
+      <div>Estimate: <span class="accent-number">₱{{ view.thirteenth | number:'1.2-2' }}</span></div>
+      <div>Non-taxable: <span class="accent-number">₱{{ view.thirteenthSplit.nonTaxable | number:'1.2-2' }}</span></div>
+      <div>Taxable: <span class="accent-number">₱{{ view.thirteenthSplit.taxable | number:'1.2-2' }}</span></div>
+    </mat-card>
+  </div>
+
+  <p class="note">Notes: This uses common PH defaults. Actual OT multipliers vary by day type. 13th month non-taxable thresholds and detailed BIR tables may apply.</p>
+</section>
