@@ -1,6 +1,4 @@
 User-agent: *
 Allow: /
 
-# Update this to your production domain
-Sitemap: /sitemap.xml
-
+Sitemap: https://phcalculators.com/sitemap.xml
