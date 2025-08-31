@@ -6,12 +6,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatCardModule } from '@angular/material/card';
+import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
 import { trigger, transition, style, query, stagger, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-contributions',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, MatCardModule],
+  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, MatCardModule, ThousandsSeparatorDirective],
   templateUrl: './contributions.component.html',
   styleUrl: './contributions.component.scss',
   animations: [

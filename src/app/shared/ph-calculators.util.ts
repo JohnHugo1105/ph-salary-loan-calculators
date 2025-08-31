@@ -4,6 +4,7 @@ export type Contributions = {
   sss: { employee: number; employer: number; total: number };
   philhealth: { employee: number; employer: number; total: number };
   pagibig: { employee: number; employer: number; total: number };
+  mpf: { employee: number; employer: number; total: number };
   totals: { employee: number; employer: number; total: number };
 };
 
@@ -35,6 +36,20 @@ export function computePagIbig(monthlySalary: number) {
   const employee = base * employeeRate;
   const employer = base * employerRate;
   const total = employee + employer;
+  return { employee: round2(employee), employer: round2(employer), total: round2(total) };
+}
+
+// Mandatory Provident Fund (MPF):
+// Employee = (min(MSC, 35,000) - 20,000) * 15% * 1/3
+// Employer = (min(MSC, 35,000) - 20,000) * 15% * 2/3
+// Total = Employee + Employer
+// If MSC <= 20,000 then all MPF values are 0. MSC here is the actual monthly salary capped at 35,000.
+export function computeMPF(monthlySalary: number) {
+  const msc = Math.min(monthlySalary, 35_000);
+  const excess = Math.max(0, msc - 20_000);
+  const total = excess * 0.15;
+  const employee = total / 3; // one-third
+  const employer = (total * 2) / 3; // two-thirds
   return { employee: round2(employee), employer: round2(employer), total: round2(total) };
 }
 
@@ -72,13 +87,14 @@ export function computeContributions(monthlySalary: number, options?: { includeS
   const sss = computeSSS(monthlySalary, options?.includeSSSEC ?? true);
   const philhealth = computePhilHealth(monthlySalary);
   const pagibig = computePagIbig(monthlySalary);
+  const mpf = computeMPF(monthlySalary);
   const totals = {
-    employee: round2(sss.employee + philhealth.employee + pagibig.employee),
-    employer: round2(sss.employer + philhealth.employer + pagibig.employer),
+    employee: round2(sss.employee + philhealth.employee + pagibig.employee + mpf.employee),
+    employer: round2(sss.employer + philhealth.employer + pagibig.employer + mpf.employer),
     total: 0,
   };
   totals.total = round2(totals.employee + totals.employer);
-  return { sss, philhealth, pagibig, totals };
+  return { sss, philhealth, pagibig, mpf, totals };
 }
 
 // TRAIN/CREATE simplified withholding monthly table (commonly used guide)
@@ -138,6 +154,16 @@ export function split13thMonthTaxability(totalBenefits: number, nonTaxableCap = 
   const nonTaxable = Math.min(totalBenefits, nonTaxableCap);
   const taxable = Math.max(0, totalBenefits - nonTaxable);
   return { nonTaxable: round2(nonTaxable), taxable: round2(taxable) };
+}
+
+// Estimate net 13th month pay given a withholding rate applied to the taxable portion over the cap
+// Net = Gross - (max(0, Gross - cap) * rate)
+export function estimateNet13thMonthPay(gross: number, ratePct = 20, cap = 90_000) {
+  const rate = Math.max(0, ratePct) / 100;
+  const taxable = Math.max(0, gross - cap);
+  const taxDue = taxable * rate;
+  const net = gross - taxDue;
+  return { taxable: round2(taxable), taxDue: round2(taxDue), net: round2(net) };
 }
 
 // Overtime: provide flexible calc from hourly rate and multiplier

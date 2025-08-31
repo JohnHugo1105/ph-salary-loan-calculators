@@ -8,11 +8,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
+import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
 
 @Component({
   selector: 'app-amortization',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatCardModule, MatButtonModule, MatSelectModule],
+  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatCardModule, MatButtonModule, MatSelectModule, ThousandsSeparatorDirective],
   templateUrl: './amortization.component.html',
   styleUrl: './amortization.component.scss',
   animations: [

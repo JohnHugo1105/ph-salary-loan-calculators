@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { computeContributions, computeOvertimePay, deriveHourlyRate, computeWithholdingTax, estimate13thMonthPay, monthlyToSemiMonthly, split13thMonthTaxability } from '../../shared/ph-calculators.util';
+import { computeContributions, computeOvertimePay, deriveHourlyRate, computeWithholdingTax, estimate13thMonthPay, monthlyToSemiMonthly, split13thMonthTaxability, estimateNet13thMonthPay } from '../../shared/ph-calculators.util';
 import { trigger, transition, style, query, stagger, animate } from '@angular/animations';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
+import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
 
 @Component({
   selector: 'app-net-pay',
@@ -18,6 +19,7 @@ import { MatCardModule } from '@angular/material/card';
     MatInputModule,
     MatSelectModule,
     MatCardModule,
+    ThousandsSeparatorDirective,
   ],
   templateUrl: './net-pay.component.html',
   styleUrl: './net-pay.component.scss',
@@ -42,6 +44,7 @@ export class NetPayComponent {
     daysPerMonth: [26, [Validators.min(1)]],
     hoursPerDay: [8, [Validators.min(1)]],
     monthsWorkedFor13th: [12, [Validators.min(0), Validators.max(12)]]
+    , thirteenthTaxRatePct: [20, [Validators.min(0), Validators.max(50)]]
   });
 
   view = this.compute();
@@ -74,6 +77,8 @@ export class NetPayComponent {
 
     const thirteenth = estimate13thMonthPay(monthlyBasic, Number(v.monthsWorkedFor13th) || 0);
     const thirteenthSplit = split13thMonthTaxability(thirteenth);
+    const thirteenthRate = Number(v.thirteenthTaxRatePct) || 0;
+    const thirteenthNet = estimateNet13thMonthPay(thirteenth, thirteenthRate);
 
     return {
       hourlyRate,
@@ -88,6 +93,8 @@ export class NetPayComponent {
       netPay,
       thirteenth,
       thirteenthSplit,
+      thirteenthRate,
+      thirteenthNet,
     };
   }
 }

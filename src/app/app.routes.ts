@@ -6,7 +6,7 @@ import { AmortizationComponent } from './features/amortization/amortization.comp
 
 export const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },
-  { path: 'contributions', component: ContributionsComponent, title: 'SSS, Pag-IBIG, PhilHealth' },
+  { path: 'contributions', component: ContributionsComponent, title: 'SSS, Pag-IBIG, PhilHealth, MPF' },
   { path: 'net-pay', component: NetPayComponent, title: 'Salary Net Pay Calculators' },
   { path: 'amortization', component: AmortizationComponent, title: 'Loan Amortization Calculators' },
   { path: '**', redirectTo: '' }

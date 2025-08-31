@@ -11,7 +11,7 @@
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Monthly Basic (₱)</mat-label>
-      <input matInput type="number" formControlName="monthlyBasic" min="0" step="0.01" />
+      <input matInput type="text" appThousandsSeparator formControlName="monthlyBasic" inputmode="decimal" />
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Allowances (₱)</mat-label>
@@ -37,6 +37,10 @@
       <mat-label>Months Worked (13th)</mat-label>
       <input matInput type="number" formControlName="monthsWorkedFor13th" min="0" max="12" step="1" />
     </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>13th-month tax rate (%)</mat-label>
+      <input matInput type="number" formControlName="thirteenthTaxRatePct" min="0" max="50" step="0.5" />
+    </mat-form-field>
   </form>
 
   <div class="cards" [@cardsIn]>
@@ -51,6 +55,7 @@
       <div>SSS: <span class="accent-number">₱{{ view.contributions.sss.employee | number:'1.2-2' }}</span></div>
       <div>PhilHealth: <span class="accent-number">₱{{ view.contributions.philhealth.employee | number:'1.2-2' }}</span></div>
       <div>Pag-IBIG: <span class="accent-number">₱{{ view.contributions.pagibig.employee | number:'1.2-2' }}</span></div>
+      <div>MPF: <span class="accent-number">₱{{ view.contributions.mpf.employee | number:'1.2-2' }}</span></div>
       <div><strong>Total:</strong> <span class="accent-number">₱{{ view.contributions.totals.employee | number:'1.2-2' }}</span></div>
     </mat-card>
     <mat-card>
@@ -66,8 +71,11 @@
       <div>Estimate: <span class="accent-number">₱{{ view.thirteenth | number:'1.2-2' }}</span></div>
       <div>Non-taxable: <span class="accent-number">₱{{ view.thirteenthSplit.nonTaxable | number:'1.2-2' }}</span></div>
       <div>Taxable: <span class="accent-number">₱{{ view.thirteenthSplit.taxable | number:'1.2-2' }}</span></div>
+      <div>Assumed rate: <span class="accent-number">{{ view.thirteenthRate | number:'1.0-2' }}%</span></div>
+      <div>Tax due (13th): <span class="accent-number">₱{{ view.thirteenthNet.taxDue | number:'1.2-2' }}</span></div>
+      <div><strong>Net 13th-month:</strong> <span class="accent-number">₱{{ view.thirteenthNet.net | number:'1.2-2' }}</span></div>
     </mat-card>
   </div>
 
-  <p class="note">Notes: This uses common PH defaults. Actual OT multipliers vary by day type. 13th month non-taxable thresholds and detailed BIR tables may apply.</p>
+  <p class="note">Notes: This uses common PH defaults. Actual OT multipliers vary by day type. 13th month: first ₱90,000 is non-taxable; any excess is taxed. The entered 13th-month tax rate is applied to the taxable portion for a net estimate. For exact rates, apply the BIR withholding schedule applicable to bonuses.</p>
 </section>

@@ -92,7 +92,8 @@ h1 { color: var(--accent); letter-spacing: 0.2px; }
   --mdc-outlined-text-field-hover-outline-color: #4a5b73;
   --mdc-outlined-text-field-focus-outline-color: var(--accent);
 }
-.mat-mdc-form-field.mat-focused { box-shadow: 0 0 0 2px rgba(0,191,165,0.2) inset; border-radius: 10px; }
+/* Remove custom focus glow that caused a taller overlapping border */
+/* .mat-mdc-form-field.mat-focused { box-shadow: 0 0 0 2px rgba(0,191,165,0.2) inset; border-radius: 10px; } */
 
 /* Ensure outline borders are visible for all fields (including mat-select) even before focus */
 .mat-mdc-form-field .mdc-notched-outline__leading,
