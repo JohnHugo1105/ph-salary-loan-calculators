@@ -1,11 +1,23 @@
 <mat-toolbar color="primary" class="mat-elevation-z2">
   <div class="brand">PH Salary & Loan Calculators</div>
   <span class="spacer"></span>
-  <a mat-button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
-  <a mat-button routerLink="/contributions" routerLinkActive="active">Contributions</a>
-  <a mat-button routerLink="/net-pay" routerLinkActive="active">Net Pay</a>
-  <a mat-button routerLink="/amortization" routerLinkActive="active">Amortization</a>
+  <nav class="nav-links">
+    <a mat-button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+    <a mat-button routerLink="/contributions" routerLinkActive="active">Contributions</a>
+    <a mat-button routerLink="/net-pay" routerLinkActive="active">Net Pay</a>
+    <a mat-button routerLink="/amortization" routerLinkActive="active">Amortization</a>
+  </nav>
+  <button class="mobile-menu-btn" mat-stroked-button color="primary" aria-label="Open menu" [attr.aria-expanded]="showMobileNav" (click)="toggleMobileNav()">
+    ☰ Menu
+  </button>
 </mat-toolbar>
+
+<nav class="mobile-nav" *ngIf="showMobileNav">
+  <a mat-button routerLink="/" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active" (click)="closeMobileNav()">Home</a>
+  <a mat-button routerLink="/contributions" routerLinkActive="active" (click)="closeMobileNav()">Contributions</a>
+  <a mat-button routerLink="/net-pay" routerLinkActive="active" (click)="closeMobileNav()">Net Pay</a>
+  <a mat-button routerLink="/amortization" routerLinkActive="active" (click)="closeMobileNav()">Amortization</a>
+</nav>
 
 <section class="notice" *ngIf="showDisclaimer">
   <div class="notice__inner">

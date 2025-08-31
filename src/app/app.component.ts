@@ -36,6 +36,7 @@ import { trigger, transition, style, query, group, animate } from '@angular/anim
 })
 export class AppComponent {
   title = 'PH Salary & Loan Calculators';
+  showMobileNav = false;
   prepareRoute(outlet: RouterOutlet | null) {
     if (!outlet || !('isActivated' in outlet) || !outlet.isActivated) {
       return undefined;
@@ -54,5 +55,13 @@ export class AppComponent {
   dismissDisclaimer() {
     this.showDisclaimer = false;
     try { localStorage.setItem('hideDisclaimer', '1'); } catch {}
+  }
+
+  toggleMobileNav() {
+    this.showMobileNav = !this.showMobileNav;
+  }
+
+  closeMobileNav() {
+    this.showMobileNav = false;
   }
 }

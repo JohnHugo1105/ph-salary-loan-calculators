@@ -27,6 +27,8 @@
   letter-spacing: 0.3px;
 }
 
+.brand { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
 .navbar .links {
   display: flex;
   align-items: center;
@@ -66,3 +68,45 @@
 .notice { border-bottom: 1px solid var(--muted); background: rgba(0,0,0,0.2); }
 .notice__inner { max-width: 1100px; margin: 0 auto; padding: 8px 16px; display: flex; gap: 12px; align-items: center; justify-content: space-between; color: var(--text-secondary); font-size: 12px; }
 .notice__dismiss { line-height: 1; }
+
+/* Responsive top navigation */
+.nav-links { display: flex; align-items: center; gap: 6px; }
+.mobile-menu-btn { display: none; }
+.mobile-menu-btn {
+  /* Strong, high-contrast label and outline for visibility */
+  color: #ffffff !important;
+  --mdc-outlined-button-label-text-color: #ffffff;
+  --mdc-outlined-button-outline-color: rgba(255,255,255,0.75);
+  font-weight: 700;
+}
+/* Slight background tint when on colored toolbar for contrast */
+.mat-toolbar .mobile-menu-btn { background: rgba(0,0,0,0.12); }
+
+.mobile-nav {
+  display: none;
+  background: color-mix(in srgb, var(--panel) 85%, #000 15%);
+  border: 1px solid var(--muted);
+  border-left: 0;
+  border-right: 0;
+  padding: 8px 8px;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.45);
+}
+.mobile-nav a { display: block; width: 100%; text-align: left; }
+/* Ensure strong contrast and visible hover for Material buttons */
+.mobile-nav a.mat-mdc-button {
+  color: var(--text) !important;
+  justify-content: flex-start;
+  width: 100%;
+}
+.mobile-nav a.mat-mdc-button:hover,
+.mobile-nav a.mat-mdc-button.active {
+  background: rgba(255,255,255,0.08) !important;
+}
+.mobile-nav a.mat-mdc-button .mdc-button__label { width: 100%; text-align: left; }
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .mobile-menu-btn { display: inline-flex; align-items: center; gap: 6px; }
+  .mobile-nav { display: grid; grid-template-columns: 1fr; gap: 4px; }
+  .brand { max-width: 60vw; font-size: 14px; }
+}
