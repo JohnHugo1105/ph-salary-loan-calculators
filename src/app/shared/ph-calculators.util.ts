@@ -176,6 +176,50 @@ export function deriveHourlyRate(monthlyBasic: number, daysPerMonth = 26, hoursP
   return round2(monthlyBasic / daysPerMonth / hoursPerDay);
 }
 
+// Holiday pays (without explicit overtime hours handling)
+export type HolidayInput = {
+  regular: { unworkedDays?: number; workedDays?: number; restWorkedDays?: number };
+  special: { unworkedDays?: number; workedDays?: number; restWorkedDays?: number };
+};
+
+export type HolidayPays = {
+  regular: { unworked: number; worked: number; restWorked: number; total: number };
+  special: { unworked: number; worked: number; restWorked: number; total: number };
+  total: number;
+};
+
+// Based on common PH rules:
+// Regular holiday: unworked = 100% daily wage; worked = 200% daily; worked on rest day = 260% daily
+// Special non-working: unworked = 0; worked = 130% daily; worked on rest day = 150% daily
+export function computeHolidayPays(dailyWage: number, input: HolidayInput): HolidayPays {
+  const rUn = Math.max(0, Number(input.regular.unworkedDays || 0));
+  const rWk = Math.max(0, Number(input.regular.workedDays || 0));
+  const rRw = Math.max(0, Number(input.regular.restWorkedDays || 0));
+
+  const sUn = Math.max(0, Number(input.special.unworkedDays || 0));
+  const sWk = Math.max(0, Number(input.special.workedDays || 0));
+  const sRw = Math.max(0, Number(input.special.restWorkedDays || 0));
+
+  const reg = {
+    unworked: round2(dailyWage * 1.0 * rUn),
+    worked: round2(dailyWage * 2.0 * rWk),
+    restWorked: round2(dailyWage * 2.6 * rRw),
+    total: 0,
+  };
+  reg.total = round2(reg.unworked + reg.worked + reg.restWorked);
+
+  const spec = {
+    unworked: 0, // no work, no pay by default
+    worked: round2(dailyWage * 1.3 * sWk),
+    restWorked: round2(dailyWage * 1.5 * sRw),
+    total: 0,
+  };
+  spec.total = round2(spec.unworked + spec.worked + spec.restWorked);
+
+  const total = round2(reg.total + spec.total);
+  return { regular: reg, special: spec, total };
+}
+
 // Loan amortization (fixed payment)
 export type AmortizationRow = { period: number; payment: number; interest: number; principal: number; balance: number };
 

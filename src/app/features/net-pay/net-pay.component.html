@@ -9,6 +9,7 @@
         <mat-option value="semi-monthly">Semi-monthly</mat-option>
       </mat-select>
     </mat-form-field>
+    <mat-checkbox formControlName="includeHolidayPays">Include holiday pays</mat-checkbox>
     <mat-form-field appearance="outline">
       <mat-label>Monthly Basic (₱)</mat-label>
       <input matInput type="text" appThousandsSeparator formControlName="monthlyBasic" inputmode="decimal" />
@@ -41,13 +42,49 @@
       <mat-label>13th-month tax rate (%)</mat-label>
       <input matInput type="number" formControlName="thirteenthTaxRatePct" min="0" max="50" step="0.5" />
     </mat-form-field>
+
+    <mat-card class="card" style="grid-column: 1 / -1; padding: 12px;" *ngIf="form.value.includeHolidayPays">
+      <h3>Holiday Days</h3>
+      <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px;">
+        <mat-form-field appearance="outline">
+          <mat-label>Regular Holiday (unworked) days</mat-label>
+          <input matInput type="number" formControlName="regHolUnworkedDays" min="0" step="1" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Regular Holiday (worked) days</mat-label>
+          <input matInput type="number" formControlName="regHolWorkedDays" min="0" step="1" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Regular Holiday (rest day) days</mat-label>
+          <input matInput type="number" formControlName="regHolRestWorkedDays" min="0" step="1" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Special Holiday (unworked) days</mat-label>
+          <input matInput type="number" formControlName="specHolUnworkedDays" min="0" step="1" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Special Holiday (worked) days</mat-label>
+          <input matInput type="number" formControlName="specHolWorkedDays" min="0" step="1" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Special Holiday (rest day) days</mat-label>
+          <input matInput type="number" formControlName="specHolRestWorkedDays" min="0" step="1" />
+        </mat-form-field>
+      </div>
+      <p class="note">Regular holiday: unworked=100% daily, worked=200%, rest day worked=260%. Special non-working: unworked=no pay, worked=130%, rest day worked=150%.</p>
+    </mat-card>
   </form>
 
   <div class="cards" [@cardsIn]>
     <mat-card>
       <h3>Gross (Monthly)</h3>
       <div>Hourly rate: <span class="accent-number">₱{{ view.hourlyRate | number:'1.2-2' }}</span></div>
+      <div>Daily wage: <span class="accent-number">₱{{ view.dailyWage | number:'1.2-2' }}</span></div>
       <div>Overtime pay: <span class="accent-number">₱{{ view.overtimePay | number:'1.2-2' }}</span></div>
+      <div *ngIf="view.includeHolidayPays">Holiday pays (regular): <span class="accent-number">₱{{ view.holidayPays.regular.total | number:'1.2-2' }}</span></div>
+      <div *ngIf="view.includeHolidayPays">Holiday pays (special): <span class="accent-number">₱{{ view.holidayPays.special.total | number:'1.2-2' }}</span></div>
+      <div *ngIf="view.includeHolidayPays">Holiday pays (total): <span class="accent-number">₱{{ view.holidayPays.total | number:'1.2-2' }}</span></div>
       <div><strong>Total:</strong> <span class="accent-number">₱{{ view.grossMonthly | number:'1.2-2' }}</span></div>
     </mat-card>
     <mat-card>

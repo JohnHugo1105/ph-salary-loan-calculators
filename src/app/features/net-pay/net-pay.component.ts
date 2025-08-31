@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { computeContributions, computeOvertimePay, deriveHourlyRate, computeWithholdingTax, estimate13thMonthPay, monthlyToSemiMonthly, split13thMonthTaxability, estimateNet13thMonthPay } from '../../shared/ph-calculators.util';
+import { computeContributions, computeOvertimePay, deriveHourlyRate, computeWithholdingTax, estimate13thMonthPay, monthlyToSemiMonthly, split13thMonthTaxability, estimateNet13thMonthPay, computeHolidayPays } from '../../shared/ph-calculators.util';
 import { trigger, transition, style, query, stagger, animate } from '@angular/animations';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
 
 @Component({
@@ -19,6 +20,7 @@ import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.di
     MatInputModule,
     MatSelectModule,
     MatCardModule,
+    MatCheckboxModule,
     ThousandsSeparatorDirective,
   ],
   templateUrl: './net-pay.component.html',
@@ -45,6 +47,13 @@ export class NetPayComponent {
     hoursPerDay: [8, [Validators.min(1)]],
     monthsWorkedFor13th: [12, [Validators.min(0), Validators.max(12)]]
     , thirteenthTaxRatePct: [20, [Validators.min(0), Validators.max(50)]]
+    , includeHolidayPays: [false]
+    , regHolUnworkedDays: [0, [Validators.min(0)]]
+    , regHolWorkedDays: [0, [Validators.min(0)]]
+    , regHolRestWorkedDays: [0, [Validators.min(0)]]
+    , specHolUnworkedDays: [0, [Validators.min(0)]]
+    , specHolWorkedDays: [0, [Validators.min(0)]]
+    , specHolRestWorkedDays: [0, [Validators.min(0)]]
   });
 
   view = this.compute();
@@ -63,8 +72,26 @@ export class NetPayComponent {
     const hoursPerDay = Number(v.hoursPerDay) || 8;
 
     const hourlyRate = deriveHourlyRate(monthlyBasic, daysPerMonth, hoursPerDay);
+    const dailyWage = monthlyBasic / daysPerMonth || 0;
     const overtimePay = computeOvertimePay(overtimeHours, hourlyRate, overtimeMultiplier);
-    const grossMonthly = monthlyBasic + allowances + overtimePay;
+    // Holiday pays (added on top of base for estimation)
+    const includeHoliday = !!v.includeHolidayPays;
+    const holidayPays = includeHoliday
+      ? computeHolidayPays(dailyWage, {
+          regular: {
+            unworkedDays: Number(v.regHolUnworkedDays) || 0,
+            workedDays: Number(v.regHolWorkedDays) || 0,
+            restWorkedDays: Number(v.regHolRestWorkedDays) || 0,
+          },
+          special: {
+            unworkedDays: Number(v.specHolUnworkedDays) || 0,
+            workedDays: Number(v.specHolWorkedDays) || 0,
+            restWorkedDays: Number(v.specHolRestWorkedDays) || 0,
+          }
+        })
+      : { regular: { unworked: 0, worked: 0, restWorked: 0, total: 0 }, special: { unworked: 0, worked: 0, restWorked: 0, total: 0 }, total: 0 };
+
+    const grossMonthly = monthlyBasic + allowances + overtimePay + (includeHoliday ? holidayPays.total : 0);
 
     const contr = computeContributions(monthlyBasic);
     const isSemi = v.payFrequency === 'semi-monthly';
@@ -84,6 +111,8 @@ export class NetPayComponent {
       hourlyRate,
       overtimePay,
       grossMonthly,
+      dailyWage,
+      holidayPays,
       contributions: contr,
       grossPeriod,
       contribPeriod,
@@ -95,6 +124,7 @@ export class NetPayComponent {
       thirteenthSplit,
       thirteenthRate,
       thirteenthNet,
+      includeHolidayPays: includeHoliday,
     };
   }
 }
