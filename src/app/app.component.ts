@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { SeoService } from './shared/seo.service';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -44,7 +45,7 @@ export class AppComponent {
 
   showDisclaimer = true;
 
-  constructor() {
+  constructor(private _seo: SeoService) {
     try {
       this.showDisclaimer = localStorage.getItem('hideDisclaimer') !== '1';
     } catch {}
