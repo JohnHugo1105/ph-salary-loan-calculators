@@ -1,5 +1,8 @@
 <mat-toolbar color="primary" class="mat-elevation-z2">
-  <div class="brand">PH Salary & Loan Calculators</div>
+  <a class="brand brand-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" aria-label="Go to home">
+    <img class="brand-icon" src="assets/app-icon.png" alt="PH Calculators" width="28" height="28" />
+    <span class="brand-text">PH Salary & Loan Calculators</span>
+  </a>
   <span class="spacer"></span>
   <nav class="nav-links">
     <a mat-button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
