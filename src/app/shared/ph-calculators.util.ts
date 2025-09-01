@@ -188,9 +188,9 @@ export type HolidayPays = {
   total: number;
 };
 
-// Based on common PH rules:
-// Regular holiday: unworked = 100% daily wage; worked = 200% daily; worked on rest day = 260% daily
-// Special non-working: unworked = 0; worked = 130% daily; worked on rest day = 150% daily
+// Simplified incremental rules (adds only the extra pay beyond normal salary):
+// Regular holiday: worked = +100% of daily wage (additional 1 day); unworked adds 0 here
+// Special non-working: worked = +30% of daily wage; unworked adds 0 here
 export function computeHolidayPays(dailyWage: number, input: HolidayInput): HolidayPays {
   const rUn = Math.max(0, Number(input.regular.unworkedDays || 0));
   const rWk = Math.max(0, Number(input.regular.workedDays || 0));
@@ -200,18 +200,20 @@ export function computeHolidayPays(dailyWage: number, input: HolidayInput): Holi
   const sWk = Math.max(0, Number(input.special.workedDays || 0));
   const sRw = Math.max(0, Number(input.special.restWorkedDays || 0));
 
+  // Incremental only: unworked contributes 0; worked/restWorked add +1.0× daily per day
   const reg = {
-    unworked: round2(dailyWage * 1.0 * rUn),
-    worked: round2(dailyWage * 2.0 * rWk),
-    restWorked: round2(dailyWage * 2.6 * rRw),
+    unworked: 0,
+    worked: round2(dailyWage * 1.0 * rWk),
+    restWorked: round2(dailyWage * 1.0 * rRw),
     total: 0,
   };
   reg.total = round2(reg.unworked + reg.worked + reg.restWorked);
 
+  // Special non-working incremental: worked/restWorked add +0.3× daily per day
   const spec = {
-    unworked: 0, // no work, no pay by default
-    worked: round2(dailyWage * 1.3 * sWk),
-    restWorked: round2(dailyWage * 1.5 * sRw),
+    unworked: 0,
+    worked: round2(dailyWage * 0.3 * sWk),
+    restWorked: round2(dailyWage * 0.3 * sRw),
     total: 0,
   };
   spec.total = round2(spec.unworked + spec.worked + spec.restWorked);
