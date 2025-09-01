@@ -8,7 +8,7 @@ import { filter } from 'rxjs/operators';
 export class SeoService {
   private readonly siteName = 'PH Salary & Loan Calculators';
   private readonly defaultDescription = 'Free Philippines calculators for SSS, Pag-IBIG, PhilHealth, MPF contributions, salary net pay, tax, 13th month, and loan amortization.';
-  private readonly image = 'assets/favicon.png';
+  private readonly image = '/favicon-512x512.png';
 
   constructor(private meta: Meta, private title: Title, private router: Router, private route: ActivatedRoute, @Inject(DOCUMENT) private doc: Document) {
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => {

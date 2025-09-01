@@ -28,6 +28,11 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
+              "src/assets/apple-touch-icon.png",
+              "src/assets/favicon-48x48.png",
+              "src/assets/favicon-96x96.png",
+              "src/assets/favicon-192x192.png",
+              "src/assets/favicon-512x512.png",
               "src/robots.txt",
               "src/manifest.webmanifest",
               "src/sitemap.xml"
@@ -91,6 +96,11 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
+              "src/assets/apple-touch-icon.png",
+              "src/assets/favicon-48x48.png",
+              "src/assets/favicon-96x96.png",
+              "src/assets/favicon-192x192.png",
+              "src/assets/favicon-512x512.png",
               "src/robots.txt",
               "src/manifest.webmanifest",
               "src/sitemap.xml"
