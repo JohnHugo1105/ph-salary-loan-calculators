@@ -74,7 +74,7 @@ export class NetPayComponent {
     const hourlyRate = deriveHourlyRate(monthlyBasic, daysPerMonth, hoursPerDay);
     const dailyWage = monthlyBasic / daysPerMonth || 0;
     const overtimePay = computeOvertimePay(overtimeHours, hourlyRate, overtimeMultiplier);
-    // Holiday pays (added on top of base for estimation)
+    // Holiday pays (incremental add-ons)
     const includeHoliday = !!v.includeHolidayPays;
     const holidayPays = includeHoliday
       ? computeHolidayPays(dailyWage, {
@@ -91,12 +91,17 @@ export class NetPayComponent {
         })
       : { regular: { unworked: 0, worked: 0, restWorked: 0, total: 0 }, special: { unworked: 0, worked: 0, restWorked: 0, total: 0 }, total: 0 };
 
-    const grossMonthly = monthlyBasic + allowances + overtimePay + (includeHoliday ? holidayPays.total : 0);
+    // Base fixed compensation vs variable add-ons
+    const baseMonthly = monthlyBasic + allowances;
+    const variableAdds = overtimePay + (includeHoliday ? holidayPays.total : 0);
+    const grossMonthly = baseMonthly + variableAdds;
 
     const contr = computeContributions(monthlyBasic);
     const isSemi = v.payFrequency === 'semi-monthly';
     const employeeDeductionsMonthly = contr.totals.employee;
-    const grossPeriod = isSemi ? monthlyToSemiMonthly(grossMonthly) : grossMonthly;
+    // For semi-monthly, split only base compensation; add-ons (OT, holidays) are not halved
+    const basePeriod = isSemi ? monthlyToSemiMonthly(baseMonthly) : baseMonthly;
+    const grossPeriod = basePeriod + variableAdds;
     const contribPeriod = isSemi ? monthlyToSemiMonthly(employeeDeductionsMonthly) : employeeDeductionsMonthly;
     const taxablePeriod = Math.max(grossPeriod - contribPeriod, 0);
     const tax = computeWithholdingTax(taxablePeriod, isSemi ? 'semi-monthly' : 'monthly');

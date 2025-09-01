@@ -188,9 +188,9 @@ export type HolidayPays = {
   total: number;
 };
 
-// Simplified incremental rules (adds only the extra pay beyond normal salary):
-// Regular holiday: worked = +100% of daily wage (additional 1 day); unworked adds 0 here
-// Special non-working: worked = +30% of daily wage; unworked adds 0 here
+// Holiday pay (incremental extras added to base pay for the period):
+// Regular holiday: if worked, add +100% of daily wage per day (1 extra day). If unworked, add 0 here.
+// Special non-working: if worked, add +30% of daily wage per day. If unworked, add 0 here.
 export function computeHolidayPays(dailyWage: number, input: HolidayInput): HolidayPays {
   const rUn = Math.max(0, Number(input.regular.unworkedDays || 0));
   const rWk = Math.max(0, Number(input.regular.workedDays || 0));
