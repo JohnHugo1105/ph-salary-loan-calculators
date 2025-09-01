@@ -1,0 +1,9 @@
+/* Subtle highlight for contribution section titles */
+mat-card-title {
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+/* Keep spacing tidy within cards */
+mat-card-content div { margin: 4px 0; }
