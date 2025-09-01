@@ -27,12 +27,17 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
+              {
+                "glob": "apple-touch-icon.png",
+                "input": "src/assets",
+                "output": "."
+              },
+              {
+                "glob": "favicon-*.png",
+                "input": "src/assets",
+                "output": "."
+              },
               "src/assets",
-              "src/assets/apple-touch-icon.png",
-              "src/assets/favicon-48x48.png",
-              "src/assets/favicon-96x96.png",
-              "src/assets/favicon-192x192.png",
-              "src/assets/favicon-512x512.png",
               "src/robots.txt",
               "src/manifest.webmanifest",
               "src/sitemap.xml"
@@ -95,12 +100,17 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
+              {
+                "glob": "apple-touch-icon.png",
+                "input": "src/assets",
+                "output": "."
+              },
+              {
+                "glob": "favicon-*.png",
+                "input": "src/assets",
+                "output": "."
+              },
               "src/assets",
-              "src/assets/apple-touch-icon.png",
-              "src/assets/favicon-48x48.png",
-              "src/assets/favicon-96x96.png",
-              "src/assets/favicon-192x192.png",
-              "src/assets/favicon-512x512.png",
               "src/robots.txt",
               "src/manifest.webmanifest",
               "src/sitemap.xml"
