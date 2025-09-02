@@ -28,6 +28,7 @@
             "assets": [
               "src/favicon.ico",
               "src/web.config",
+              "src/staticwebapp.config.json",
               {
                 "glob": "apple-touch-icon.png",
                 "input": "src/assets",
