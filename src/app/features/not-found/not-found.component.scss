@@ -1,0 +1,17 @@
+.not-found {
+  max-width: 720px;
+  margin: 48px auto;
+  padding: 24px;
+  text-align: center;
+}
+
+.home-link {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: var(--accent, #00bfa5);
+  color: #fff;
+  text-decoration: none;
+}
+
