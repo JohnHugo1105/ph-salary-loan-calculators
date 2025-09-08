@@ -19,7 +19,7 @@ export class SeoService {
       this.title.setTitle(fullTitle);
 
       const desc: string = data['description'] || this.defaultDescription;
-      const url = this.doc?.location?.href || '/';
+      const url = this.getCanonicalUrl();
 
       this.setTag('name', 'description', desc);
       this.setTag('property', 'og:title', fullTitle);
@@ -57,5 +57,15 @@ export class SeoService {
       this.doc.head.appendChild(link);
     }
     link.setAttribute('href', url);
+  }
+
+  private getCanonicalUrl(): string {
+    try {
+      const { origin, pathname } = this.doc.location;
+      const cleanPath = pathname || '/';
+      return `${origin}${cleanPath}`;
+    } catch {
+      return '/';
+    }
   }
 }
