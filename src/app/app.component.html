@@ -9,6 +9,8 @@
     <a mat-button routerLink="/contributions" routerLinkActive="active">Contributions</a>
     <a mat-button routerLink="/net-pay" routerLinkActive="active">Net Pay</a>
     <a mat-button routerLink="/amortization" routerLinkActive="active">Amortization</a>
+    <a mat-button routerLink="/articles" routerLinkActive="active">Articles</a>
+    <a mat-button routerLink="/about" routerLinkActive="active">About</a>
   </nav>
   <button class="mobile-menu-btn" mat-stroked-button color="primary" aria-label="Open menu" [attr.aria-expanded]="showMobileNav" (click)="toggleMobileNav()">
     ☰ Menu
@@ -20,6 +22,8 @@
   <a mat-button routerLink="/contributions" routerLinkActive="active" (click)="closeMobileNav()">Contributions</a>
   <a mat-button routerLink="/net-pay" routerLinkActive="active" (click)="closeMobileNav()">Net Pay</a>
   <a mat-button routerLink="/amortization" routerLinkActive="active" (click)="closeMobileNav()">Amortization</a>
+  <a mat-button routerLink="/articles" routerLinkActive="active" (click)="closeMobileNav()">Articles</a>
+  <a mat-button routerLink="/about" routerLinkActive="active" (click)="closeMobileNav()">About</a>
 </nav>
 
 <section class="notice" *ngIf="showDisclaimer">
@@ -32,7 +36,23 @@
 </section>
 
 <main class="container">
-  <div [@routeAnimations]="prepareRoute(outlet)">
-    <router-outlet #outlet="outlet" />
-  </div>
+  <router-outlet />
+  
 </main>
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <div class="site-footer__brand">
+      <strong>PH Calculators</strong>
+      <div class="small">Free PH salary & loan tools</div>
+    </div>
+    <nav class="site-footer__links">
+      <a routerLink="/privacy-policy">Privacy</a>
+      <a routerLink="/terms">Terms</a>
+      <a routerLink="/disclaimer">Disclaimer</a>
+      <a routerLink="/contact">Contact</a>
+      <a routerLink="/about">About</a>
+      <a routerLink="/articles">Articles</a>
+    </nav>
+  </div>
+</footer>

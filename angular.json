@@ -30,6 +30,11 @@
               "src/web.config",
               "src/staticwebapp.config.json",
               {
+                "glob": "indexnow*.txt",
+                "input": "src",
+                "output": "/"
+              },
+              {
                 "glob": "apple-touch-icon.png",
                 "input": "src/assets",
                 "output": "."
@@ -111,6 +116,11 @@
                 "glob": "favicon-*.png",
                 "input": "src/assets",
                 "output": "."
+              },
+              {
+                "glob": "indexnow*.txt",
+                "input": "src",
+                "output": "/"
               },
               "src/assets",
               "src/robots.txt",
