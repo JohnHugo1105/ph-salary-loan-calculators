@@ -43,7 +43,7 @@ export class NetPayComponent {
     allowances: [0, [Validators.min(0)]],
     overtimeHours: [0, [Validators.min(0)]],
     overtimeMultiplier: [1.25, [Validators.min(1)]],
-    daysPerMonth: [26, [Validators.min(1)]],
+    daysPerMonth: [21.5, [Validators.min(1)]],
     hoursPerDay: [8, [Validators.min(1)]],
     monthsWorkedFor13th: [12, [Validators.min(0), Validators.max(12)]]
     , thirteenthTaxRatePct: [20, [Validators.min(0), Validators.max(50)]]
@@ -68,7 +68,7 @@ export class NetPayComponent {
     const allowances = Number(v.allowances) || 0;
     const overtimeHours = Number(v.overtimeHours) || 0;
     const overtimeMultiplier = Number(v.overtimeMultiplier) || 1.25;
-    const daysPerMonth = Number(v.daysPerMonth) || 26;
+    const daysPerMonth = Number(v.daysPerMonth) || 21.5;
     const hoursPerDay = Number(v.hoursPerDay) || 8;
 
     const hourlyRate = deriveHourlyRate(monthlyBasic, daysPerMonth, hoursPerDay);
