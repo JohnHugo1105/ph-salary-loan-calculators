@@ -4,11 +4,12 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, MatToolbarModule, MatButtonModule],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, MatToolbarModule, MatButtonModule, MatSlideToggleModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   animations: []
@@ -16,6 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
 export class AppComponent {
   title = 'PH Salary & Loan Calculators';
   showMobileNav = false;
+  isLight = false;
   prepareRoute(outlet: RouterOutlet | null) {
     if (!outlet || !('isActivated' in outlet) || !outlet.isActivated) {
       return undefined;
@@ -29,6 +31,9 @@ export class AppComponent {
     try {
       this.showDisclaimer = localStorage.getItem('hideDisclaimer') !== '1';
     } catch {}
+
+    // Initialize theme (dark default)
+    this.initTheme();
   }
 
   dismissDisclaimer() {
@@ -42,5 +47,28 @@ export class AppComponent {
 
   closeMobileNav() {
     this.showMobileNav = false;
+  }
+
+  private initTheme() {
+    try {
+      const saved = localStorage.getItem('theme');
+      if (saved === 'light' || saved === 'dark') {
+        this.applyTheme(saved === 'light');
+        return;
+      }
+    } catch {}
+    this.applyTheme(false); // default dark
+  }
+
+  onToggleTheme(checked: boolean) {
+    this.applyTheme(checked);
+    try { localStorage.setItem('theme', checked ? 'light' : 'dark'); } catch {}
+  }
+
+  private applyTheme(light: boolean) {
+    this.isLight = light;
+    if (typeof document !== 'undefined') {
+      document.body.classList.toggle('light-theme', light);
+    }
   }
 }

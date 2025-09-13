@@ -31,6 +31,32 @@ $theme: mat.define-dark-theme((
 @include mat.core();
 @include mat.all-component-themes($theme);
 
+// Light theme (colors only) scoped to body.light-theme
+$light-theme: mat.define-light-theme((
+  color: (
+    primary: $primary,
+    accent: $accent,
+    warn: $warn,
+  ),
+));
+body.light-theme {
+  --bg: #f7f7f8;
+  --bg-soft: #ffffff;
+  --panel: #ffffff;
+  --muted: #e1e4e8;
+  --text: #1f2937;
+  --text-secondary: #4b5563;
+  --primary: #2979ff;
+  --accent: #ffb300;
+  --highlight: #ff8f00;
+  --success: #2e7d32;
+  --warning: #b28704;
+  --error: #c62828;
+
+  // Apply Material color tokens for light theme within scope
+  @include mat.all-component-colors($light-theme);
+}
+
 html, body { min-height: 100%; }
 body {
   min-height: 100vh;
@@ -42,6 +68,12 @@ body {
   background-attachment: fixed;
   background-color: #121212; // fallback
   color: var(--text);
+}
+
+/* Light theme background override (colors only, no size changes) */
+body.light-theme {
+  background: linear-gradient(180deg, #f9fafb 0%, #eef2f7 100%);
+  background-color: #f9fafb;
 }
 
 /* Readability */
@@ -78,6 +110,7 @@ label.check { flex-direction: row; align-items: center; gap: 8px; }
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
 .card, mat-card { background: var(--panel) !important; border: 1px solid var(--muted); border-radius: 8px !important; padding: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important; transition: background 140ms ease, border-color 140ms ease; }
 .card:hover, mat-card:hover { background: #222; border-color: #3a3a3a; }
+.light-theme .card:hover, .light-theme mat-card:hover { background: #f4f6f8; border-color: #d0d5da; }
 .card:focus-within, mat-card:focus-within { border-color: var(--primary); }
 
 .summary { margin-top: 10px; }
@@ -89,6 +122,7 @@ th, td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--mut
 th:first-child, td:first-child { text-align: left; }
 
 thead th { background: #16233a; position: sticky; top: 0; color: var(--text); }
+.light-theme thead th { background: #e8f1ff; color: #1f2937; }
 tbody tr:hover { background: rgba(255,255,255,0.03); }
 tbody tr:nth-child(odd) { background: rgba(255,255,255,0.02); }
 tbody tr:last-child { background: rgba(255, 179, 0, 0.08); }
@@ -168,6 +202,22 @@ mat-card h3 {
 .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
 .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
   border-color: var(--primary) !important;
+}
+
+/* Light theme form field outline tuning */
+.light-theme .mat-mdc-form-field {
+  --mdc-outlined-text-field-outline-color: #c5ccd6;
+  --mdc-outlined-text-field-hover-outline-color: #9fb3d1;
+}
+.light-theme .mat-mdc-form-field .mdc-notched-outline__leading,
+.light-theme .mat-mdc-form-field .mdc-notched-outline__notch,
+.light-theme .mat-mdc-form-field .mdc-notched-outline__trailing {
+  border-color: #c5ccd6 !important;
+}
+.light-theme .mat-mdc-form-field:hover .mdc-notched-outline__leading,
+.light-theme .mat-mdc-form-field:hover .mdc-notched-outline__notch,
+.light-theme .mat-mdc-form-field:hover .mdc-notched-outline__trailing {
+  border-color: #9fb3d1 !important;
 }
 
 /* Make form fields naturally fill their container */
