@@ -4,7 +4,7 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#121212",
-  "theme_color": "#00bfa5",
+  "theme_color": "#2979ff",
   "description": "Free Philippines calculators for SSS, Pag-IBIG, PhilHealth, MPF contributions, salary net pay, tax, 13th month, and loan amortization.",
   "icons": [
     { "src": "/favicon-48x48.png",  "type": "image/png", "sizes": "48x48",  "purpose": "any maskable" },

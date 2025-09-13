@@ -1,8 +1,8 @@
 :host {
-  --bg: #0b132b;
-  --panel: #1c2541;
-  --text: #f5f7fa;
-  --accent: #3a86ff;
+  --bg: #121212;
+  --panel: #1e1e1e;
+  --text: #e0e0e0;
+  --accent: var(--primary);
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -55,7 +55,7 @@
 .navbar a.active,
 .navbar a:hover {
   opacity: 1;
-  color: var(--accent);
+  color: var(--primary);
 }
 
 /* Make main content fill remaining height to push footer to bottom */
