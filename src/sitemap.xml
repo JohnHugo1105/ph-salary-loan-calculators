@@ -1,67 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://phcalculators.com/</loc>
+    <loc>https://www.phcalculators.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://phcalculators.com/contributions</loc>
+    <loc>https://www.phcalculators.com/contributions</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://phcalculators.com/net-pay</loc>
+    <loc>https://www.phcalculators.com/net-pay</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://phcalculators.com/amortization</loc>
+    <loc>https://www.phcalculators.com/amortization</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://phcalculators.com/articles</loc>
+    <loc>https://www.phcalculators.com/articles</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://phcalculators.com/articles/sss-contribution-2025</loc>
+    <loc>https://www.phcalculators.com/articles/sss-contribution-2025</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://phcalculators.com/articles/pagibig-vs-mpf</loc>
+    <loc>https://www.phcalculators.com/articles/pagibig-vs-mpf</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://phcalculators.com/articles/loan-amortization-ph</loc>
+    <loc>https://www.phcalculators.com/articles/loan-amortization-ph</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://phcalculators.com/about</loc>
+    <loc>https://www.phcalculators.com/about</loc>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://phcalculators.com/contact</loc>
+    <loc>https://www.phcalculators.com/contact</loc>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://phcalculators.com/privacy-policy</loc>
+    <loc>https://www.phcalculators.com/privacy-policy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://phcalculators.com/terms</loc>
+    <loc>https://www.phcalculators.com/terms</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://phcalculators.com/disclaimer</loc>
+    <loc>https://www.phcalculators.com/disclaimer</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
