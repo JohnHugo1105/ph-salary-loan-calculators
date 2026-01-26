@@ -1,0 +1,134 @@
+.result-summary {
+    margin-top: 24px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+
+        &.total {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--muted);
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+
+        .highlight {
+            color: #4caf50; // Green for dividends
+        }
+    }
+}
+
+.chart-card {
+    padding: 16px;
+    margin-bottom: 24px;
+}
+
+.chart-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    height: 200px;
+    margin-top: 24px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--muted);
+
+    .bar-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 15%;
+        height: 100%;
+        position: relative;
+        justify-content: flex-end;
+
+        .bar-track {
+            width: 100%;
+            height: 100%; // Relative to chart-container
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            position: relative;
+        }
+
+        .bar {
+            width: 100%;
+            border-radius: 4px 4px 0 0;
+            transition: height 0.3s ease-out;
+
+            &.capital {
+                background: #555;
+                position: absolute;
+                z-index: 1;
+                opacity: 0.3;
+                // If we want stacked visualization, this CSS needs complexity.
+                // For simple "Total Value" bar:
+                display: none; // Hiding capital bar for simplicity, just showing Total Value growth
+            }
+
+            &.value {
+                background: var(--primary);
+                z-index: 2;
+                min-height: 4px;
+            }
+        }
+
+        .bar-label {
+            position: absolute;
+            bottom: -24px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -20px;
+            // This is tricky with dynamic height. 
+            // Let's just hide exact value on top to keep it clean, use tooltip
+            display: none;
+        }
+    }
+}
+
+.legend {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 40px;
+    gap: 8px;
+    font-size: 0.9rem;
+
+    .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 4px;
+
+        &.value {
+            background: var(--primary);
+        }
+    }
+}
+
+.table-container {
+    overflow-x: auto;
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .right {
+            text-align: right;
+        }
+    }
+}

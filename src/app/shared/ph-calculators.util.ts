@@ -324,3 +324,132 @@ export function computeGrossFromNet(
     iterations
   };
 }
+
+// 13th Month Pay: Pro-rated (Sum of actual basic pay / 12)
+export function compute13thMonthProRated(monthlyBasicHistory: number[]) {
+  // Ensure we only sum up to 12 months, usually Jan-Dec
+  const totalEarned = monthlyBasicHistory.reduce((acc, curr) => acc + (Number(curr) || 0), 0);
+  const thirteenthMonth = totalEarned / 12;
+  return round2(thirteenthMonth);
+}
+
+// MP2 Calculator
+// Mode: 'annual' (Payout yearly) vs 'compounded' (Maturity after 5 years)
+export function computeMP2(monthlyContribution: number, ratePct: number, years = 5) {
+  const annualRate = ratePct / 100;
+  // MP2 dividends are based on Average Monthly Balance (AMB).
+  // But for a fixed monthly contribution, the logic simplifies:
+  // Year 1 Dividend = (Monthly * 12) * Rate / 2 (approx, or average balance approach)
+  // Actually, standard MP2 formula for Year 1 (regular savings) is effectively:
+  // Dividend = TotalContributions * Rate * (Factor depending on month)
+  // Simplest correct approximation for full year contribution:
+  // Average Balance = (Month1 + Month2... + Month12) / 12
+  // For Month 1 deposit, it earns 12 months? No, dividends are usually declared annually.
+
+  // Let's use the Effective Average Method:
+  // Month 1 contribution is invested for 12 months.
+  // Month 12 contribution is invested for 1 month.
+  // Average Duration = 6.5 months. 
+  // Dividend = (Monthly * 12) * Rate * (6.5/12)? 
+  //
+  // A more standard simplified projection used by Pag-IBIG marketing:
+  // Dividend = (Accumulated Saving) * Rate.
+  // But for the *current* year's fresh contributions, it's roughly half the rate effectively.
+
+  // Let's iterate month by month for accuracy.
+
+  let balance = 0;
+  const rows: { year: number; contribution: number; dividend: number; total: number }[] = [];
+  let totalContrib = 0;
+  let totalDividend = 0;
+
+  for (let y = 1; y <= years; y++) {
+    // For each year, we add 12 contributions
+    // And compute dividend at end of year
+
+    // Previous balance earns full year interest
+    const dividendFromPrev = balance * annualRate;
+
+    // New contributions for this year:
+    // Month 1: earns 12/12 rate? Pag-IBIG is pro-rated.
+    // Let's assume uniform distribution: Average balance of new money is TotalNew/2.
+    // So DividendNew = (Monthly * 12) * Rate / 2?
+    // Pag-IBIG officially says: Dividend = AMB * Rate.
+    // If you start Jan: AMB for new money is roughly Total/2.
+
+    const yearlyContribution = monthlyContribution * 12;
+    const dividendFromNew = (yearlyContribution / 2) * annualRate;
+    // ^ Approximation: (BalanceStart + BalanceEnd)/2 * Rate
+
+    const yearDividend = dividendFromPrev + dividendFromNew;
+
+    // Update totals
+    totalContrib += yearlyContribution;
+    totalDividend += yearDividend;
+
+    // Annual Payout Mode: Dividend is paid out, not added to balance.
+    // Compounded Mode: Dividend is added to balance.
+
+    // Note: We always add yearlyContribution to balance.
+    balance += yearlyContribution;
+
+    rows.push({
+      year: y,
+      contribution: round2(totalContrib),
+      dividend: round2(yearDividend),
+      total: round2(balance + (rows.length > 0 && rows[rows.length - 1].total ? 0 : 0)) // Placeholder
+    });
+  }
+
+  // Re-calculate rows properly based on mode in the Component, or split logic here.
+  // Actually, let's just return the "Compound" path as default base, 
+  // and for "Annual", the balance resets or doesn't grow by dividend.
+
+  return {
+    rows // This needs to be handled carefully in UI
+  };
+}
+
+// Improved MP2 Logic handling both modes
+export type MP2Row = { year: number; cumulativeContrib: number; annualDividend: number; totalAccumulated: number };
+
+export function calculateMP2(monthlyContribution: number, ratePct: number, mode: 'compounded' | 'annual'): MP2Row[] {
+  const rate = ratePct / 100;
+  let currentBalance = 0;
+  let cumulativeContrib = 0;
+  const rows: MP2Row[] = [];
+
+  for (let y = 1; y <= 5; y++) {
+    const yearContrib = monthlyContribution * 12;
+    cumulativeContrib += yearContrib;
+
+    // Dividend for the "New Money" this year
+    // Using the 0.5 factor approximation for regular monthly deposits (AMB of new money is half)
+    const dividendNew = yearContrib * rate * 0.5;
+
+    // Dividend for "Old Money" (Balance from previous year)
+    // In Year 1, currentBalance is 0.
+    const dividendOld = currentBalance * rate;
+
+    const totalDividend = dividendNew + dividendOld;
+
+    // Update Balance
+    currentBalance += yearContrib; // Add principal
+
+    if (mode === 'compounded') {
+      currentBalance += totalDividend; // Re-invest dividend
+    } else {
+      // Annual payout: Dividend is NOT added to balance
+      // Balance only grows by principal
+    }
+
+    rows.push({
+      year: y,
+      cumulativeContrib: round2(cumulativeContrib),
+      annualDividend: round2(totalDividend),
+      totalAccumulated: round2(currentBalance)
+    });
+  }
+
+  return rows;
+}

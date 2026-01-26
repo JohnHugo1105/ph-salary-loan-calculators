@@ -1,0 +1,140 @@
+<section>
+    <h1>Pag-IBIG MP2 Calculator</h1>
+
+    <div class="calc-layout">
+        <!-- INPUT -->
+        <form [formGroup]="form" class="grid" style="margin: 0; display: flex; flex-direction: column;">
+
+            <p class="muted">
+                Modified Pag-IBIG 2 (MP2) Savings is a special savings facility with a 5-year maturity, designed for
+                members who wish to earn higher dividends.
+            </p>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Monthly Contribution (₱)</mat-label>
+                <input matInput type="text" appThousandsSeparator formControlName="monthlyContribution"
+                    inputmode="decimal" />
+                <mat-hint>Minimum ₱500</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Dividend Rate (%)</mat-label>
+                <input matInput type="number" formControlName="rate" step="0.01" />
+                <mat-hint>2023 rate was 7.05%. 2024 is TBD.</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Payout Mode</mat-label>
+                <mat-select formControlName="mode">
+                    <mat-option value="compounded">5-Year Compounding (End of Term)</mat-option>
+                    <mat-option value="annual">Annual Payout (Yearly)</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-card class="result-summary">
+                <h3>5-Year Projection</h3>
+                <div class="summary-row">
+                    <span>Total Contribution:</span>
+                    <strong>₱{{ totals.contribution | number:'1.2-2' }}</strong>
+                </div>
+                <div class="summary-row">
+                    <span>Total Dividends:</span>
+                    <strong class="highlight">₱{{ totals.dividend | number:'1.2-2' }}</strong>
+                </div>
+                <div class="summary-row total">
+                    <span>Total Value:</span>
+                    <strong>₱{{ totals.accumulated | number:'1.2-2' }}</strong>
+                </div>
+            </mat-card>
+
+        </form>
+
+        <!-- CHART & RESULTS -->
+        <div class="cards">
+            <mat-card class="chart-card">
+                <h3>Growth Chart</h3>
+                <div class="chart-container">
+                    <div class="bar-group" *ngFor="let row of results">
+                        <div class="bar-label">Year {{ row.year }}</div>
+                        <div class="bar-track">
+                            <!-- Capital Bar -->
+                            <div class="bar capital" [style.height]="getBarHeight(row.cumulativeContrib)"
+                                matTooltip="Capital: ₱{{ row.cumulativeContrib | number:'1.0-0' }}">
+                            </div>
+                            <!-- Interest Bar (Stacked on top visually if we used stacked, but here side-by-side or stacked? -->
+                            <!-- Let's do a single bar representing Total Value, with color stop? Or just Total Value bar. -->
+                            <!-- Better: Show Total Value bar vs Capital bar side by side or overlaid. -->
+                            <!-- Let's do Overlaid: Total Value is the full height (blue), Capital is (grey) inside it? -->
+                            <!-- Actually, simplest is just plotting 'Total Accumulated'. -->
+                            <div class="bar value" [style.height]="getBarHeight(row.totalAccumulated)"
+                                matTooltip="Total: ₱{{ row.totalAccumulated | number:'1.0-0' }}">
+                            </div>
+                        </div>
+                        <div class="bar-value">₱{{ row.totalAccumulated | number:'1.0-0' }}</div>
+                    </div>
+                </div>
+                <div class="legend">
+                    <span class="dot value"></span> Total Value
+                    <!-- We only show Total Value bar for simplicity in CSS -->
+                </div>
+            </mat-card>
+
+            <!-- Table View -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th class="right">Contrib</th>
+                            <th class="right">Dividend</th>
+                            <th class="right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of results">
+                            <td>{{ row.year }}</td>
+                            <td class="right">{{ row.cumulativeContrib | number:'1.0-0' }}</td>
+                            <td class="right">+{{ row.annualDividend | number:'1.2-2' }}</td>
+                            <td class="right"><strong>{{ row.totalAccumulated | number:'1.2-2' }}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <hr style="margin: 32px 0; border: 0; border-top: 1px solid var(--muted);">
+
+    <!-- SEO CONTENT -->
+    <article>
+        <h2>Pag-IBIG MP2 Calculation Guide</h2>
+        <p>
+            The <strong>Modified Pag-IBIG 2 (MP2)</strong> is a voluntary savings program with a 5-year maturity.
+            It historically earns a higher dividend rate than the regular Pag-IBIG savings.
+            Dividends are tax-free and government-guaranteed.
+        </p>
+
+        <h3>Computation Logic</h3>
+        <p>
+            Dividends are calculated based on your <strong>Average Monthly Balance (AMB)</strong> multiplied by the
+            dividend rate declared for the year.
+        </p>
+        <ul>
+            <li><strong>Year 1:</strong> Your monthly contributions accumulate. The AMB for new money effectively earns
+                roughly half the annual rate.</li>
+            <li><strong>Year 2-5:</strong> Your previous balance (Capital + Earned Dividends in Compounded Mode) earns
+                the full annual rate.</li>
+        </ul>
+
+        <h3>Payout Options</h3>
+        <p>
+            <strong>Compounded (5-Year Maturity):</strong> Dividends are re-invested, allowing your money to grow faster
+            through the power of compounding.
+            You receive the total principal plus all dividends after 5 years.
+        </p>
+        <p>
+            <strong>Annual Payout:</strong> You receive the dividend earnings via bank/check every year.
+            Your principal remains intact but does not grow from re-invested earnings.
+        </p>
+    </article>
+</section>

@@ -13,11 +13,15 @@ import { ArticlesListComponent } from './features/articles/articles-list.compone
 import { Sss2025ArticleComponent } from './features/articles/sss-2025.component';
 import { PagibigVsMpfArticleComponent } from './features/articles/pagibig-vs-mpf.component';
 import { LoanAmortizationPhArticleComponent } from './features/articles/loan-amortization-ph.component';
+import { ThirteenthMonthComponent } from './features/thirteenth-month/thirteenth-month.component';
+import { Mp2Component } from './features/mp2/mp2.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full', title: 'PH Salary & Loan Calculators', data: { description: 'Free Philippines calculators for SSS, Pag-IBIG, PhilHealth, MPF contributions, salary net pay, tax, 13th month, and loan amortization.' } },
   { path: 'contributions', component: ContributionsComponent, title: 'SSS, Pag-IBIG, PhilHealth, MPF', data: { description: 'Compute SSS, PhilHealth, Pag-IBIG, and MPF contributions with employee and employer shares.' } },
   { path: 'net-pay', component: NetPayComponent, title: 'Salary Net Pay Calculators', data: { description: 'Estimate take-home pay with contributions, withholding tax, 13th month, overtime, and optional holiday pays.' } },
+  { path: '13th-month-pay', component: ThirteenthMonthComponent, title: '13th Month Pay Calculator Philippines', data: { description: 'Compute your 13th-month pay with pro-rated calculator for resigned employees or new hires.' } },
+  { path: 'mp2-calculator', component: Mp2Component, title: 'Pag-IBIG MP2 Calculator', data: { description: 'Estimate your MP2 savings growth with annual payout or 5-year compounding options.' } },
   { path: 'amortization', component: AmortizationComponent, title: 'Loan Amortization Calculators', data: { description: 'Calculate monthly payments and schedules for housing, car, and salary loans.' } },
   { path: 'about', component: AboutComponent, title: 'About • PH Calculators', data: { description: 'About PH Calculators: mission, ownership, and transparency for AdSense compliance.' } },
   { path: 'contact', component: ContactComponent, title: 'Contact • PH Calculators', data: { description: 'Contact PH Calculators for inquiries, feedback, or corrections.' } },

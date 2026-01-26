@@ -1,5 +1,6 @@
 <mat-toolbar color="primary" class="mat-elevation-z2">
-  <a class="brand brand-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" aria-label="Go to home">
+  <a class="brand brand-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+    aria-label="Go to home">
     <img class="brand-icon" src="/favicon-48x48.png" alt="PH Calculators" width="28" height="28" />
     <span class="brand-text">PH Salary & Loan Calculators</span>
   </a>
@@ -8,26 +9,34 @@
     <a mat-button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
     <a mat-button routerLink="/contributions" routerLinkActive="active">Contributions</a>
     <a mat-button routerLink="/net-pay" routerLinkActive="active">Net Pay</a>
+    <a mat-button routerLink="/13th-month-pay" routerLinkActive="active">13th Month</a>
+    <a mat-button routerLink="/mp2-calculator" routerLinkActive="active">MP2</a>
     <a mat-button routerLink="/amortization" routerLinkActive="active">Amortization</a>
     <a mat-button routerLink="/articles" routerLinkActive="active">Articles</a>
     <a mat-button routerLink="/about" routerLinkActive="active">About</a>
-    <mat-slide-toggle [checked]="isLight" (change)="onToggleTheme($event.checked)" color="accent" aria-label="Toggle light theme">
+    <mat-slide-toggle [checked]="isLight" (change)="onToggleTheme($event.checked)" color="accent"
+      aria-label="Toggle light theme">
       Light
     </mat-slide-toggle>
   </nav>
-  <button class="mobile-menu-btn" mat-stroked-button color="primary" aria-label="Open menu" [attr.aria-expanded]="showMobileNav" (click)="toggleMobileNav()">
+  <button class="mobile-menu-btn" mat-stroked-button color="primary" aria-label="Open menu"
+    [attr.aria-expanded]="showMobileNav" (click)="toggleMobileNav()">
     ☰ Menu
   </button>
 </mat-toolbar>
 
 <nav class="mobile-nav" *ngIf="showMobileNav">
-  <a mat-button routerLink="/" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active" (click)="closeMobileNav()">Home</a>
+  <a mat-button routerLink="/" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active"
+    (click)="closeMobileNav()">Home</a>
   <a mat-button routerLink="/contributions" routerLinkActive="active" (click)="closeMobileNav()">Contributions</a>
   <a mat-button routerLink="/net-pay" routerLinkActive="active" (click)="closeMobileNav()">Net Pay</a>
+  <a mat-button routerLink="/13th-month-pay" routerLinkActive="active" (click)="closeMobileNav()">13th Month</a>
+  <a mat-button routerLink="/mp2-calculator" routerLinkActive="active" (click)="closeMobileNav()">MP2</a>
   <a mat-button routerLink="/amortization" routerLinkActive="active" (click)="closeMobileNav()">Amortization</a>
   <a mat-button routerLink="/articles" routerLinkActive="active" (click)="closeMobileNav()">Articles</a>
   <a mat-button routerLink="/about" routerLinkActive="active" (click)="closeMobileNav()">About</a>
-  <mat-slide-toggle [checked]="isLight" (change)="onToggleTheme($event.checked)" color="accent" aria-label="Toggle light theme">
+  <mat-slide-toggle [checked]="isLight" (change)="onToggleTheme($event.checked)" color="accent"
+    aria-label="Toggle light theme">
     Light
   </mat-slide-toggle>
 </nav>
@@ -35,15 +44,17 @@
 <section class="notice" *ngIf="showDisclaimer">
   <div class="notice__inner">
     <span>
-      Estimates only. Not official. Not financial advice. Calculations are for guidance and may not reflect latest tables. Please verify with official sources.
+      Estimates only. Not official. Not financial advice. Calculations are for guidance and may not reflect latest
+      tables. Please verify with official sources.
     </span>
-    <button mat-raised-button color="accent" class="notice__dismiss" (click)="dismissDisclaimer()" aria-label="Dismiss disclaimer">Dismiss</button>
+    <button mat-raised-button color="accent" class="notice__dismiss" (click)="dismissDisclaimer()"
+      aria-label="Dismiss disclaimer">Dismiss</button>
   </div>
 </section>
 
 <main class="container">
   <router-outlet />
-  
+
 </main>
 
 <footer class="site-footer">
