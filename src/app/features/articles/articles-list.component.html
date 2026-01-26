@@ -1,10 +1,27 @@
-<section>
-  <h1>Guides & Articles</h1>
-  <p>Short, practical explainers to complement the calculators.</p>
-  <ul>
-    <li><a routerLink="/articles/sss-contribution-2025">How to compute your SSS contribution in 2025</a></li>
-    <li><a routerLink="/articles/pagibig-vs-mpf">Pag-IBIG vs MPF explained</a></li>
-    <li><a routerLink="/articles/loan-amortization-ph">How loan amortization works in the Philippines</a></li>
-  </ul>
-</section>
+<header class="hero">
+  <div class="hero-content">
+    <h1>Guides & Articles</h1>
+    <p class="subtitle">Short, practical explainers to complement the calculators.</p>
+  </div>
+</header>
 
+<section class="container">
+  <div class="tool-grid">
+    <a *ngFor="let article of articles" [routerLink]="article.route" class="tool-card">
+      <mat-card class="card-inner">
+        <div class="icon-wrapper" [class]="article.color">
+          <mat-icon>{{ article.icon }}</mat-icon>
+        </div>
+        <mat-card-header>
+          <mat-card-title>{{ article.title }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>{{ article.description }}</p>
+        </mat-card-content>
+        <div class="card-action">
+          <span class="read-more">Read Article &rarr;</span>
+        </div>
+      </mat-card>
+    </a>
+  </div>
+</section>

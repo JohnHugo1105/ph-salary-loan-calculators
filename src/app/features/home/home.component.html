@@ -1,13 +1,31 @@
-<section>
-  <h1>Philippines Salary & Loan Calculators</h1>
-  <p>Select a category to begin:</p>
-  <ul>
-    <li><a routerLink="/contributions">SSS, Pag-IBIG, PhilHealth, MPF contributions</a></li>
-    <li><a routerLink="/net-pay">Salary net pay (tax, overtime)</a></li>
-    <li><a routerLink="/13th-month-pay">13th Month Pay Calculator</a></li>
-    <li><a routerLink="/mp2-calculator">Pag-IBIG MP2 Savings Calculator</a></li>
-    <li><a routerLink="/amortization">Loan amortization (housing, car, salary)</a></li>
-    <li><a routerLink="/articles">Articles & guides</a></li>
-    <li><a routerLink="/about">About this site</a></li>
-  </ul>
+<header class="hero">
+  <div class="hero-content">
+    <h1>Philippine Salary & Loan Tools</h1>
+    <p class="subtitle">Free and updated for 2025 financial rules.</p>
+  </div>
+</header>
+
+<section class="container">
+  <div class="tool-grid">
+    <a *ngFor="let tool of tools" [routerLink]="tool.route" class="tool-card">
+      <mat-card class="card-inner">
+        <div class="icon-wrapper" [class]="tool.color">
+          <mat-icon>{{ tool.icon }}</mat-icon>
+        </div>
+        <mat-card-header>
+          <mat-card-title>{{ tool.title }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>{{ tool.description }}</p>
+        </mat-card-content>
+      </mat-card>
+    </a>
+  </div>
 </section>
+
+<footer class="home-footer">
+  <p>
+    <a routerLink="/about">About</a> &bull;
+    <a routerLink="/contact">Contact</a>
+  </p>
+</footer>
