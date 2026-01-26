@@ -1,0 +1,16 @@
+{
+    "navigationFallback": {
+        "rewrite": "/index.html"
+    },
+    "globalHeaders": {
+        "content-security-policy": "default-src https: 'unsafe-inline' 'unsafe-eval'; img-src https: data:;"
+    },
+    "routes": [
+        {
+            "route": "/articles/*",
+            "headers": {
+                "cache-control": "public, max-age=604800, immutable"
+            }
+        }
+    ]
+}
