@@ -12,10 +12,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
 import { SeoService } from '../../shared/seo.service';
 
+import { MatIconModule } from '@angular/material/icon';
+
 @Component({
   selector: 'app-amortization',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatCardModule, MatButtonModule, MatSelectModule, ThousandsSeparatorDirective, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatCardModule, MatButtonModule, MatSelectModule, MatIconModule, ThousandsSeparatorDirective, RouterModule],
   templateUrl: './amortization.component.html',
   styleUrl: './amortization.component.scss',
   animations: [

@@ -1,0 +1,248 @@
+.hero {
+    background: linear-gradient(135deg, var(--primary) 0%, darken(#2979ff, 20%) 100%);
+    color: #ffffff;
+    padding: 60px 24px;
+    text-align: center;
+    border-radius: 24px;
+    margin-bottom: 48px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+
+    h1 {
+        color: #ffffff !important;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+        letter-spacing: -0.5px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .subtitle {
+        color: rgba(255, 255, 255, 0.95) !important;
+        font-size: 1.25rem;
+        width: 600px;
+        max-width: 100%;
+        margin: 0 auto;
+        font-weight: 300;
+    }
+
+    @media (max-width: 600px) {
+        padding: 60px 20px;
+
+        h1 {
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+        }
+    }
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.calc-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+@media (min-width: 960px) {
+    .calc-layout {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        align-items: start;
+    }
+}
+
+.input-col {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.input-card {
+    padding: 24px;
+    background: var(--panel);
+}
+
+.grid-form {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    /* Form fields have internal spacing needs */
+}
+
+.result-card {
+    background: linear-gradient(135deg, var(--primary) 0%, darken(#2979ff, 15%) 100%);
+    color: white;
+    padding: 32px 24px;
+    border: none;
+    box-shadow: 0 8px 20px rgba(41, 121, 255, 0.3) !important;
+    text-align: center;
+
+    .result-label {
+        font-size: 0.95rem;
+        opacity: 0.9;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .result-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        line-height: 1.1;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+}
+
+.table-col {
+    min-width: 0;
+    /* Prevent grid blowout */
+}
+
+.table-card {
+    padding: 0;
+    background: var(--panel);
+    overflow: hidden;
+}
+
+.table-wrap {
+    overflow-x: auto;
+    width: 100%;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    white-space: nowrap;
+}
+
+th,
+td {
+    padding: 12px 16px;
+    text-align: right;
+    border-bottom: 1px solid var(--muted);
+}
+
+th:first-child,
+td:first-child {
+    text-align: left;
+    padding-left: 24px;
+}
+
+th:last-child,
+td:last-child {
+    padding-right: 24px;
+}
+
+thead th {
+    background: var(--bg-soft);
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.pager {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--bg-soft);
+    border-top: 1px solid var(--muted);
+}
+
+.pager__left {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    .pager-info {
+        margin: 0 12px;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+}
+
+.pager__size {
+    width: 80px;
+    font-size: 0.85rem;
+    margin-bottom: -16px;
+    /* Mat-form-field density compensation */
+}
+
+.density-sm {
+    transform: scale(0.9);
+    transform-origin: right center;
+}
+
+.divider {
+    margin: 48px 0;
+    border: 0;
+    border-top: 1px solid var(--muted);
+}
+
+.content-article {
+    max-width: 800px;
+    margin: 0 auto;
+
+    h2,
+    h3 {
+        color: var(--text);
+    }
+
+    p,
+    li {
+        color: var(--text-secondary);
+        line-height: 1.7;
+        font-size: 1.05rem;
+    }
+
+    h2 {
+        margin-bottom: 24px;
+        font-size: 1.75rem;
+    }
+
+    h3 {
+        margin-top: 32px;
+        margin-bottom: 16px;
+    }
+
+    .styled-list {
+        padding-left: 20px;
+
+        li {
+            margin-bottom: 12px;
+        }
+    }
+
+    .cta-wrapper {
+        margin-top: 40px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .pager {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .pager__left {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+}

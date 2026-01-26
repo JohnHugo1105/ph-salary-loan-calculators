@@ -1,78 +1,103 @@
-<section>
-  <h1>Loan Amortization</h1>
+<header class="hero">
+  <div class="hero-content">
+    <h1>Loan Amortization</h1>
+    <p class="subtitle">Estimate monthly payments for housing, car, or personal loans.</p>
+  </div>
+</header>
 
+<section class="container">
   <div class="calc-layout">
-    <!-- INPUT -->
-    <div style="display: flex; flex-direction: column; gap: 12px;">
-      <form [formGroup]="form" class="grid" style="margin: 0; display: flex; flex-direction: column;">
-        <mat-form-field appearance="outline">
-          <mat-label>Amount (₱)</mat-label>
-          <input matInput type="text" appThousandsSeparator formControlName="amount" inputmode="decimal" />
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Annual Rate (%)</mat-label>
-          <input matInput type="number" formControlName="annualRate" min="0" step="0.01" />
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Term (months)</mat-label>
-          <input matInput type="number" formControlName="months" min="1" step="1" />
-        </mat-form-field>
-      </form>
+    <!-- INPUT & RESULT COLUMN -->
+    <div class="input-col">
+      <mat-card class="input-card">
+        <mat-card-header>
+          <mat-card-title>Loan Details</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="form" class="grid-form">
+            <mat-form-field appearance="outline">
+              <mat-label>Amount (₱)</mat-label>
+              <input matInput type="text" appThousandsSeparator formControlName="amount" inputmode="decimal" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Annual Rate (%)</mat-label>
+              <input matInput type="number" formControlName="annualRate" min="0" step="0.01" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Term (months)</mat-label>
+              <input matInput type="number" formControlName="months" min="1" step="1" />
+            </mat-form-field>
+          </form>
+        </mat-card-content>
+      </mat-card>
 
-      <mat-card style="background: var(--primary); color: white; border: none;">
-        <div style="font-size: 14px; opacity: 0.9;">Estimated Monthly Payment</div>
-        <div style="font-size: 28px; font-weight: 700;">₱{{ schedule.payment | number:'1.2-2' }}</div>
+      <mat-card class="result-card">
+        <div class="result-label">Estimated Monthly Payment</div>
+        <div class="result-value">₱{{ schedule.payment | number:'1.2-2' }}</div>
       </mat-card>
     </div>
 
     <!-- TABLE RESULT -->
-    <div class="table-wrap" [@tableIn] style="margin-top: 0;">
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Payment</th>
-            <th>Interest</th>
-            <th>Principal</th>
-            <th>Balance</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let r of pagedRows">
-            <td>{{ r.period }}</td>
-            <td>₱{{ r.payment | number:'1.2-2' }}</td>
-            <td>₱{{ r.interest | number:'1.2-2' }}</td>
-            <td>₱{{ r.principal | number:'1.2-2' }}</td>
-            <td>₱{{ r.balance | number:'1.2-2' }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="pager">
-        <div class="pager__left">
-          <button mat-stroked-button color="primary" (click)="first()" [disabled]="!canPrev()">First</button>
-          <button mat-stroked-button color="primary" (click)="prev()" [disabled]="!canPrev()">Prev</button>
-          <button mat-stroked-button color="primary" (click)="next()" [disabled]="!canNext()">Next</button>
-          <button mat-stroked-button color="primary" (click)="last()" [disabled]="!canNext()">Last</button>
+    <div class="table-col">
+      <mat-card class="table-card">
+        <div class="table-wrap" [@tableIn]>
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Payment</th>
+                <th>Interest</th>
+                <th>Principal</th>
+                <th>Balance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let r of pagedRows">
+                <td>{{ r.period }}</td>
+                <td>₱{{ r.payment | number:'1.2-2' }}</td>
+                <td>₱{{ r.interest | number:'1.2-2' }}</td>
+                <td>₱{{ r.principal | number:'1.2-2' }}</td>
+                <td>₱{{ r.balance | number:'1.2-2' }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <div class="pager__right">
-          <span>{{ startIndex + 1 }}–{{ endIndex }} of {{ totalRows }}</span>
-          <mat-form-field appearance="outline" class="pager__size">
-            <mat-label>Rows</mat-label>
-            <mat-select [value]="pageSize" (selectionChange)="setPageSize($event.value)">
-              <mat-option [value]="12">12</mat-option>
-              <mat-option [value]="24">24</mat-option>
-              <mat-option [value]="60">60</mat-option>
-            </mat-select>
-          </mat-form-field>
+
+        <div class="pager">
+          <div class="pager__left">
+            <button mat-icon-button (click)="first()" [disabled]="!canPrev()" title="First Page">
+              <mat-icon>first_page</mat-icon>
+            </button>
+            <button mat-icon-button (click)="prev()" [disabled]="!canPrev()" title="Previous Page">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+            <span class="pager-info">{{ startIndex + 1 }}–{{ endIndex }} of {{ totalRows }}</span>
+            <button mat-icon-button (click)="next()" [disabled]="!canNext()" title="Next Page">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+            <button mat-icon-button (click)="last()" [disabled]="!canNext()" title="Last Page">
+              <mat-icon>last_page</mat-icon>
+            </button>
+          </div>
+          <div class="pager__right">
+            <mat-form-field appearance="outline" class="pager__size density-sm">
+              <mat-label>Rows</mat-label>
+              <mat-select [value]="pageSize" (selectionChange)="setPageSize($event.value)">
+                <mat-option [value]="12">12</mat-option>
+                <mat-option [value]="24">24</mat-option>
+                <mat-option [value]="60">60</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
         </div>
-      </div>
+      </mat-card>
     </div>
   </div>
 
-  <hr style="margin: 32px 0; border: 0; border-top: 1px solid var(--muted);">
+  <hr class="divider">
 
   <!-- SEO CONTENT -->
-  <article>
+  <article class="content-article">
     <h2>Loan Amortization in the Philippines</h2>
     <p>
       Whether you are applying for a housing loan (Pag-IBIG/Bank), car loan, or salary loan, understanding how your
@@ -88,7 +113,7 @@
     </p>
 
     <h3>Key Factors</h3>
-    <ul>
+    <ul class="styled-list">
       <li><strong>Principal Amount:</strong> The total amount you are borrowing.</li>
       <li><strong>Annual Interest Rate:</strong> The percentage charged by the lender per year. Philippine banks
         typically offer rates between 6% to 12% for housing, depending on the fixing period.</li>
@@ -96,7 +121,7 @@
         monthly payments but significantly higher total interest paid.</li>
     </ul>
 
-    <div style="margin-top: 24px;">
+    <div class="cta-wrapper">
       <a mat-stroked-button color="primary" routerLink="/articles/loan-amortization-ph">Read Full Guide: How
         Amortization Works</a>
     </div>
