@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatCardModule } from '@angular/material/card';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
+import { SeoService } from '../../shared/seo.service';
 import { trigger, transition, style, query, stagger, animate } from '@angular/animations';
 
 @Component({
@@ -34,11 +35,26 @@ export class ContributionsComponent {
 
   result = computeContributions(30000, { includeSSSEC: true });
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private seo: SeoService) {
     this.form.valueChanges.subscribe(v => {
       const salary = Number(v.monthlySalary) || 0;
       const includeEC = !!v.includeSSSEC;
       this.result = computeContributions(salary, { includeSSSEC: includeEC });
+    });
+
+    this.seo.setSchema({
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      'name': 'SSS, PhilHealth, Pag-IBIG Contributions Calculator',
+      'operatingSystem': 'Web',
+      'applicationCategory': 'FinanceApplication',
+      'url': 'https://www.phcalculators.com/contributions',
+      'offers': {
+        '@type': 'Offer',
+        'price': '0',
+        'priceCurrency': 'PHP'
+      },
+      'featureList': 'Compute SSS, PhilHealth, Pag-IBIG, and MPF shares'
     });
   }
 }

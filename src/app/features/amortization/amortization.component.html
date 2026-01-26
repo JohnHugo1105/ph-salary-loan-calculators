@@ -1,63 +1,104 @@
 <section>
   <h1>Loan Amortization</h1>
-  <form [formGroup]="form" class="grid">
-    <mat-form-field appearance="outline">
-      <mat-label>Amount (₱)</mat-label>
-      <input matInput type="text" appThousandsSeparator formControlName="amount" inputmode="decimal" />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Annual Rate (%)</mat-label>
-      <input matInput type="number" formControlName="annualRate" min="0" step="0.01" />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Term (months)</mat-label>
-      <input matInput type="number" formControlName="months" min="1" step="1" />
-    </mat-form-field>
-  </form>
 
-  <mat-card>
-    <div><strong>Monthly Payment:</strong>&nbsp;<span class="accent-number">₱{{ schedule.payment | number:'1.2-2' }}</span></div>
-  </mat-card>
-
-  <div class="table-wrap" [@tableIn]>
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Payment</th>
-          <th>Interest</th>
-          <th>Principal</th>
-          <th>Balance</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let r of pagedRows">
-          <td>{{ r.period }}</td>
-          <td>₱{{ r.payment | number:'1.2-2' }}</td>
-          <td>₱{{ r.interest | number:'1.2-2' }}</td>
-          <td>₱{{ r.principal | number:'1.2-2' }}</td>
-          <td>₱{{ r.balance | number:'1.2-2' }}</td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="pager">
-      <div class="pager__left">
-        <button mat-stroked-button color="primary" (click)="first()" [disabled]="!canPrev()">First</button>
-        <button mat-stroked-button color="primary" (click)="prev()" [disabled]="!canPrev()">Prev</button>
-        <button mat-stroked-button color="primary" (click)="next()" [disabled]="!canNext()">Next</button>
-        <button mat-stroked-button color="primary" (click)="last()" [disabled]="!canNext()">Last</button>
-      </div>
-      <div class="pager__right">
-        <span>{{ startIndex + 1 }}–{{ endIndex }} of {{ totalRows }}</span>
-        <mat-form-field appearance="outline" class="pager__size">
-          <mat-label>Rows</mat-label>
-          <mat-select [value]="pageSize" (selectionChange)="setPageSize($event.value)">
-            <mat-option [value]="12">12</mat-option>
-            <mat-option [value]="24">24</mat-option>
-            <mat-option [value]="60">60</mat-option>
-          </mat-select>
+  <div class="calc-layout">
+    <!-- INPUT -->
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <form [formGroup]="form" class="grid" style="margin: 0; display: flex; flex-direction: column;">
+        <mat-form-field appearance="outline">
+          <mat-label>Amount (₱)</mat-label>
+          <input matInput type="text" appThousandsSeparator formControlName="amount" inputmode="decimal" />
         </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Annual Rate (%)</mat-label>
+          <input matInput type="number" formControlName="annualRate" min="0" step="0.01" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Term (months)</mat-label>
+          <input matInput type="number" formControlName="months" min="1" step="1" />
+        </mat-form-field>
+      </form>
+
+      <mat-card style="background: var(--primary); color: white; border: none;">
+        <div style="font-size: 14px; opacity: 0.9;">Estimated Monthly Payment</div>
+        <div style="font-size: 28px; font-weight: 700;">₱{{ schedule.payment | number:'1.2-2' }}</div>
+      </mat-card>
+    </div>
+
+    <!-- TABLE RESULT -->
+    <div class="table-wrap" [@tableIn] style="margin-top: 0;">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Payment</th>
+            <th>Interest</th>
+            <th>Principal</th>
+            <th>Balance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of pagedRows">
+            <td>{{ r.period }}</td>
+            <td>₱{{ r.payment | number:'1.2-2' }}</td>
+            <td>₱{{ r.interest | number:'1.2-2' }}</td>
+            <td>₱{{ r.principal | number:'1.2-2' }}</td>
+            <td>₱{{ r.balance | number:'1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pager">
+        <div class="pager__left">
+          <button mat-stroked-button color="primary" (click)="first()" [disabled]="!canPrev()">First</button>
+          <button mat-stroked-button color="primary" (click)="prev()" [disabled]="!canPrev()">Prev</button>
+          <button mat-stroked-button color="primary" (click)="next()" [disabled]="!canNext()">Next</button>
+          <button mat-stroked-button color="primary" (click)="last()" [disabled]="!canNext()">Last</button>
+        </div>
+        <div class="pager__right">
+          <span>{{ startIndex + 1 }}–{{ endIndex }} of {{ totalRows }}</span>
+          <mat-form-field appearance="outline" class="pager__size">
+            <mat-label>Rows</mat-label>
+            <mat-select [value]="pageSize" (selectionChange)="setPageSize($event.value)">
+              <mat-option [value]="12">12</mat-option>
+              <mat-option [value]="24">24</mat-option>
+              <mat-option [value]="60">60</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
       </div>
     </div>
   </div>
+
+  <hr style="margin: 32px 0; border: 0; border-top: 1px solid var(--muted);">
+
+  <!-- SEO CONTENT -->
+  <article>
+    <h2>Loan Amortization in the Philippines</h2>
+    <p>
+      Whether you are applying for a housing loan (Pag-IBIG/Bank), car loan, or salary loan, understanding how your
+      monthly amortization is computed is essential for financial planning.
+    </p>
+
+    <h3>Amortization Formula</h3>
+    <p>
+      This calculator uses the standard <strong>diminishing balance</strong> method. This means your interest is
+      calculated based on the remaining principal balance each month.
+      As you pay off the principal, the interest portion decreases, and more of your monthly payment goes toward the
+      principal.
+    </p>
+
+    <h3>Key Factors</h3>
+    <ul>
+      <li><strong>Principal Amount:</strong> The total amount you are borrowing.</li>
+      <li><strong>Annual Interest Rate:</strong> The percentage charged by the lender per year. Philippine banks
+        typically offer rates between 6% to 12% for housing, depending on the fixing period.</li>
+      <li><strong>Term:</strong> The duration of the loan. Longer terms (e.g., 15-30 years for housing) result in lower
+        monthly payments but significantly higher total interest paid.</li>
+    </ul>
+
+    <div style="margin-top: 24px;">
+      <a mat-stroked-button color="primary" routerLink="/articles/loan-amortization-ph">Read Full Guide: How
+        Amortization Works</a>
+    </div>
+  </article>
 </section>

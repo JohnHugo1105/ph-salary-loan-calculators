@@ -1,118 +1,186 @@
 <section>
   <h1>Salary Net Pay</h1>
 
-  <form [formGroup]="form" class="grid">
-    <mat-form-field appearance="outline">
-      <mat-label>Pay Frequency</mat-label>
-      <mat-select formControlName="payFrequency">
-        <mat-option value="monthly">Monthly</mat-option>
-        <mat-option value="semi-monthly">Semi-monthly</mat-option>
-      </mat-select>
-    </mat-form-field>
-    <mat-checkbox formControlName="includeHolidayPays">Include holiday pays</mat-checkbox>
-    <mat-form-field appearance="outline">
-      <mat-label>Monthly Basic (₱)</mat-label>
-      <input matInput type="text" appThousandsSeparator formControlName="monthlyBasic" inputmode="decimal" />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Allowances (₱)</mat-label>
-      <input matInput type="text" appThousandsSeparator formControlName="allowances" inputmode="decimal" />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Overtime Hours</mat-label>
-      <input matInput type="number" formControlName="overtimeHours" min="0" step="0.01" />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>OT Multiplier</mat-label>
-      <input matInput type="number" formControlName="overtimeMultiplier" min="1" step="0.01" />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Days/Month</mat-label>
-      <input matInput type="number" formControlName="daysPerMonth" min="1" step="1" />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Hours/Day</mat-label>
-      <input matInput type="number" formControlName="hoursPerDay" min="1" step="1" />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Months Worked (13th)</mat-label>
-      <input matInput type="number" formControlName="monthsWorkedFor13th" min="0" max="12" step="1" />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>13th-month tax rate (%)</mat-label>
-      <input matInput type="number" formControlName="thirteenthTaxRatePct" min="0" max="50" step="0.5" />
-    </mat-form-field>
+  <div class="calc-layout">
+    <!-- INPUT FORM -->
+    <form [formGroup]="form" class="grid" style="margin: 0; display: flex; flex-direction: column;">
+      <mat-form-field appearance="outline">
+        <mat-label>Pay Frequency</mat-label>
+        <mat-select formControlName="payFrequency">
+          <mat-option value="monthly">Monthly</mat-option>
+          <mat-option value="semi-monthly">Semi-monthly</mat-option>
+        </mat-select>
+      </mat-form-field>
 
-    <mat-card class="card" style="grid-column: 1 / -1; padding: 12px;" *ngIf="form.value.includeHolidayPays">
-      <h3>Holiday Days</h3>
-      <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px;">
-        <mat-form-field appearance="outline">
-          <mat-label>Regular Holiday (unworked) days</mat-label>
-          <input matInput type="number" formControlName="regHolUnworkedDays" min="0" step="1" />
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Regular Holiday (worked) days</mat-label>
-          <input matInput type="number" formControlName="regHolWorkedDays" min="0" step="1" />
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Regular Holiday (rest day) days</mat-label>
-          <input matInput type="number" formControlName="regHolRestWorkedDays" min="0" step="1" />
-        </mat-form-field>
+      <mat-checkbox formControlName="includeHolidayPays">Include holiday pays</mat-checkbox>
 
+      <mat-form-field appearance="outline">
+        <mat-label>Monthly Basic (₱)</mat-label>
+        <input matInput type="text" appThousandsSeparator formControlName="monthlyBasic" inputmode="decimal" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Allowances (₱)</mat-label>
+        <input matInput type="text" appThousandsSeparator formControlName="allowances" inputmode="decimal" />
+      </mat-form-field>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
         <mat-form-field appearance="outline">
-          <mat-label>Special Holiday (unworked) days</mat-label>
-          <input matInput type="number" formControlName="specHolUnworkedDays" min="0" step="1" />
+          <mat-label>Overtime Hrs</mat-label>
+          <input matInput type="number" formControlName="overtimeHours" min="0" step="0.01" />
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>Special Holiday (worked) days</mat-label>
-          <input matInput type="number" formControlName="specHolWorkedDays" min="0" step="1" />
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Special Holiday (rest day) days</mat-label>
-          <input matInput type="number" formControlName="specHolRestWorkedDays" min="0" step="1" />
+          <mat-label>Multiplier</mat-label>
+          <input matInput type="number" formControlName="overtimeMultiplier" min="1" step="0.01" />
         </mat-form-field>
       </div>
-      <p class="note">Simplified holiday extras added to base: Regular worked = +100% of daily wage (1 extra day); Special non-working worked = +30% of daily wage. Unworked days add 0 here.</p>
-    </mat-card>
-  </form>
 
-  <div class="cards" [@cardsIn]>
-    <mat-card>
-      <h3>Gross (Monthly)</h3>
-      <div>Hourly rate:&nbsp;<span class="accent-number">₱{{ view.hourlyRate | number:'1.2-2' }}</span></div>
-      <div>Daily wage:&nbsp;<span class="accent-number">₱{{ view.dailyWage | number:'1.2-2' }}</span></div>
-      <div>Overtime pay:&nbsp;<span class="accent-number">₱{{ view.overtimePay | number:'1.2-2' }}</span></div>
-      <div *ngIf="view.includeHolidayPays">Holiday pays (regular):&nbsp;<span class="accent-number">₱{{ view.holidayPays.regular.total | number:'1.2-2' }}</span></div>
-      <div *ngIf="view.includeHolidayPays">Holiday pays (special):&nbsp;<span class="accent-number">₱{{ view.holidayPays.special.total | number:'1.2-2' }}</span></div>
-      <div *ngIf="view.includeHolidayPays">Holiday pays (total):&nbsp;<span class="accent-number">₱{{ view.holidayPays.total | number:'1.2-2' }}</span></div>
-      <div class="total-row"><strong>Total:</strong>&nbsp;<span class="accent-number">₱{{ view.grossMonthly | number:'1.2-2' }}</span></div>
-    </mat-card>
-    <mat-card>
-      <h3>Contributions (Employee)</h3>
-      <div>SSS:&nbsp;<span class="accent-number">₱{{ view.contributions.sss.employee | number:'1.2-2' }}</span></div>
-      <div>PhilHealth:&nbsp;<span class="accent-number">₱{{ view.contributions.philhealth.employee | number:'1.2-2' }}</span></div>
-      <div>Pag-IBIG:&nbsp;<span class="accent-number">₱{{ view.contributions.pagibig.employee | number:'1.2-2' }}</span></div>
-      <div>MPF:&nbsp;<span class="accent-number">₱{{ view.contributions.mpf.employee | number:'1.2-2' }}</span></div>
-      <div class="total-row"><strong>Total:</strong>&nbsp;<span class="accent-number">₱{{ view.contributions.totals.employee | number:'1.2-2' }}</span></div>
-    </mat-card>
-    <mat-card>
-      <h3>Tax & Net</h3>
-      <div>Gross ({{ view.payFrequency }}):&nbsp;<span class="accent-number">₱{{ view.grossPeriod | number:'1.2-2' }}</span></div>
-      <div>Contrib ({{ view.payFrequency }}):&nbsp;<span class="accent-number">₱{{ view.contribPeriod | number:'1.2-2' }}</span></div>
-      <div>Taxable ({{ view.payFrequency }}):&nbsp;<span class="accent-number">₱{{ view.taxablePeriod | number:'1.2-2' }}</span></div>
-      <div>Withholding tax:&nbsp;<span class="accent-number">₱{{ view.tax | number:'1.2-2' }}</span></div>
-      <div class="total-row"><strong>Net ({{ view.payFrequency }})</strong>:&nbsp;<span class="accent-number">₱{{ view.netPay | number:'1.2-2' }}</span></div>
-    </mat-card>
-    <mat-card>
-      <h3>13th Month</h3>
-      <div>Estimate:&nbsp;<span class="accent-number">₱{{ view.thirteenth | number:'1.2-2' }}</span></div>
-      <div>Non-taxable:&nbsp;<span class="accent-number">₱{{ view.thirteenthSplit.nonTaxable | number:'1.2-2' }}</span></div>
-      <div>Taxable:&nbsp;<span class="accent-number">₱{{ view.thirteenthSplit.taxable | number:'1.2-2' }}</span></div>
-      <div>Assumed rate:&nbsp;<span class="accent-number">{{ view.thirteenthRate | number:'1.0-2' }}%</span></div>
-      <div>Tax due (13th):&nbsp;<span class="accent-number">₱{{ view.thirteenthNet.taxDue | number:'1.2-2' }}</span></div>
-      <div class="total-row"><strong>Net 13th-month:</strong>&nbsp;<span class="accent-number">₱{{ view.thirteenthNet.net | number:'1.2-2' }}</span></div>
-    </mat-card>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <mat-form-field appearance="outline">
+          <mat-label>Days/Month</mat-label>
+          <input matInput type="number" formControlName="daysPerMonth" min="1" step="0.5" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Hours/Day</mat-label>
+          <input matInput type="number" formControlName="hoursPerDay" min="1" step="0.5" />
+        </mat-form-field>
+      </div>
+
+      <mat-card class="card" style="padding: 12px;" *ngIf="form.value.includeHolidayPays">
+        <h3>Holiday Days</h3>
+        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin: 0;">
+          <mat-form-field appearance="outline">
+            <mat-label>Reg (Unworked)</mat-label>
+            <input matInput type="number" formControlName="regHolUnworkedDays" min="0" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Reg (Worked)</mat-label>
+            <input matInput type="number" formControlName="regHolWorkedDays" min="0" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Spec (Unworked)</mat-label>
+            <input matInput type="number" formControlName="specHolUnworkedDays" min="0" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Spec (Worked)</mat-label>
+            <input matInput type="number" formControlName="specHolWorkedDays" min="0" />
+          </mat-form-field>
+        </div>
+      </mat-card>
+
+      <h3>13th Month Settings</h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <mat-form-field appearance="outline">
+          <mat-label>Months Worked</mat-label>
+          <input matInput type="number" formControlName="monthsWorkedFor13th" min="0" max="12" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Tax Rate (%)</mat-label>
+          <input matInput type="number" formControlName="thirteenthTaxRatePct" min="0" max="50" />
+        </mat-form-field>
+      </div>
+    </form>
+
+    <!-- RESULTS -->
+    <div class="cards" [@cardsIn]>
+      <mat-card>
+        <h3>Gross (Monthly)</h3>
+        <div>Hourly rate:&nbsp;<span class="accent-number">₱{{ view.hourlyRate | number:'1.2-2' }}</span></div>
+        <div>Daily wage:&nbsp;<span class="accent-number">₱{{ view.dailyWage | number:'1.2-2' }}</span></div>
+        <div>Overtime pay:&nbsp;<span class="accent-number">₱{{ view.overtimePay | number:'1.2-2' }}</span></div>
+        <div *ngIf="view.includeHolidayPays">Holiday pays (regular):&nbsp;<span class="accent-number">₱{{
+            view.holidayPays.regular.total | number:'1.2-2' }}</span></div>
+        <div *ngIf="view.includeHolidayPays">Holiday pays (special):&nbsp;<span class="accent-number">₱{{
+            view.holidayPays.special.total | number:'1.2-2' }}</span></div>
+        <div *ngIf="view.includeHolidayPays">Holiday pays (total):&nbsp;<span class="accent-number">₱{{
+            view.holidayPays.total | number:'1.2-2' }}</span></div>
+        <div class="total-row"><strong>Total:</strong>&nbsp;<span class="accent-number">₱{{ view.grossMonthly |
+            number:'1.2-2' }}</span></div>
+      </mat-card>
+      <mat-card>
+        <h3>Contributions (Employee)</h3>
+        <div>SSS:&nbsp;<span class="accent-number">₱{{ view.contributions.sss.employee | number:'1.2-2' }}</span></div>
+        <div>PhilHealth:&nbsp;<span class="accent-number">₱{{ view.contributions.philhealth.employee | number:'1.2-2'
+            }}</span></div>
+        <div>Pag-IBIG:&nbsp;<span class="accent-number">₱{{ view.contributions.pagibig.employee | number:'1.2-2'
+            }}</span></div>
+        <div>MPF:&nbsp;<span class="accent-number">₱{{ view.contributions.mpf.employee | number:'1.2-2' }}</span></div>
+        <div class="total-row"><strong>Total:</strong>&nbsp;<span class="accent-number">₱{{
+            view.contributions.totals.employee | number:'1.2-2' }}</span></div>
+      </mat-card>
+      <mat-card>
+        <h3>Tax & Net</h3>
+        <div>Gross ({{ view.payFrequency }}):&nbsp;<span class="accent-number">₱{{ view.grossPeriod | number:'1.2-2'
+            }}</span></div>
+        <div>Contrib ({{ view.payFrequency }}):&nbsp;<span class="accent-number">₱{{ view.contribPeriod | number:'1.2-2'
+            }}</span></div>
+        <div>Taxable ({{ view.payFrequency }}):&nbsp;<span class="accent-number">₱{{ view.taxablePeriod | number:'1.2-2'
+            }}</span></div>
+        <div>Withholding tax:&nbsp;<span class="accent-number">₱{{ view.tax | number:'1.2-2' }}</span></div>
+        <div class="total-row"><strong>Net ({{ view.payFrequency }})</strong>:&nbsp;<span class="accent-number">₱{{
+            view.netPay | number:'1.2-2' }}</span></div>
+      </mat-card>
+      <mat-card>
+        <h3>13th Month</h3>
+        <div>Estimate:&nbsp;<span class="accent-number">₱{{ view.thirteenth | number:'1.2-2' }}</span></div>
+        <div>Non-taxable:&nbsp;<span class="accent-number">₱{{ view.thirteenthSplit.nonTaxable | number:'1.2-2'
+            }}</span></div>
+        <div>Taxable:&nbsp;<span class="accent-number">₱{{ view.thirteenthSplit.taxable | number:'1.2-2' }}</span></div>
+        <div>Assumed rate:&nbsp;<span class="accent-number">{{ view.thirteenthRate | number:'1.0-2' }}%</span></div>
+        <div>Tax due (13th):&nbsp;<span class="accent-number">₱{{ view.thirteenthNet.taxDue | number:'1.2-2' }}</span>
+        </div>
+        <div class="total-row"><strong>Net 13th-month:</strong>&nbsp;<span class="accent-number">₱{{
+            view.thirteenthNet.net | number:'1.2-2' }}</span></div>
+      </mat-card>
+    </div>
   </div>
 
-  <p class="note">Notes: This uses common PH defaults. Actual OT multipliers vary by day type. 13th month: first ₱90,000 is non-taxable; any excess is taxed. The entered 13th-month tax rate is applied to the taxable portion for a net estimate. For exact rates, apply the BIR withholding schedule applicable to bonuses.</p>
+  <hr style="margin: 32px 0; border: 0; border-top: 1px solid var(--muted);">
+
+  <!-- SEO CONTENT -->
+  <article>
+    <h2>How to Compute Net Pay in the Philippines (2025)</h2>
+    <p>
+      Estimating your take-home pay involves deducting government mandated contributions and withholding tax from your
+      gross salary.
+      This calculator uses the latest contribution tables and tax rates applicable for typical Filipino employees.
+    </p>
+
+    <h3>1. Government Contributions</h3>
+    <ul>
+      <li><strong>SSS (Social Security System):</strong> Based on your monthly salary credit. The 2025 schedule
+        continues the transition to higher rates enacted by the SSS Act of 2018. It includes the regular Social Security
+        contribution and the WISP (Worker’s Investment and Savings Program) for higher income tiers.</li>
+      <li><strong>PhilHealth:</strong> The premium rate is now set at 5% of your monthly basic salary, with an income
+        floor of ₱10,000 and a ceiling of ₱90,000 or higher (pending official memorandums). The total premium is shared
+        equally between employee and employer.</li>
+      <li><strong>Pag-IBIG (HDMF):</strong> The standard rate is 2% of your monthly basic salary (capped at ₱5,000
+        compensation base), meaning the maximum employee contribution is typically ₱100/month unless you opt to
+        contribute more.</li>
+    </ul>
+
+    <h3>2. Withholding Tax</h3>
+    <p>
+      After removing contributions, the remaining amount is your <strong>Taxable Income</strong>. The Philippines uses a
+      graduated tax schedule under the TRAIN Law.
+      For example, annual income below ₱250,000 is tax-exempt. Income above this threshold is taxed at rates ranging
+      from 15% to 35%.
+    </p>
+
+    <h3>3. 13th Month Pay & Bonuses</h3>
+    <p>
+      Mandated by law, 13th-month pay is equivalent to 1/12 of your total basic salary earned within the calendar year.
+      The first ₱90,000 of your total 13th-month pay and other bonuses is <strong>tax-exempt</strong>. Any amount
+      exceeding ₱90,000 is subject to income tax.
+    </p>
+
+    <p class="note">
+      <strong>Disclaimer:</strong> This tool is for estimation purposes only. Actual deductions may vary based on
+      company policies, tardiness/absences, and other adjustments. Always verify with your HR payslip.
+    </p>
+  </article>
+
+  <p class="note" style="margin-top: 24px;">Notes: This tool assumes a standard private employee setup. Actual OT
+    multipliers vary by day type (Regular Holiday, Special Non-working, Rest Day).</p>
 </section>

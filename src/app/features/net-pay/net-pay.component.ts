@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
+import { SeoService } from '../../shared/seo.service';
 
 @Component({
   selector: 'app-net-pay',
@@ -58,8 +59,23 @@ export class NetPayComponent {
 
   view = this.compute();
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private seo: SeoService) {
     this.form.valueChanges.subscribe(() => this.view = this.compute());
+
+    this.seo.setSchema({
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      'name': 'Philippine Salary Net Pay Calculator',
+      'operatingSystem': 'Web',
+      'applicationCategory': 'FinanceApplication',
+      'url': 'https://www.phcalculators.com/net-pay',
+      'offers': {
+        '@type': 'Offer',
+        'price': '0',
+        'priceCurrency': 'PHP'
+      },
+      'featureList': 'Compute SSS, PhilHealth, Pag-IBIG, and Withholding Tax'
+    });
   }
 
   private compute() {
@@ -78,17 +94,17 @@ export class NetPayComponent {
     const includeHoliday = !!v.includeHolidayPays;
     const holidayPays = includeHoliday
       ? computeHolidayPays(dailyWage, {
-          regular: {
-            unworkedDays: Number(v.regHolUnworkedDays) || 0,
-            workedDays: Number(v.regHolWorkedDays) || 0,
-            restWorkedDays: Number(v.regHolRestWorkedDays) || 0,
-          },
-          special: {
-            unworkedDays: Number(v.specHolUnworkedDays) || 0,
-            workedDays: Number(v.specHolWorkedDays) || 0,
-            restWorkedDays: Number(v.specHolRestWorkedDays) || 0,
-          }
-        })
+        regular: {
+          unworkedDays: Number(v.regHolUnworkedDays) || 0,
+          workedDays: Number(v.regHolWorkedDays) || 0,
+          restWorkedDays: Number(v.regHolRestWorkedDays) || 0,
+        },
+        special: {
+          unworkedDays: Number(v.specHolUnworkedDays) || 0,
+          workedDays: Number(v.specHolWorkedDays) || 0,
+          restWorkedDays: Number(v.specHolRestWorkedDays) || 0,
+        }
+      })
       : { regular: { unworked: 0, worked: 0, restWorked: 0, total: 0 }, special: { unworked: 0, worked: 0, restWorked: 0, total: 0 }, total: 0 };
 
     // Base fixed compensation vs variable add-ons

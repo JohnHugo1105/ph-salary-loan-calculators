@@ -102,6 +102,21 @@ button:focus-visible,
   margin: 12px 0 20px;
 }
 
+/* Calculator specific 2-column layout for desktop */
+.calc-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+@media (min-width: 960px) {
+  .calc-layout {
+    display: grid;
+    grid-template-columns: 350px 1fr; /* Fixed width form, flexible results */
+    align-items: start;
+  }
+}
+
 label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
 input, select { padding: 8px 10px; border-radius: 8px; border: 1px solid var(--muted); background: var(--bg-soft); color: var(--text); }
 input[type=checkbox] { width: auto; }

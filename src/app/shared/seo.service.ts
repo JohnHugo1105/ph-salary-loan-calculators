@@ -34,6 +34,19 @@ export class SeoService {
       this.setTag('name', 'twitter:image', this.image);
 
       this.updateCanonical(url);
+
+      // Default schema for all pages
+      this.setSchema({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        'name': this.siteName,
+        'url': 'https://www.phcalculators.com/',
+        'potentialAction': {
+          '@type': 'SearchAction',
+          'target': 'https://www.phcalculators.com/?q={search_term_string}',
+          'query-input': 'required name=search_term_string'
+        }
+      });
     });
   }
 
@@ -65,7 +78,8 @@ export class SeoService {
 
       // Enforce production domain if not on localhost
       const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
-      const canonicalOrigin = isLocal ? origin : 'https://phcalculators.com';
+      // FIX: Force WWW for production to consolidate signals
+      const canonicalOrigin = isLocal ? origin : 'https://www.phcalculators.com';
 
       // Remove trailing slash if present (except for root)
       let cleanPath = pathname || '/';
@@ -75,7 +89,20 @@ export class SeoService {
 
       return `${canonicalOrigin}${cleanPath}`;
     } catch {
-      return 'https://phcalculators.com/';
+      return 'https://www.phcalculators.com/';
     }
+  }
+
+  /**
+   * Inject JSON-LD Structured Data
+   */
+  setSchema(data: any) {
+    let script: HTMLScriptElement | null = this.doc.querySelector("script[type='application/ld+json']");
+    if (!script) {
+      script = this.doc.createElement('script');
+      script.setAttribute('type', 'application/ld+json');
+      this.doc.head.appendChild(script);
+    }
+    script.text = JSON.stringify(data);
   }
 }

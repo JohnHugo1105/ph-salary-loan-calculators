@@ -9,6 +9,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
+import { SeoService } from '../../shared/seo.service';
 
 @Component({
   selector: 'app-amortization',
@@ -38,13 +39,28 @@ export class AmortizationComponent {
   pageSize = 24;
   page = 0;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private seo: SeoService) {
     this.form.valueChanges.subscribe(v => {
       const amount = Number(v.amount) || 0;
       const rate = Number(v.annualRate) || 0;
       const months = Number(v.months) || 1;
       this.schedule = computeAmortization(amount, rate, months);
       this.page = 0;
+    });
+
+    this.seo.setSchema({
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      'name': 'Loan Amortization Calculator Philippines',
+      'operatingSystem': 'Web',
+      'applicationCategory': 'FinanceApplication',
+      'url': 'https://www.phcalculators.com/amortization',
+      'offers': {
+        '@type': 'Offer',
+        'price': '0',
+        'priceCurrency': 'PHP'
+      },
+      'featureList': 'Compute monthly payments and generates amortization schedule'
     });
   }
 
