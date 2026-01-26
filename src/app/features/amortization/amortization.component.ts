@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { computeAmortization } from '../../shared/ph-calculators.util';
@@ -14,7 +15,7 @@ import { SeoService } from '../../shared/seo.service';
 @Component({
   selector: 'app-amortization',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatCardModule, MatButtonModule, MatSelectModule, ThousandsSeparatorDirective],
+  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatCardModule, MatButtonModule, MatSelectModule, ThousandsSeparatorDirective, RouterModule],
   templateUrl: './amortization.component.html',
   styleUrl: './amortization.component.scss',
   animations: [

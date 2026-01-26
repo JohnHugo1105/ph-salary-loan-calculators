@@ -6,6 +6,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { RouterModule } from '@angular/router';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
 import { SeoService } from '../../shared/seo.service';
 import { trigger, transition, style, query, stagger, animate } from '@angular/animations';
@@ -13,7 +15,7 @@ import { trigger, transition, style, query, stagger, animate } from '@angular/an
 @Component({
   selector: 'app-contributions',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, MatCardModule, ThousandsSeparatorDirective],
+  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, MatCardModule, MatButtonModule, ThousandsSeparatorDirective, RouterModule],
   templateUrl: './contributions.component.html',
   styleUrl: './contributions.component.scss',
   animations: [
