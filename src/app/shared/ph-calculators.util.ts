@@ -83,7 +83,7 @@ export function computeSSS(
   };
 }
 
-export function computeContributions(monthlySalary: number, options?: { includeSSSEC?: boolean }) : Contributions {
+export function computeContributions(monthlySalary: number, options?: { includeSSSEC?: boolean }): Contributions {
   const sss = computeSSS(monthlySalary, options?.includeSSSEC ?? true);
   const philhealth = computePhilHealth(monthlySalary);
   const pagibig = computePagIbig(monthlySalary);
@@ -239,4 +239,88 @@ export function computeAmortization(amount: number, annualRatePct: number, month
     rows.push({ period: i, payment: round2(payment), interest: round2(interest), principal: round2(principal), balance: round2(Math.max(balance, 0)) });
   }
   return { payment: round2(payment), schedule: rows };
+}
+
+// Reverse Calculator: Binary Search to find Gross Monthly from Target Net
+// TargetNet is the desired "Take Home" for the specified frequency.
+export function computeGrossFromNet(
+  targetNet: number,
+  frequency: 'monthly' | 'semi-monthly' = 'monthly'
+) {
+  // Bounds
+  let min = targetNet; // Gross can't be less than net
+  let max = targetNet * 2.5; // Heuristic upper bound
+
+  // Refine max if needed (if deductions are huge, gross might be > 2.5x)
+  // But for typical PH salaries, 2.5x is plenty safe.
+
+  let iterations = 0;
+  const maxIterations = 50; // Safety break
+  let calculatedGross = 0;
+  let bestResult = {
+    gross: 0,
+    net: 0,
+    contributions: 0,
+    tax: 0,
+    diff: Infinity
+  };
+
+  while (iterations < maxIterations) {
+    const mid = (min + max) / 2;
+    calculatedGross = mid;
+
+    // Simulate forward calculation
+    const contr = computeContributions(calculatedGross);
+    const totalContribs = contr.totals.employee;
+
+    // Adjust for frequency
+    let basePeriod = calculatedGross;
+    let contribPeriod = totalContribs;
+
+    if (frequency === 'semi-monthly') {
+      basePeriod = calculatedGross / 2;
+      contribPeriod = totalContribs / 2;
+    }
+
+    const taxable = Math.max(0, basePeriod - contribPeriod);
+    const tax = computeWithholdingTax(taxable, frequency);
+    const net = basePeriod - contribPeriod - tax;
+
+    // Check difference
+    const diff = net - targetNet;
+
+    // Store if this is our closest match so far
+    if (Math.abs(diff) < Math.abs(bestResult.diff)) {
+      bestResult = {
+        gross: calculatedGross,
+        net: net,
+        contributions: totalContribs, // always monthly total
+        tax: tax, // tax per period
+        diff: diff
+      };
+    }
+
+    // Binary search logic
+    if (Math.abs(diff) < 1) {
+      break; // Within 1 peso is good enough
+    }
+
+    if (diff < 0) {
+      // Net is too low -> Need higher Gross
+      min = mid;
+    } else {
+      // Net is too high -> Need lower Gross
+      max = mid;
+    }
+
+    iterations++;
+  }
+
+  return {
+    monthlyBasic: round2(bestResult.gross),
+    netPay: round2(bestResult.net),
+    totalContributions: round2(bestResult.contributions),
+    taxPerPeriod: round2(bestResult.tax),
+    iterations
+  };
 }
