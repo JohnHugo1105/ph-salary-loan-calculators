@@ -61,11 +61,21 @@ export class SeoService {
 
   private getCanonicalUrl(): string {
     try {
-      const { origin, pathname } = this.doc.location;
-      const cleanPath = pathname || '/';
-      return `${origin}${cleanPath}`;
+      const { origin, pathname, hostname } = this.doc.location;
+
+      // Enforce production domain if not on localhost
+      const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
+      const canonicalOrigin = isLocal ? origin : 'https://phcalculators.com';
+
+      // Remove trailing slash if present (except for root)
+      let cleanPath = pathname || '/';
+      if (cleanPath.length > 1 && cleanPath.endsWith('/')) {
+        cleanPath = cleanPath.slice(0, -1);
+      }
+
+      return `${canonicalOrigin}${cleanPath}`;
     } catch {
-      return '/';
+      return 'https://phcalculators.com/';
     }
   }
 }
