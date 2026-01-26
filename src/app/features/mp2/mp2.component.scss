@@ -1,134 +1,325 @@
-.result-summary {
-    margin-top: 24px;
-    padding: 16px;
-    background: rgba(255, 255, 255, 0.05);
+.hero {
+    background: linear-gradient(135deg, var(--primary) 0%, darken(#2979ff, 20%) 100%);
+    color: #ffffff;
+    padding: 60px 24px;
+    text-align: center;
+    border-radius: 24px;
+    margin-bottom: 48px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
 
-    .summary-row {
+    h1 {
+        color: #ffffff !important;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+        letter-spacing: -0.5px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .subtitle {
+        color: rgba(255, 255, 255, 0.95) !important;
+        font-size: 1.25rem;
+        width: 600px;
+        max-width: 100%;
+        margin: 0 auto;
+        font-weight: 300;
+    }
+
+    @media (max-width: 600px) {
+        padding: 60px 20px;
+
+        h1 {
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+        }
+    }
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.calc-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+@media (min-width: 960px) {
+    .calc-layout {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        align-items: start;
+    }
+
+    .mobile-only {
+        display: none;
+    }
+}
+
+.input-col {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.input-card {
+    padding: 24px;
+    background: var(--panel);
+}
+
+.desc-text {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.grid-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+/* Summary Card (Mobile) */
+.result-summary {
+    background: var(--bg-soft);
+    padding: 16px;
+
+    .summary-item {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 8px;
+        margin-bottom: 12px;
+        font-size: 0.95rem;
+
+        &.highlight strong {
+            color: #4caf50;
+        }
 
         &.total {
-            margin-top: 12px;
+            margin-top: 16px;
             padding-top: 12px;
             border-top: 1px dashed var(--muted);
             font-size: 1.1rem;
-            color: var(--primary);
-        }
 
-        .highlight {
-            color: #4caf50; // Green for dividends
+            strong {
+                color: var(--primary);
+            }
+        }
+    }
+}
+
+/* Result Column */
+.result-col {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.result-card {
+    background: linear-gradient(135deg, var(--primary) 0%, darken(#2979ff, 15%) 100%);
+    color: white;
+    padding: 32px 24px;
+    border: none;
+    box-shadow: 0 8px 20px rgba(41, 121, 255, 0.3) !important;
+    text-align: center;
+
+    .result-label {
+        font-size: 0.95rem;
+        opacity: 0.9;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .result-value {
+        font-size: 2.8rem;
+        font-weight: 700;
+        line-height: 1.1;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .result-sub {
+        margin-top: 12px;
+        font-size: 0.9rem;
+        opacity: 0.9;
+
+        .accent-text {
+            color: var(--accent);
+            font-weight: 700;
         }
     }
 }
 
 .chart-card {
-    padding: 16px;
-    margin-bottom: 24px;
-}
+    padding: 24px;
+    background: var(--panel);
 
-.chart-container {
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-end;
-    height: 200px;
-    margin-top: 24px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--muted);
+    h3 {
+        margin: 0 0 24px;
+        font-size: 1.1rem;
+    }
+
+    .chart-wrapper {
+        height: 200px;
+        display: flex;
+        align-items: flex-end;
+        padding-bottom: 24px;
+    }
+
+    .chart-bars {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 8px;
+    }
 
     .bar-group {
+        flex: 1;
+        height: 100%;
         display: flex;
         flex-direction: column;
-        align-items: center;
-        width: 15%;
-        height: 100%;
-        position: relative;
         justify-content: flex-end;
+        align-items: center;
+        position: relative;
 
-        .bar-track {
+        .bar-fill {
             width: 100%;
-            height: 100%; // Relative to chart-container
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
+            background: linear-gradient(to top, var(--primary), lighten(#2979ff, 20%));
+            border-radius: 4px 4px 0 0;
+            min-height: 4px;
+            transition: height 0.4s ease-out;
             position: relative;
+
+            &:hover {
+                filter: brightness(1.2);
+            }
         }
 
-        .bar {
-            width: 100%;
-            border-radius: 4px 4px 0 0;
-            transition: height 0.3s ease-out;
-
-            &.capital {
-                background: #555;
-                position: absolute;
-                z-index: 1;
-                opacity: 0.3;
-                // If we want stacked visualization, this CSS needs complexity.
-                // For simple "Total Value" bar:
-                display: none; // Hiding capital bar for simplicity, just showing Total Value growth
-            }
-
-            &.value {
-                background: var(--primary);
-                z-index: 2;
-                min-height: 4px;
-            }
+        .bar-val {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            color: var(--text);
+            font-weight: 500;
         }
 
         .bar-label {
-            position: absolute;
-            bottom: -24px;
-            font-size: 0.75rem;
-            white-space: nowrap;
-        }
-
-        .bar-value {
-            position: absolute;
-            top: -20px;
-            // This is tricky with dynamic height. 
-            // Let's just hide exact value on top to keep it clean, use tooltip
-            display: none;
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
         }
     }
 }
 
-.legend {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 40px;
-    gap: 8px;
-    font-size: 0.9rem;
-
-    .dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 4px;
-
-        &.value {
-            background: var(--primary);
-        }
-    }
+.table-card {
+    padding: 0;
+    background: var(--panel);
+    overflow: hidden;
 }
 
-.table-container {
+.table-responsive {
     overflow-x: auto;
+}
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.9rem;
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
 
-        th,
-        td {
-            padding: 8px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    th,
+    td {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--muted);
+    }
+
+    th {
+        text-align: left;
+        color: var(--text-secondary);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        background: var(--bg-soft);
+
+        &.num {
+            text-align: right;
+        }
+    }
+
+    td {
+        &.num {
+            text-align: right;
         }
 
-        .right {
-            text-align: right;
+        &.highlight {
+            color: #4caf50;
+        }
+
+        &.bold {
+            font-weight: 700;
+            color: var(--primary);
+        }
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+}
+
+.divider {
+    margin: 48px 0;
+    border: 0;
+    border-top: 1px solid var(--muted);
+}
+
+.content-article {
+    max-width: 800px;
+    margin: 0 auto;
+
+    h2,
+    h3 {
+        color: var(--text);
+    }
+
+    p,
+    li {
+        color: var(--text-secondary);
+        line-height: 1.7;
+        font-size: 1.05rem;
+    }
+
+    h2 {
+        margin-bottom: 24px;
+        font-size: 1.75rem;
+    }
+
+    h3 {
+        margin-top: 32px;
+        margin-bottom: 16px;
+    }
+
+    .styled-list {
+        padding-left: 20px;
+
+        li {
+            margin-bottom: 12px;
         }
     }
 }

@@ -1,2 +1,295 @@
-/* Keep spacing tidy within cards */
-mat-card-content div { margin: 4px 0; }
+.hero {
+    background: linear-gradient(135deg, var(--primary) 0%, darken(#2979ff, 20%) 100%);
+    color: #ffffff;
+    padding: 60px 24px;
+    text-align: center;
+    border-radius: 24px;
+    margin-bottom: 48px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+
+    h1 {
+        color: #ffffff !important;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+        letter-spacing: -0.5px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .subtitle {
+        color: rgba(255, 255, 255, 0.95) !important;
+        font-size: 1.25rem;
+        width: 600px;
+        max-width: 100%;
+        margin: 0 auto;
+        font-weight: 300;
+    }
+
+    @media (max-width: 600px) {
+        padding: 60px 20px;
+
+        h1 {
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+        }
+    }
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.calc-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+@media (min-width: 960px) {
+    .calc-layout {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        align-items: start;
+    }
+}
+
+.input-col {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.input-card {
+    padding: 24px;
+    background: var(--panel);
+}
+
+.grid-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Summary Card (New Addition) */
+.summary-card {
+    background: linear-gradient(135deg, var(--bg-soft) 0%, var(--panel) 100%);
+    border: 1px solid var(--muted);
+
+    .summary-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+
+        .value {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        &.total {
+            border-top: 1px dashed var(--muted);
+            padding-top: 12px;
+            margin-top: 4px;
+
+            .label {
+                color: var(--text);
+                font-weight: 600;
+            }
+
+            .value {
+                color: var(--primary);
+                font-size: 1.2rem;
+                font-weight: 700;
+            }
+        }
+    }
+}
+
+/* Detail Cards Grid */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.detail-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--panel);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    mat-card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--muted);
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-soft);
+
+            mat-icon {
+                font-size: 24px;
+                width: 24px;
+                height: 24px;
+            }
+        }
+
+        mat-card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+    }
+
+    mat-card-content {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+
+            .num {
+                color: var(--text);
+                font-weight: 500;
+            }
+
+            &.total {
+                margin-top: auto;
+                padding-top: 12px;
+                border-top: 1px dashed var(--muted);
+                font-weight: 600;
+
+                span {
+                    color: var(--text);
+                }
+
+                .num {
+                    font-size: 1.1rem;
+                }
+            }
+        }
+    }
+
+    /* Color accents for cards */
+    &.primary {
+        .card-icon {
+            color: var(--primary);
+            background: rgba(var(--primary-rgb), 0.1);
+        }
+
+        .total .num {
+            color: var(--primary);
+        }
+    }
+
+    &.accent {
+        .card-icon {
+            color: var(--accent);
+            background: rgba(var(--accent-rgb), 0.1);
+        }
+
+        .total .num {
+            color: var(--accent);
+        }
+    }
+
+    &.warn {
+        .card-icon {
+            color: #f44336;
+            background: rgba(244, 67, 54, 0.1);
+        }
+
+        .total .num {
+            color: #f44336;
+        }
+    }
+
+    &.info {
+        .card-icon {
+            color: #00bcd4;
+            background: rgba(0, 188, 212, 0.1);
+        }
+
+        .total .num {
+            color: #00bcd4;
+        }
+    }
+}
+
+.divider {
+    margin: 48px 0;
+    border: 0;
+    border-top: 1px solid var(--muted);
+}
+
+.content-article {
+    max-width: 800px;
+    margin: 0 auto;
+
+    h2,
+    h3 {
+        color: var(--text);
+    }
+
+    p,
+    li {
+        color: var(--text-secondary);
+        line-height: 1.7;
+        font-size: 1.05rem;
+    }
+
+    h2 {
+        margin-bottom: 24px;
+        font-size: 1.75rem;
+    }
+
+    h3 {
+        margin-top: 32px;
+        margin-bottom: 16px;
+    }
+
+    .cta-wrapper {
+        margin-top: 40px;
+        text-align: center;
+    }
+
+    .note {
+        margin-top: 32px;
+        font-size: 0.85rem;
+        opacity: 0.7;
+        font-style: italic;
+        border-top: 1px solid var(--muted);
+        padding-top: 16px;
+    }
+}

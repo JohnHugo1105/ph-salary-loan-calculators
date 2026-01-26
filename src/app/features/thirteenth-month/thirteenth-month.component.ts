@@ -6,6 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
 import { SeoService } from '../../shared/seo.service';
@@ -22,6 +23,7 @@ import { compute13thMonthProRated, estimate13thMonthPay, split13thMonthTaxabilit
     MatCardModule,
     MatButtonModule,
     MatButtonToggleModule,
+    MatIconModule,
     ThousandsSeparatorDirective,
     RouterModule
   ],

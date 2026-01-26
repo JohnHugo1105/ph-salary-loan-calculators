@@ -11,6 +11,7 @@ import { RouterModule } from '@angular/router';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
 import { SeoService } from '../../shared/seo.service';
 import { calculateMP2, MP2Row, round2 } from '../../shared/ph-calculators.util';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-mp2',
@@ -25,6 +26,7 @@ import { calculateMP2, MP2Row, round2 } from '../../shared/ph-calculators.util';
     MatButtonModule,
     MatTooltipModule,
     ThousandsSeparatorDirective,
+    MatIconModule,
     RouterModule
   ],
   templateUrl: './mp2.component.html',

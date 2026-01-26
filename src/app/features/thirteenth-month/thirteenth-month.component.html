@@ -1,103 +1,110 @@
-<section>
-    <h1>13th Month Pay Calculator</h1>
+<header class="hero">
+    <div class="hero-content">
+        <h1>13th Month Pay Calculator</h1>
+        <p class="subtitle">Quickly compute your pro-rated 13th-month pay and check for tax exemptions.</p>
+    </div>
+</header>
 
+<section class="container">
     <div class="calc-layout">
-        <!-- INPUT & RESULTS WRAPPED IN FORM -->
-        <form [formGroup]="form" class="calc-layout-inner" style="display: contents;">
-
-            <!-- LEFT COLUMN: INPUTS -->
-            <div class="inputs-column grid" style="margin: 0; display: flex; flex-direction: column;">
-                <div style="margin-bottom: 16px;">
-                    <mat-button-toggle-group formControlName="mode" appearance="legacy" style="width: 100%;">
-                        <mat-button-toggle value="simple" style="width: 50%;">Simple (Full Year)</mat-button-toggle>
-                        <mat-button-toggle value="detailed" style="width: 50%;">Pro-rated (Monthly)</mat-button-toggle>
-                    </mat-button-toggle-group>
-                    <p class="small muted" style="margin-top: 8px;" *ngIf="form.value.mode === 'detailed'">
-                        Enter your <strong>Basic Pay</strong> for each month you were employed. Leave 0 for months
-                        unworked.
-                    </p>
-                </div>
-
-                <ng-container *ngIf="form.value.mode === 'simple'">
-                    <mat-form-field appearance="outline">
-                        <mat-label>Current Monthly Basic Pay (₱)</mat-label>
-                        <input matInput type="text" appThousandsSeparator formControlName="monthlyBasic"
-                            inputmode="decimal" />
-                        <mat-hint>Assumes you worked 12 months with this salary.</mat-hint>
-                    </mat-form-field>
-                </ng-container>
-
-                <ng-container *ngIf="form.value.mode === 'detailed'">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                        <ng-container formArrayName="history">
-                            <mat-form-field *ngFor="let month of months; let i = index" appearance="outline">
-                                <mat-label>{{ month }}</mat-label>
-                                <input matInput type="text" appThousandsSeparator [formControlName]="i"
-                                    inputmode="decimal" />
-                            </mat-form-field>
-                        </ng-container>
-                    </div>
-                </ng-container>
-            </div>
-
-            <!-- RIGHT COLUMN: RESULTS -->
-            <div class="cards">
-                <mat-card>
-                    <h3 style="margin-bottom: 0;">Total 13th Month Pay</h3>
-                    <div class="hero-number">₱{{ result.gross13th | number:'1.2-2' }}</div>
-
-                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--muted);">
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>Tax-Exempt Portion:</span>
-                            <strong>₱{{ result.nonTaxable | number:'1.2-2' }}</strong>
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 12px; padding: 12px; background: rgba(255, 87, 34, 0.1); border-radius: 4px;"
-                        *ngIf="result.taxable > 0">
-                        <div style="display: flex; justify-content: space-between; color: var(--warn);">
-                            <span>Taxable Excess:</span>
-                            <strong>₱{{ result.taxable | number:'1.2-2' }}</strong>
+        <!-- LEFT COLUMN: INPUTS -->
+        <div class="input-col">
+            <form [formGroup]="form">
+                <mat-card class="input-card">
+                    <mat-card-header>
+                        <mat-card-title>Configuration</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div class="toggle-wrapper">
+                            <mat-button-toggle-group formControlName="mode" appearance="standard">
+                                <mat-button-toggle value="simple">Simple (Full Year)</mat-button-toggle>
+                                <mat-button-toggle value="detailed">Pro-rated (Monthly)</mat-button-toggle>
+                            </mat-button-toggle-group>
                         </div>
 
-                        <div
-                            style="margin-top: 8px; display: flex; align-items: center; justify-content: space-between;">
-                            <span class="small muted">Assumed Tax Rate (%):</span>
-                            <!-- This input is now correctly inside the formGroup -->
-                            <input type="number" formControlName="taxRate" style="width: 60px; padding: 4px;" />
+                        <p class="hint-text" *ngIf="form.value.mode === 'detailed'">
+                            Enter your <strong>Basic Pay</strong> for each month you were employed. Leave 0 for months
+                            unworked.
+                        </p>
+
+                        <div class="form-content">
+                            <ng-container *ngIf="form.value.mode === 'simple'">
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Current Monthly Basic Pay (₱)</mat-label>
+                                    <input matInput type="text" appThousandsSeparator formControlName="monthlyBasic"
+                                        inputmode="decimal" />
+                                    <mat-hint>Assumes 12 months employment</mat-hint>
+                                </mat-form-field>
+                            </ng-container>
+
+                            <ng-container *ngIf="form.value.mode === 'detailed'">
+                                <div class="months-grid" formArrayName="history">
+                                    <mat-form-field *ngFor="let month of months; let i = index" appearance="outline"
+                                        class="density-sm">
+                                        <mat-label>{{ month.slice(0, 3) }}</mat-label>
+                                        <input matInput type="text" appThousandsSeparator [formControlName]="i"
+                                            inputmode="decimal" />
+                                    </mat-form-field>
+                                </div>
+                            </ng-container>
                         </div>
-
-                        <div
-                            style="display: flex; justify-content: space-between; margin-top: 8px; font-style: italic;">
-                            <span>Estimated Tax Due:</span>
-                            <strong style="color: var(--warn)">- ₱{{ result.taxDue | number:'1.2-2' }}</strong>
-                        </div>
-                    </div>
-
-                    <div
-                        style="margin-top: 16px; padding-top: 16px; border-top: 2px solid var(--primary); display: flex; justify-content: space-between; font-size: 1.2rem;">
-                        <span>Net 13th Month Pay:</span>
-                        <strong style="color: var(--primary)">₱{{ result.net13th | number:'1.2-2' }}</strong>
-                    </div>
-
-                    <div class="note-box warn" *ngIf="result.taxable > 0" style="margin-top: 16px;">
-                        <strong>⚠️ Tax Alert:</strong> You have exceeded the ₱90,000 tax exemption cap.
-                        The excess ₱{{ result.taxable | number:'1.0-0' }} will be added to your annual taxable income
-                        and
-                        taxed according to your bracket (20-35%).
-                    </div>
+                    </mat-card-content>
                 </mat-card>
-            </div>
+            </form>
+        </div>
 
-        </form>
+        <!-- RIGHT COLUMN: RESULTS -->
+        <div class="result-col">
+            <mat-card class="result-card">
+                <div class="result-label">Estimated 13th Month Pay</div>
+                <div class="result-value">₱{{ result.gross13th | number:'1.2-2' }}</div>
+            </mat-card>
+
+            <mat-card class="detail-card">
+                <mat-card-header>
+                    <mat-card-title>Tax Analysis</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="row">
+                        <span>Tax-Exempt Portion</span>
+                        <span class="num">₱{{ result.nonTaxable | number:'1.2-2' }}</span>
+                    </div>
+
+                    <div *ngIf="result.taxable > 0" class="taxable-section">
+                        <div class="row warn">
+                            <span>Taxable Excess (Over ₱90k)</span>
+                            <span class="num">₱{{ result.taxable | number:'1.2-2' }}</span>
+                        </div>
+
+                        <div class="tax-estimator">
+                            <div class="row small">
+                                <span>Est. Tax Rate (%)</span>
+                                <input type="number" [formControl]="$any(form).controls.taxRate" class="inline-input" />
+                            </div>
+                            <div class="row small">
+                                <span>Est. Tax Due</span>
+                                <span class="num warn">- ₱{{ result.taxDue | number:'1.2-2' }}</span>
+                            </div>
+                        </div>
+
+                        <div class="row total">
+                            <span>Net 13th Month Pay</span>
+                            <span class="num primary">₱{{ result.net13th | number:'1.2-2' }}</span>
+                        </div>
+                    </div>
+
+                    <div *ngIf="result.taxable === 0" class="row total">
+                        <span class="success-text"><mat-icon inline>check_circle</mat-icon> Fully Tax-Exempt</span>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
     </div>
 
-
-
-    <hr style="margin: 32px 0; border: 0; border-top: 1px solid var(--muted);">
+    <hr class="divider">
 
     <!-- SEO CONTENT -->
-    <article>
+    <article class="content-article">
         <h2>How to Compute 13th Month Pay (Pro-rated)</h2>
         <p>
             According to Presidential Decree No. 851, every rank-and-file employee in the Philippines is entitled to
@@ -120,13 +127,6 @@
         <p>
             Under the TRAIN Law, the 13th-month pay and other benefits are <strong>tax-exempt up to ₱90,000</strong>.
             Any amount exceeding this cap is added to your taxable income and subject to withholding tax.
-        </p>
-
-        <h3>Does it include allowances?</h3>
-        <p>
-            Generally, <strong>No</strong>. Allowances, overtime pay, and night differentials are excluded from the
-            computation
-            unless your company policy explicitly includes them or it has been the practice for a long time.
         </p>
     </article>
 </section>

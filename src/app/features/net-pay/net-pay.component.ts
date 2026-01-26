@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { computeContributions, computeOvertimePay, deriveHourlyRate, computeWithholdingTax, monthlyToSemiMonthly, computeHolidayPays } from '../../shared/ph-calculators.util';
 import { trigger, transition, style, query, stagger, animate } from '@angular/animations';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
@@ -22,6 +23,7 @@ import { SeoService } from '../../shared/seo.service';
     MatSelectModule,
     MatCardModule,
     MatCheckboxModule,
+    MatIconModule,
     ThousandsSeparatorDirective,
   ],
   templateUrl: './net-pay.component.html',

@@ -1,21 +1,83 @@
-<section>
-  <h1>About PH Salary & Loan Calculators</h1>
-  <p>
-    PH Calculators helps workers, HR, and small businesses in the Philippines quickly estimate
-    contributions (SSS, PhilHealth, Pag-IBIG, MPF), salary net pay, taxes, 13th month, and loan amortization.
-    This site focuses on clarity and transparency, showing assumptions and formulas used by the tools.
-  </p>
-  <p>
-    Ownership & Author: This project is maintained by a software engineer based in the Philippines.
-    Contact details are available on the <a routerLink="/contact">Contact</a> page. We welcome feedback,
-    corrections, and requests for additional calculators.
-  </p>
-  <p>
-    Accuracy & Sources: Calculators use commonly referenced rules and public guidance (e.g., BIR, SSS, DOLE).
-    Actual employer policies or official tables may differ. Always verify with official sources.
-  </p>
-  <p>
-    Monetization: We plan to support the site with unobtrusive ads to keep it free. We do not sell personal data.
-    See our <a routerLink="/privacy-policy">Privacy Policy</a> and <a routerLink="/disclaimer">Disclaimer</a>.
-  </p>
+<header class="hero">
+  <div class="hero-content">
+    <h1>About PH Salary & Loan Calculators</h1>
+    <p class="subtitle">Empowering Filipinos with accurate and transparent financial tools.</p>
+  </div>
+</header>
+
+<section class="container">
+  <div class="content-wrapper">
+    <!-- Main Content Card -->
+    <mat-card class="content-card">
+      <mat-card-header>
+        <div class="icon-circle primary">
+          <mat-icon>info</mat-icon>
+        </div>
+        <mat-card-title>Our Mission</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>
+          <strong>PH Calculators</strong> helps workers, HR professionals, and small business owners in the
+          Philippines quickly estimate government contributions (SSS, PhilHealth, Pag-IBIG, MPF), salary deductions, net
+          pay, 13th-month pay, and loan amortizations.
+        </p>
+        <p>
+          We focus on <strong>clarity, speed, and transparency</strong>. Unlike other tools that hide the logic, we aim
+          to show the formulas and assumptions used, so you can trust the numbers.
+        </p>
+      </mat-card-content>
+    </mat-card>
+
+    <div class="grid-2">
+      <!-- Accuracy Card -->
+      <mat-card class="content-card">
+        <mat-card-header>
+          <div class="icon-circle accent">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <mat-card-title>Accuracy & Sources</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>
+            Our calculators use commonly referenced public guidance and official tables (e.g., from BIR, SSS,
+            PhilHealth,
+            and Pag-IBIG circulars).
+          </p>
+          <p class="muted-text">
+            <em>Disclaimer: Actual employer policies or official tables may differ slightly. Always verify with official
+              government sources or your HR department.</em>
+          </p>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Privacy Card -->
+      <mat-card class="content-card">
+        <mat-card-header>
+          <div class="icon-circle warn">
+            <mat-icon>security</mat-icon>
+          </div>
+          <mat-card-title>Privacy & Terms</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>
+            We respect your privacy. All calculations are performed efficiently on your device. We do not store or sell
+            your personal salary data.
+          </p>
+          <div class="links">
+            <a mat-button color="primary" routerLink="/privacy-policy">Privacy Policy</a>
+            <a mat-button color="warn" routerLink="/disclaimer">Disclaimer</a>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Contact Section -->
+    <div class="contact-section">
+      <h3>Have feedback or found a bug?</h3>
+      <p>We welcome corrections and requests for new calculators.</p>
+      <a mat-flat-button color="primary" routerLink="/contact">
+        <mat-icon>mail</mat-icon> Contact Us
+      </a>
+    </div>
+  </div>
 </section>

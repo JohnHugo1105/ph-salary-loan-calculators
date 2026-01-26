@@ -12,10 +12,12 @@ import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.di
 import { SeoService } from '../../shared/seo.service';
 import { trigger, transition, style, query, stagger, animate } from '@angular/animations';
 
+import { MatIconModule } from '@angular/material/icon';
+
 @Component({
   selector: 'app-contributions',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, MatCardModule, MatButtonModule, ThousandsSeparatorDirective, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, MatCardModule, MatButtonModule, MatIconModule, ThousandsSeparatorDirective, RouterModule],
   templateUrl: './contributions.component.html',
   styleUrl: './contributions.component.scss',
   animations: [
