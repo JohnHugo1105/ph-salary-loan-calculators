@@ -1,0 +1,15 @@
+<div class="cookie-banner" *ngIf="isVisible" @slideUp>
+    <div class="cookie-content">
+        <mat-icon class="cookie-icon">cookie</mat-icon>
+        <div class="cookie-text">
+            <p>
+                We use cookies to ensure you get the best experience on our website.
+                By continuing to use this site, you agree to our use of cookies.
+            </p>
+        </div>
+    </div>
+    <div class="cookie-actions">
+        <a mat-button color="accent" routerLink="/privacy-policy">Learn More</a>
+        <button mat-raised-button color="primary" (click)="accept()">Accept</button>
+    </div>
+</div>

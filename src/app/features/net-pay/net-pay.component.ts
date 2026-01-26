@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { computeContributions, computeOvertimePay, deriveHourlyRate, computeWithholdingTax, estimate13thMonthPay, monthlyToSemiMonthly, split13thMonthTaxability, estimateNet13thMonthPay, computeHolidayPays } from '../../shared/ph-calculators.util';
+import { computeContributions, computeOvertimePay, deriveHourlyRate, computeWithholdingTax, monthlyToSemiMonthly, computeHolidayPays } from '../../shared/ph-calculators.util';
 import { trigger, transition, style, query, stagger, animate } from '@angular/animations';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -46,15 +46,13 @@ export class NetPayComponent {
     overtimeMultiplier: [1.25, [Validators.min(1)]],
     daysPerMonth: [21.5, [Validators.min(1)]],
     hoursPerDay: [8, [Validators.min(1)]],
-    monthsWorkedFor13th: [12, [Validators.min(0), Validators.max(12)]]
-    , thirteenthTaxRatePct: [20, [Validators.min(0), Validators.max(50)]]
-    , includeHolidayPays: [false]
-    , regHolUnworkedDays: [0, [Validators.min(0)]]
-    , regHolWorkedDays: [0, [Validators.min(0)]]
-    , regHolRestWorkedDays: [0, [Validators.min(0)]]
-    , specHolUnworkedDays: [0, [Validators.min(0)]]
-    , specHolWorkedDays: [0, [Validators.min(0)]]
-    , specHolRestWorkedDays: [0, [Validators.min(0)]]
+    includeHolidayPays: [false],
+    regHolUnworkedDays: [0, [Validators.min(0)]],
+    regHolWorkedDays: [0, [Validators.min(0)]],
+    regHolRestWorkedDays: [0, [Validators.min(0)]],
+    specHolUnworkedDays: [0, [Validators.min(0)]],
+    specHolWorkedDays: [0, [Validators.min(0)]],
+    specHolRestWorkedDays: [0, [Validators.min(0)]]
   });
 
   view = this.compute();
@@ -123,11 +121,6 @@ export class NetPayComponent {
     const tax = computeWithholdingTax(taxablePeriod, isSemi ? 'semi-monthly' : 'monthly');
     const netPay = grossPeriod - contribPeriod - tax;
 
-    const thirteenth = estimate13thMonthPay(monthlyBasic, Number(v.monthsWorkedFor13th) || 0);
-    const thirteenthSplit = split13thMonthTaxability(thirteenth);
-    const thirteenthRate = Number(v.thirteenthTaxRatePct) || 0;
-    const thirteenthNet = estimateNet13thMonthPay(thirteenth, thirteenthRate);
-
     return {
       hourlyRate,
       overtimePay,
@@ -141,10 +134,6 @@ export class NetPayComponent {
       tax,
       payFrequency: v.payFrequency,
       netPay,
-      thirteenth,
-      thirteenthSplit,
-      thirteenthRate,
-      thirteenthNet,
       includeHolidayPays: includeHoliday,
     };
   }

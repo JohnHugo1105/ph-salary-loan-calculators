@@ -69,17 +69,7 @@
         </div>
       </mat-card>
 
-      <h3>13th Month Settings</h3>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-        <mat-form-field appearance="outline">
-          <mat-label>Months Worked</mat-label>
-          <input matInput type="number" formControlName="monthsWorkedFor13th" min="0" max="12" />
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Tax Rate (%)</mat-label>
-          <input matInput type="number" formControlName="thirteenthTaxRatePct" min="0" max="50" />
-        </mat-form-field>
-      </div>
+
     </form>
 
     <!-- RESULTS -->
@@ -121,18 +111,7 @@
         <div class="total-row"><strong>Net ({{ view.payFrequency }})</strong>:&nbsp;<span class="accent-number">₱{{
             view.netPay | number:'1.2-2' }}</span></div>
       </mat-card>
-      <mat-card>
-        <h3>13th Month</h3>
-        <div>Estimate:&nbsp;<span class="accent-number">₱{{ view.thirteenth | number:'1.2-2' }}</span></div>
-        <div>Non-taxable:&nbsp;<span class="accent-number">₱{{ view.thirteenthSplit.nonTaxable | number:'1.2-2'
-            }}</span></div>
-        <div>Taxable:&nbsp;<span class="accent-number">₱{{ view.thirteenthSplit.taxable | number:'1.2-2' }}</span></div>
-        <div>Assumed rate:&nbsp;<span class="accent-number">{{ view.thirteenthRate | number:'1.0-2' }}%</span></div>
-        <div>Tax due (13th):&nbsp;<span class="accent-number">₱{{ view.thirteenthNet.taxDue | number:'1.2-2' }}</span>
-        </div>
-        <div class="total-row"><strong>Net 13th-month:</strong>&nbsp;<span class="accent-number">₱{{
-            view.thirteenthNet.net | number:'1.2-2' }}</span></div>
-      </mat-card>
+
     </div>
   </div>
 
@@ -168,12 +147,7 @@
       from 15% to 35%.
     </p>
 
-    <h3>3. 13th Month Pay & Bonuses</h3>
-    <p>
-      Mandated by law, 13th-month pay is equivalent to 1/12 of your total basic salary earned within the calendar year.
-      The first ₱90,000 of your total 13th-month pay and other bonuses is <strong>tax-exempt</strong>. Any amount
-      exceeding ₱90,000 is subject to income tax.
-    </p>
+
 
     <p class="note">
       <strong>Disclaimer:</strong> This tool is for estimation purposes only. Actual deductions may vary based on
