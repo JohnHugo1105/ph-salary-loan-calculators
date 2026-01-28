@@ -133,9 +133,19 @@ button:focus-visible,
 @media (min-width: 960px) {
   .calc-layout {
     display: grid;
-    grid-template-columns: 350px 1fr; /* Fixed width form, flexible results */
+    grid-template-columns: 440px 1fr; /* Increased from 400px to prevent truncation */
     align-items: start;
   }
+}
+
+/* Ensure MatSelect values have enough room and don't cut off abruptly */
+.mat-mdc-select-value {
+  max-width: calc(100% - 24px); /* Leave room for arrow */
+}
+.mat-mdc-select-value-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
