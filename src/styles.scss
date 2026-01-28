@@ -58,6 +58,11 @@ body.light-theme {
 }
 
 html, body { min-height: 100%; }
+/* Global Box Sizing Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 body {
   min-height: 100vh;
   margin: 0;
@@ -68,6 +73,22 @@ body {
   background-attachment: fixed;
   background-color: #121212; // fallback
   color: var(--text);
+  overflow-x: hidden; /* Prevent horizontal scroll from minor overflows */
+  width: 100%;
+}
+
+/* ... */
+
+/* Ensure Material components allow text wrapping on small screens */
+.mat-mdc-checkbox-layout,
+.mat-mdc-radio-button .mdc-form-field {
+  white-space: normal !important;
+}
+
+.mat-mdc-checkbox-layout .mdc-label {
+  line-height: 1.4;
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
 
 /* Light theme background override (colors only, no size changes) */
@@ -246,6 +267,10 @@ mat-form-field { width: 100%; }
   .notice__inner { flex-direction: column; align-items: flex-start; gap: 10px; }
   .notice__dismiss { width: 100%; }
   body { font-size: 15px; }
+}
+
+@media (max-width: 480px) {
+  .container { padding: 12px; } /* Reduce padding further for small mobiles */
 }
 
 @media (max-width: 600px) {
