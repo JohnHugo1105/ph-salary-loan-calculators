@@ -102,6 +102,8 @@
     <p>
       Whether you are applying for a housing loan (Pag-IBIG/Bank), car loan, or salary loan, understanding how your
       monthly amortization is computed is essential for financial planning.
+      This calculator assumes a standard fixed-rate loan structure common in Philippine banks (BDO, BPI, Metrobank,
+      Security Bank) and government agencies.
     </p>
 
     <h3>Amortization Formula</h3>
@@ -111,19 +113,36 @@
       As you pay off the principal, the interest portion decreases, and more of your monthly payment goes toward the
       principal.
     </p>
+    <p>
+      <em>Note: This is different from "Add-on Rate" loans often used for cars or gadgets, where interest is computed on
+        the original principal for the entire term.</em>
+    </p>
 
-    <h3>Key Factors</h3>
+    <h3>Key Factors Affecting Your Loan</h3>
     <ul class="styled-list">
-      <li><strong>Principal Amount:</strong> The total amount you are borrowing.</li>
-      <li><strong>Annual Interest Rate:</strong> The percentage charged by the lender per year. Philippine banks
-        typically offer rates between 6% to 12% for housing, depending on the fixing period.</li>
+      <li><strong>Principal Amount:</strong> The total amount you are borrowing. Ensure this fits your Debt-to-Income
+        ratio (usually max 30-40% of your gross income).</li>
+      <li><strong>Annual Interest Rate:</strong> The percentage charged by the lender per year.
+        <ul>
+          <li><strong>Pag-IBIG Housing:</strong> Approx 5.75% to 6.375% (depends on fixing period).</li>
+          <li><strong>Bank Housing:</strong> 6% to 10% (floating/repricing).</li>
+          <li><strong>Personal Loans:</strong> 12% to 25%+.</li>
+        </ul>
+      </li>
       <li><strong>Term:</strong> The duration of the loan. Longer terms (e.g., 15-30 years for housing) result in lower
         monthly payments but significantly higher total interest paid.</li>
     </ul>
 
+    <h3>Understanding Repricing Periods</h3>
+    <p>
+      A "Fixing Period" or "Repricing Period" is the time during which your interest rate is guaranteed.
+      For example, if you choose a 5-year fixing period on a 20-year loan, your rate stays the same for 5 years.
+      After that, the bank will "reprice" or adjust your rate based on current market conditions.
+      Always be prepared for potential rate hikes after your fixing period ends.
+    </p>
+
     <div class="cta-wrapper">
-      <a mat-stroked-button color="primary" routerLink="/articles/loan-amortization-ph">Read Full Guide: How
-        Amortization Works</a>
+      <a mat-stroked-button color="primary" routerLink="/articles">View All Guides</a>
     </div>
   </article>
 </section>
