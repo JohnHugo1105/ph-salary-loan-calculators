@@ -44,6 +44,11 @@
                 "input": "src/assets",
                 "output": "."
               },
+              {
+                "glob": "ads.txt",
+                "input": "src/assets",
+                "output": "."
+              },
               "src/assets",
               "src/robots.txt",
               "src/manifest.webmanifest",
@@ -114,6 +119,11 @@
               },
               {
                 "glob": "favicon-*.png",
+                "input": "src/assets",
+                "output": "."
+              },
+              {
+                "glob": "ads.txt",
                 "input": "src/assets",
                 "output": "."
               },
