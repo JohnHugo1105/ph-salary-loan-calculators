@@ -35,18 +35,7 @@ export class SeoService {
 
       this.updateCanonical(url);
 
-      // Default schema for all pages
-      this.setSchema({
-        '@context': 'https://schema.org',
-        '@type': 'WebSite',
-        'name': this.siteName,
-        'url': 'https://www.phcalculators.com/',
-        'potentialAction': {
-          '@type': 'SearchAction',
-          'target': 'https://www.phcalculators.com/?q={search_term_string}',
-          'query-input': 'required name=search_term_string'
-        }
-      });
+
     });
   }
 
