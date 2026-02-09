@@ -7,11 +7,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { CookieConsentComponent } from './shared/components/cookie-consent/cookie-consent.component';
+import { AdComponent } from './shared/components/ad/ad.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, MatToolbarModule, MatButtonModule, MatSlideToggleModule, CookieConsentComponent],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, MatToolbarModule, MatButtonModule, MatSlideToggleModule, CookieConsentComponent, AdComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   animations: []

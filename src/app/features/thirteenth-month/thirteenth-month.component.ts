@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
 import { SeoService } from '../../shared/seo.service';
+import { AdComponent } from '../../shared/components/ad/ad.component';
 import { compute13thMonthProRated, estimate13thMonthPay, split13thMonthTaxability, round2 } from '../../shared/ph-calculators.util';
 
 @Component({
@@ -25,7 +26,8 @@ import { compute13thMonthProRated, estimate13thMonthPay, split13thMonthTaxabilit
     MatButtonToggleModule,
     MatIconModule,
     ThousandsSeparatorDirective,
-    RouterModule
+    RouterModule,
+    AdComponent
   ],
   templateUrl: './thirteenth-month.component.html',
   styleUrl: './thirteenth-month.component.scss'

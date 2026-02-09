@@ -1,0 +1,12 @@
+<div class="ad-container" *ngIf="adContent">
+    <span class="sponsored-label">Partner Offer</span>
+    <div class="icon-wrapper">
+        <mat-icon>{{ adContent.icon }}</mat-icon>
+    </div>
+    <h3>{{ adContent.headline }}</h3>
+    <p [innerHTML]="adContent.body"></p>
+
+    <a [href]="adContent.link" target="_blank" rel="nofollow noopener">
+        {{ adContent.actionText }}
+    </a>
+</div>

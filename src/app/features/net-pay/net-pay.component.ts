@@ -11,6 +11,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
 import { SeoService } from '../../shared/seo.service';
+import { AdComponent } from '../../shared/components/ad/ad.component';
 
 @Component({
   selector: 'app-net-pay',
@@ -25,6 +26,7 @@ import { SeoService } from '../../shared/seo.service';
     MatCheckboxModule,
     MatIconModule,
     ThousandsSeparatorDirective,
+    AdComponent,
   ],
   templateUrl: './net-pay.component.html',
   styleUrl: './net-pay.component.scss',
