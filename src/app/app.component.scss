@@ -54,6 +54,8 @@
   max-width: 1100px;
   margin: 0 auto;
   flex: 1 0 auto;
+  min-width: 0;
+  /* Important for flex items to shrink */
 
   @media (max-width: 600px) {
     padding: 12px;

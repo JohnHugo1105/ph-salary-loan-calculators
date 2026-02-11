@@ -1,3 +1,9 @@
+:host {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+}
+
 .hero {
     background: linear-gradient(135deg, var(--primary) 0%, darken(#2979ff, 20%) 100%);
     color: #ffffff;
@@ -47,6 +53,7 @@
 
     @media (max-width: 600px) {
         padding: 0 12px;
+        min-width: 360px; // Trigger scroll if too small
     }
 }
 

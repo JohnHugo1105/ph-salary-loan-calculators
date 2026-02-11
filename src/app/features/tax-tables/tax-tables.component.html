@@ -1,0 +1,151 @@
+<header class="hero">
+    <div class="hero-content">
+        <h1>2026 Tax & Contribution Tables</h1>
+        <p class="subtitle">Official reference tables for BIR Income Tax, SSS, and PhilHealth.</p>
+    </div>
+</header>
+
+<section class="container">
+    <article class="content-article">
+
+        <!-- AD PLACEMENT -->
+        <app-ad type="cashSpace"></app-ad>
+
+        <h2>1. Revised Withholding Tax Table (TRAIN Law)</h2>
+        <p>
+            Effective since January 1, 2023, the Philippines follows the graduated income tax schedule below.
+            This table applies to all compensation income earners.
+        </p>
+
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Annual Income</th>
+                        <th>Tax Rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>P250,000 and below</strong></td>
+                        <td><strong>0% (Tax Exempt)</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Over P250,000 to P400,000</td>
+                        <td>15% of the excess over P250,000</td>
+                    </tr>
+                    <tr>
+                        <td>Over P400,000 to P800,000</td>
+                        <td>P22,500 + 20% of the excess over P400,000</td>
+                    </tr>
+                    <tr>
+                        <td>Over P800,000 to P2,000,000</td>
+                        <td>P102,500 + 25% of the excess over P800,000</td>
+                    </tr>
+                    <tr>
+                        <td>Over P2,000,000 to P8,000,000</td>
+                        <td>P402,500 + 30% of the excess over P2,000,000</td>
+                    </tr>
+                    <tr>
+                        <td>Over P8,000,000</td>
+                        <td>P2,202,500 + 35% of the excess over P8,000,000</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>How to Use This Table (Sample Calculation)</h3>
+        <p>
+            Let's say your <strong>Taxable Income</strong> (Gross Pay minus SSS/PhilHealth/Pag-IBIG) is
+            <strong>P500,000</strong> per year.
+        </p>
+        <ol class="styled-list">
+            <li>Look at the table. P500,000 falls in the range <strong>"Over P400,000 to P800,000"</strong>.</li>
+            <li><strong>Base Tax:</strong> P22,500.</li>
+            <li><strong>Excess:</strong> P500,000 - P400,000 = P100,000.</li>
+            <li><strong>Rate on Excess:</strong> 20% of P100,000 = P20,000.</li>
+            <li><strong>Total Tax:</strong> P22,500 + P20,000 = <strong>P42,500</strong> per year.</li>
+        </ol>
+        <p>
+            To find your monthly tax, simply divide by 12: <strong>P3,541.67</strong> per month.
+        </p>
+
+
+        <hr class="divider">
+
+        <h2>2. SSS Contribution Schedule (2025-2026)</h2>
+        <p>
+            The Social Security System (SSS) contribution is based on your Monthly Salary Credit (MSC).
+            The total contribution rate is <strong>14%</strong> (4.5% Employee, 9.5% Employer).
+            <em>Note: This table includes the Mandatory Provident Fund (WISP) for incomes above P20,000.</em>
+        </p>
+
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Range of Compensation</th>
+                        <th>Regular SSS (Lite)</th>
+                        <th>WISP</th>
+                        <th>Total Employee Share</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>P4,250 - P4,749.99</td>
+                        <td>P202.50</td>
+                        <td>-</td>
+                        <td><strong>P202.50</strong></td>
+                    </tr>
+                    <tr>
+                        <td>P9,750 - P10,249.99</td>
+                        <td>P450.00</td>
+                        <td>-</td>
+                        <td><strong>P450.00</strong></td>
+                    </tr>
+                    <tr>
+                        <td>P19,750 - P20,249.99</td>
+                        <td>P900.00</td>
+                        <td>-</td>
+                        <td><strong>P900.00</strong></td>
+                    </tr>
+                    <tr>
+                        <td>P20,250 - P20,749.99</td>
+                        <td>P900.00</td>
+                        <td>P22.50</td>
+                        <td><strong>P922.50</strong></td>
+                    </tr>
+                    <tr>
+                        <td>P24,750 - P25,249.99</td>
+                        <td>P900.00</td>
+                        <td>P225.00</td>
+                        <td><strong>P1,125.00</strong></td>
+                    </tr>
+                    <tr>
+                        <td>P29,750 and above</td>
+                        <td>P900.00</td>
+                        <td>P450.00</td>
+                        <td><strong>P1,350.00</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="note">
+            <em>*Simplified view. For exact salary credits between these ranges, use our <a
+                    routerLink="/contributions">SSS Calculator</a>.</em>
+        </p>
+
+        <h3>Understanding WISP</h3>
+        <p>
+            If you earn more than P20,000 per month, you are automatically enrolled in the <strong>Workers' Investment
+                and Savings Program (WISP)</strong>.
+            This is an additional savings layer that earns interest and is tax-free. It is added on top of your regular
+            retirement pension.
+        </p>
+
+        <div class="cta-wrapper">
+            <a mat-flat-button color="primary" routerLink="/net-pay">Go to Net Pay Calculator</a>
+        </div>
+
+    </article>
+</section>
