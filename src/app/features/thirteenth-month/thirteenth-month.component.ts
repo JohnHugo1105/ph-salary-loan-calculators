@@ -54,15 +54,47 @@ export class ThirteenthMonthComponent implements OnInit {
   };
 
   constructor(private fb: FormBuilder, private seo: SeoService) {
-    this.seo.setSchema({
-      '@context': 'https://schema.org',
-      '@type': 'SoftwareApplication',
-      'name': '13th Month Pay Calculator Philippines',
-      'operatingSystem': 'Web',
-      'applicationCategory': 'FinanceApplication',
-      'url': 'https://www.phcalculators.com/13th-month-pay',
-      'featureList': 'Compute pro-rated 13th month pay and tax exemption'
-    });
+    this.seo.setSchema([
+      {
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        'name': '13th Month Pay Calculator Philippines',
+        'operatingSystem': 'Web',
+        'applicationCategory': 'FinanceApplication',
+        'url': 'https://www.phcalculators.com/13th-month-pay',
+        'featureList': 'Compute pro-rated 13th month pay and tax exemption'
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        'mainEntity': [
+          {
+            '@type': 'Question',
+            'name': 'Are managers or supervisory employees entitled to 13th-month pay?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'Under Presidential Decree No. 851, only rank-and-file employees are legally entitled to 13th-month pay. However, many employers in the Philippines choose to grant it to managerial and supervisory employees as well, through established company policy or practice.'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': 'What happens if my 13th-month pay exceeds ₱90,000?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'Under the TRAIN Law, the 13th-month pay and other benefits are tax-exempt up to the ₱90,000 limit. Any amount exceeding this ₱90,000 threshold must be added to your regular gross income, making it subject to the standard graduated income tax rates.'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': 'How is a pro-rated 13th-month pay calculated for new or resigned employees?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'Pro-rated 13th-month pay is calculated by summing up your total basic salary earned during the calendar year and dividing it by 12. If you worked for 4 months and earned ₱20,000 per month, your pro-rated 13th month is (₱20,000 * 4) / 12 = ₱6,666.67.'
+            }
+          }
+        ]
+      }
+    ]);
   }
 
   ngOnInit() {

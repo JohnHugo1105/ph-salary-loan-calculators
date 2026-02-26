@@ -46,19 +46,51 @@ export class ContributionsComponent {
       this.result = computeContributions(salary, { includeSSSEC: includeEC });
     });
 
-    this.seo.setSchema({
-      '@context': 'https://schema.org',
-      '@type': 'SoftwareApplication',
-      'name': 'SSS, PhilHealth, Pag-IBIG Contributions Calculator',
-      'operatingSystem': 'Web',
-      'applicationCategory': 'FinanceApplication',
-      'url': 'https://www.phcalculators.com/contributions',
-      'offers': {
-        '@type': 'Offer',
-        'price': '0',
-        'priceCurrency': 'PHP'
+    this.seo.setSchema([
+      {
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        'name': 'SSS, PhilHealth, Pag-IBIG Contributions Calculator',
+        'operatingSystem': 'Web',
+        'applicationCategory': 'FinanceApplication',
+        'url': 'https://www.phcalculators.com/contributions',
+        'offers': {
+          '@type': 'Offer',
+          'price': '0',
+          'priceCurrency': 'PHP'
+        },
+        'featureList': 'Compute SSS, PhilHealth, Pag-IBIG, and MPF shares'
       },
-      'featureList': 'Compute SSS, PhilHealth, Pag-IBIG, and MPF shares'
-    });
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        'mainEntity': [
+          {
+            '@type': 'Question',
+            'name': 'What is WISP in SSS?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'The Worker\'s Investment and Savings Program (WISP) is a mandatory provident fund managed by SSS. It serves as an additional retirement savings program on top of the regular SSS pension for members whose Monthly Salary Credit (MSC) exceeds ₱20,000.'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': 'Did PhilHealth rates increase in 2025?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'Yes, as mandated by the Universal Health Care (UHC) Law, the PhilHealth premium rate was scheduled to increase to 5.0% of the basic monthly income, with the income ceiling adjusting to ₱90,000-₱100,000 depending on the final BIR/PhilHealth circular releases for the year.'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': 'Can I voluntarily pay more than the mandatory ₱100 Pag-IBIG contribution?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'Yes, you can opt to increase your monthly Pag-IBIG Regular Savings contribution beyond the mandatory ₱100 to save more. However, many Filipinos choose to enroll in the separate voluntary Modified Pag-IBIG II (MP2) program instead, as it traditionally yields higher dividends.'
+            }
+          }
+        ]
+      }
+    ]);
   }
 }

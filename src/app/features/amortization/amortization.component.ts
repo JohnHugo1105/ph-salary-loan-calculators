@@ -52,20 +52,52 @@ export class AmortizationComponent {
       this.page = 0;
     });
 
-    this.seo.setSchema({
-      '@context': 'https://schema.org',
-      '@type': 'SoftwareApplication',
-      'name': 'Loan Amortization Calculator Philippines',
-      'operatingSystem': 'Web',
-      'applicationCategory': 'FinanceApplication',
-      'url': 'https://www.phcalculators.com/amortization',
-      'offers': {
-        '@type': 'Offer',
-        'price': '0',
-        'priceCurrency': 'PHP'
+    this.seo.setSchema([
+      {
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        'name': 'Loan Amortization Calculator Philippines',
+        'operatingSystem': 'Web',
+        'applicationCategory': 'FinanceApplication',
+        'url': 'https://www.phcalculators.com/amortization',
+        'offers': {
+          '@type': 'Offer',
+          'price': '0',
+          'priceCurrency': 'PHP'
+        },
+        'featureList': 'Compute monthly payments and generates amortization schedule'
       },
-      'featureList': 'Compute monthly payments and generates amortization schedule'
-    });
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        'mainEntity': [
+          {
+            '@type': 'Question',
+            'name': 'What is a diminishing balance interest rate?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'A diminishing balance interest rate means that the interest is calculated based on the remaining principal balance of the loan each month, not the original borrowed amount. As you pay off the principal, the interest portion of your monthly payment decreases.'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': 'What is a repricing period for a housing loan?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'A repricing period (or fixing period) is the duration for which your interest rate is guaranteed to stay the same. After this period (e.g., 1 year, 3 years, 5 years), the bank will adjust or \'reprice\' your interest rate based on current market conditions, which can increase or decrease your monthly amortization.'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': 'Is it better to have a 5-year or 20-year loan term?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'It depends on your cash flow. A 5-year term will have significantly higher monthly payments, but you will pay drastically less total interest over the life of the loan. A 20-year term spreads the payments out to be much lower and more affordable month-to-month, but yields much higher total interest costs overall.'
+            }
+          }
+        ]
+      }
+    ]);
   }
 
   get totalRows() { return this.schedule.schedule.length; }

@@ -64,20 +64,52 @@ export class NetPayComponent {
   constructor(private fb: FormBuilder, private seo: SeoService) {
     this.form.valueChanges.subscribe(() => this.view = this.compute());
 
-    this.seo.setSchema({
-      '@context': 'https://schema.org',
-      '@type': 'SoftwareApplication',
-      'name': 'Philippine Salary Net Pay Calculator',
-      'operatingSystem': 'Web',
-      'applicationCategory': 'FinanceApplication',
-      'url': 'https://www.phcalculators.com/net-pay',
-      'offers': {
-        '@type': 'Offer',
-        'price': '0',
-        'priceCurrency': 'PHP'
+    this.seo.setSchema([
+      {
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        'name': 'Philippine Salary Net Pay Calculator',
+        'operatingSystem': 'Web',
+        'applicationCategory': 'FinanceApplication',
+        'url': 'https://www.phcalculators.com/net-pay',
+        'offers': {
+          '@type': 'Offer',
+          'price': '0',
+          'priceCurrency': 'PHP'
+        },
+        'featureList': 'Compute SSS, PhilHealth, Pag-IBIG, and Withholding Tax'
       },
-      'featureList': 'Compute SSS, PhilHealth, Pag-IBIG, and Withholding Tax'
-    });
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        'mainEntity': [
+          {
+            '@type': 'Question',
+            'name': 'What is the difference between Gross Pay and Net Pay in the Philippines?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'Gross pay is your total earnings before any deductions are made. Net pay (take-home pay) is the amount you actually receive after mandatory government contributions (SSS, PhilHealth, Pag-IBIG) and withholding taxes are deducted.'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': 'Are de minimis benefits taxable?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'No, de minimis benefits (like rice subsidy, clothing allowance, medical cash allowance) are reasonably small facilities or privileges furnished by an employer to its employees and are exempt from income tax.'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': 'Is holiday pay legally required in the Philippines?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'Yes, the Labor Code mandates holiday pay. If you do not work on a regular holiday, you still get 100% of your daily wage. If you work on a regular holiday, you get 200%. For special non-working days, the "no work, no pay" principle applies, but if you work, you get an additional 30% premium.'
+            }
+          }
+        ]
+      }
+    ]);
   }
 
   private compute() {

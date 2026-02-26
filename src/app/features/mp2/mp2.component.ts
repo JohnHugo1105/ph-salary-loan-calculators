@@ -49,15 +49,47 @@ export class Mp2Component implements OnInit {
   chartMax = 0; // For scaling CSS bars
 
   constructor(private fb: FormBuilder, private seo: SeoService) {
-    this.seo.setSchema({
-      '@context': 'https://schema.org',
-      '@type': 'SoftwareApplication',
-      'name': 'Pag-IBIG MP2 Calculator Philippines',
-      'operatingSystem': 'Web',
-      'applicationCategory': 'FinanceApplication',
-      'url': 'https://www.phcalculators.com/mp2-calculator',
-      'featureList': 'Result projection with 5-year compounding or annual payout'
-    });
+    this.seo.setSchema([
+      {
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        'name': 'Pag-IBIG MP2 Calculator Philippines',
+        'operatingSystem': 'Web',
+        'applicationCategory': 'FinanceApplication',
+        'url': 'https://www.phcalculators.com/mp2-calculator',
+        'featureList': 'Result projection with 5-year compounding or annual payout'
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        'mainEntity': [
+          {
+            '@type': 'Question',
+            'name': 'Can I withdraw my MP2 savings before 5 years?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'Yes, but generally only for valid reasons (medical emergencies, total disability, unemployment) without penalty. If you apply for voluntary early withdrawal for non-critical reasons, you will only receive 50% of your total earned dividends.'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': 'Is there a limit to how much I can save in MP2?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'There is no maximum limit to how much you can invest in the MP2 program. However, for one-time remittances exceeding ₱500,000, you are legally required by Pag-IBIG to present proof of your income source (e.g., deed of sale, payslips) to comply with anti-money laundering regulations.'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': 'Can I open multiple MP2 accounts at the same time?',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': 'Yes! Pag-IBIG allows members to open and maintain multiple MP2 accounts simultaneously. This is highly useful if you want to earmark different accounts for different financial goals (e.g., one account for a car fund, another for a child\'s education).'
+            }
+          }
+        ]
+      }
+    ]);
   }
 
   ngOnInit() {
