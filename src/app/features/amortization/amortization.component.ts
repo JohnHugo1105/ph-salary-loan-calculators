@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, ElementRef, ViewChild, AfterViewInit, OnInit } from '@angular/core';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { computeAmortization } from '../../shared/ph-calculators.util';
 import { trigger, transition, style, query, stagger, animate } from '@angular/animations';
+import { Chart } from 'chart.js/auto';
+import { SaveShareService } from '../../shared/services/save-share.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
@@ -32,7 +34,11 @@ import { MatIconModule } from '@angular/material/icon';
     ])
   ]
 })
-export class AmortizationComponent {
+export class AmortizationComponent implements OnInit, AfterViewInit {
+  @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
+  chart: any;
+  shareUrl: string = '';
+  saveSuccess: boolean = false;
   form = this.fb.group({
     amount: [1000000, [Validators.required, Validators.min(0)]],
     annualRate: [8, [Validators.required, Validators.min(0)]],
@@ -43,13 +49,21 @@ export class AmortizationComponent {
   pageSize = 24;
   page = 0;
 
-  constructor(private fb: FormBuilder, private seo: SeoService) {
+  constructor(
+    private fb: FormBuilder, 
+    private seo: SeoService,
+    private saveShare: SaveShareService,
+    private route: ActivatedRoute
+  ) {
     this.form.valueChanges.subscribe(v => {
       const amount = Number(v.amount) || 0;
       const rate = Number(v.annualRate) || 0;
       const months = Number(v.months) || 1;
       this.schedule = computeAmortization(amount, rate, months);
       this.page = 0;
+      this.updateChart();
+      this.shareUrl = ''; // reset share link when input changes
+      this.saveSuccess = false;
     });
 
     this.seo.setSchema([
@@ -112,4 +126,85 @@ export class AmortizationComponent {
   next() { if (this.canNext()) this.page++; }
   last() { this.page = this.totalPages - 1; }
   setPageSize(size: number) { this.pageSize = size; this.page = 0; }
+
+  ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      if (params['data']) {
+        const decoded = this.saveShare.decodeSharedData(params['data']);
+        if (decoded) {
+          this.form.patchValue({
+            amount: decoded.amount,
+            annualRate: decoded.annualRate,
+            months: decoded.months
+          });
+        }
+      }
+    });
+  }
+
+  ngAfterViewInit() {
+    this.initChart();
+  }
+
+  initChart() {
+    if (!this.chartCanvas) return;
+    
+    const totalPrincipal = this.schedule.schedule.reduce((sum, row) => sum + row.principal, 0);
+    const totalInterest = this.schedule.schedule.reduce((sum, row) => sum + row.interest, 0);
+
+    this.chart = new Chart(this.chartCanvas.nativeElement, {
+      type: 'pie',
+      data: {
+        labels: ['Total Principal', 'Total Interest'],
+        datasets: [{
+          data: [totalPrincipal, totalInterest],
+          backgroundColor: ['#4ade80', '#f87171'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+  }
+
+  updateChart() {
+    if (!this.chart) return;
+    const totalPrincipal = this.schedule.schedule.reduce((sum, row) => sum + row.principal, 0);
+    const totalInterest = this.schedule.schedule.reduce((sum, row) => sum + row.interest, 0);
+    
+    this.chart.data.datasets[0].data = [totalPrincipal, totalInterest];
+    this.chart.update();
+  }
+
+  saveCalculation() {
+    const data = {
+      type: 'amortization',
+      amount: this.form.value.amount,
+      annualRate: this.form.value.annualRate,
+      months: this.form.value.months,
+      payment: this.schedule.payment
+    };
+    this.saveSuccess = this.saveShare.saveCalculation('amortization', data);
+    setTimeout(() => this.saveSuccess = false, 3000);
+  }
+
+  generateShareLink() {
+    const data = {
+      amount: this.form.value.amount,
+      annualRate: this.form.value.annualRate,
+      months: this.form.value.months
+    };
+    this.shareUrl = this.saveShare.generateShareLink(data);
+  }
+
+  copyLink() {
+    if (this.shareUrl) {
+      navigator.clipboard.writeText(this.shareUrl);
+      alert('Link copied to clipboard!');
+    }
+  }
 }

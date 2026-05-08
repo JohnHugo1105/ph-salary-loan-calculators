@@ -1,0 +1,63 @@
+<header class="hero">
+    <div class="hero-content">
+        <h1>SSS Maternity Benefit Calculator</h1>
+        <p class="subtitle">Compute your daily maternity allowance based on Expanded Maternity Leave Law (RA 11210).</p>
+    </div>
+</header>
+
+<section class="container">
+    <div class="calc-layout">
+        <!-- INPUTS -->
+        <div class="input-col">
+            <mat-card class="input-card">
+                <mat-card-header>
+                    <mat-card-title>Maternity Leave Details</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <form [formGroup]="form" class="grid-form">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Total of 6 Highest MSCs (₱)</mat-label>
+                            <input matInput type="text" appThousandsSeparator formControlName="totalMsc" />
+                            <mat-hint>Sum of your 6 highest monthly salary credits in the past 12 months (Max ₱180,000)</mat-hint>
+                        </mat-form-field>
+                        
+                        <mat-form-field appearance="outline">
+                            <mat-label>Type of Delivery / Contingency</mat-label>
+                            <mat-select formControlName="deliveryType">
+                                <mat-option [value]="105">Normal / Caesarean Delivery (105 Days)</mat-option>
+                                <mat-option [value]="120">Solo Parent Delivery (120 Days)</mat-option>
+                                <mat-option [value]="60">Miscarriage / Emergency Termination (60 Days)</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </form>
+                </mat-card-content>
+            </mat-card>
+        </div>
+
+        <!-- RESULTS -->
+        <div class="result-col">
+            <mat-card class="result-card">
+                <div class="result-label">Total Maternity Benefit</div>
+                <div class="result-value">₱{{ results.totalBenefit | number:'1.2-2' }}</div>
+                <div class="result-sub">Paid out as cash allowance.</div>
+            </mat-card>
+
+            <mat-card class="table-card" style="margin-top: 1rem; padding: 1rem;">
+                <div style="margin-bottom: 0.5rem;">
+                    <strong>Average Daily Salary Credit (ADSC):</strong> 
+                    <span class="highlight">₱{{ results.adsc | number:'1.2-2' }}</span>
+                </div>
+                <div style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">
+                    (Computed as: Total 6 Highest MSCs ÷ 180 days)
+                </div>
+                
+                <div>
+                    <strong>Total Benefit Calculation:</strong> 
+                    <span style="display: block; font-size: 1.1rem;">
+                        ₱{{ results.adsc | number:'1.2-2' }} × {{ form.value.deliveryType }} days = <strong>₱{{ results.totalBenefit | number:'1.2-2' }}</strong>
+                    </span>
+                </div>
+            </mat-card>
+        </div>
+    </div>
+</section>

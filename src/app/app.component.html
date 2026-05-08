@@ -7,14 +7,31 @@
   <span class="spacer"></span>
   <nav class="nav-links">
     <a mat-button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
-    <a mat-button routerLink="/contributions" routerLinkActive="active">Contributions</a>
-    <a mat-button routerLink="/net-pay" routerLinkActive="active">Net Pay</a>
-    <a mat-button routerLink="/13th-month-pay" routerLinkActive="active">13th Month</a>
-    <a mat-button routerLink="/mp2-calculator" routerLinkActive="active">MP2</a>
-    <a mat-button routerLink="/amortization" routerLinkActive="active">Amortization</a>
-    <a mat-button routerLink="/tax-tables" routerLinkActive="active">Tax Tables</a>
+    
+    <button mat-button [matMenuTriggerFor]="salaryTaxesMenu">Salary & Taxes <mat-icon iconPositionEnd>arrow_drop_down</mat-icon></button>
+    <mat-menu #salaryTaxesMenu="matMenu">
+      <a mat-menu-item routerLink="/net-pay" routerLinkActive="active">Net Pay</a>
+      <a mat-menu-item routerLink="/13th-month-pay" routerLinkActive="active">13th Month Pay</a>
+      <a mat-menu-item routerLink="/tax-tables" routerLinkActive="active">2026 Tax Tables</a>
+    </mat-menu>
+
+    <button mat-button [matMenuTriggerFor]="loansMenu">Loans & Mortgages <mat-icon iconPositionEnd>arrow_drop_down</mat-icon></button>
+    <mat-menu #loansMenu="matMenu">
+      <a mat-menu-item routerLink="/amortization" routerLinkActive="active">General Amortization</a>
+      <a mat-menu-item routerLink="/sss-salary-loan" routerLinkActive="active">SSS Salary Loan</a>
+      <a mat-menu-item routerLink="/pagibig-housing-loan" routerLinkActive="active">Pag-IBIG Housing Loan</a>
+    </mat-menu>
+
+    <button mat-button [matMenuTriggerFor]="savingsMenu">Savings & Benefits <mat-icon iconPositionEnd>arrow_drop_down</mat-icon></button>
+    <mat-menu #savingsMenu="matMenu">
+      <a mat-menu-item routerLink="/contributions" routerLinkActive="active">Contributions (SSS, Pag-IBIG...)</a>
+      <a mat-menu-item routerLink="/mp2-calculator" routerLinkActive="active">MP2 Savings</a>
+      <a mat-menu-item routerLink="/sss-maternity-benefit" routerLinkActive="active">SSS Maternity Benefit</a>
+    </mat-menu>
+
     <a mat-button routerLink="/articles" routerLinkActive="active">Articles</a>
     <a mat-button routerLink="/about" routerLinkActive="active">About</a>
+
     <mat-slide-toggle [checked]="isLight" (change)="onToggleTheme($event.checked)" color="accent"
       aria-label="Toggle light theme">
       Light
@@ -27,18 +44,41 @@
 </mat-toolbar>
 
 <nav class="mobile-nav" *ngIf="showMobileNav">
-  <a mat-button routerLink="/" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active"
-    (click)="closeMobileNav()">Home</a>
-  <a mat-button routerLink="/contributions" routerLinkActive="active" (click)="closeMobileNav()">Contributions</a>
-  <a mat-button routerLink="/net-pay" routerLinkActive="active" (click)="closeMobileNav()">Net Pay</a>
-  <a mat-button routerLink="/13th-month-pay" routerLinkActive="active" (click)="closeMobileNav()">13th Month</a>
-  <a mat-button routerLink="/mp2-calculator" routerLinkActive="active" (click)="closeMobileNav()">MP2</a>
-  <a mat-button routerLink="/amortization" routerLinkActive="active" (click)="closeMobileNav()">Amortization</a>
-  <a mat-button routerLink="/tax-tables" routerLinkActive="active" (click)="closeMobileNav()">Tax Tables</a>
+  <a mat-button routerLink="/" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active" (click)="closeMobileNav()">Home</a>
+  
+  <mat-accordion class="mobile-accordion" displayMode="flat">
+    <mat-expansion-panel class="mat-elevation-z0" style="background: transparent;">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Salary & Taxes</mat-panel-title>
+      </mat-expansion-panel-header>
+      <a mat-menu-item routerLink="/net-pay" routerLinkActive="active" (click)="closeMobileNav()">Net Pay</a>
+      <a mat-menu-item routerLink="/13th-month-pay" routerLinkActive="active" (click)="closeMobileNav()">13th Month Pay</a>
+      <a mat-menu-item routerLink="/tax-tables" routerLinkActive="active" (click)="closeMobileNav()">2026 Tax Tables</a>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel class="mat-elevation-z0" style="background: transparent;">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Loans & Mortgages</mat-panel-title>
+      </mat-expansion-panel-header>
+      <a mat-menu-item routerLink="/amortization" routerLinkActive="active" (click)="closeMobileNav()">General Amortization</a>
+      <a mat-menu-item routerLink="/sss-salary-loan" routerLinkActive="active" (click)="closeMobileNav()">SSS Salary Loan</a>
+      <a mat-menu-item routerLink="/pagibig-housing-loan" routerLinkActive="active" (click)="closeMobileNav()">Pag-IBIG Housing Loan</a>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel class="mat-elevation-z0" style="background: transparent;">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Savings & Benefits</mat-panel-title>
+      </mat-expansion-panel-header>
+      <a mat-menu-item routerLink="/contributions" routerLinkActive="active" (click)="closeMobileNav()">Contributions</a>
+      <a mat-menu-item routerLink="/mp2-calculator" routerLinkActive="active" (click)="closeMobileNav()">MP2 Savings</a>
+      <a mat-menu-item routerLink="/sss-maternity-benefit" routerLinkActive="active" (click)="closeMobileNav()">SSS Maternity Benefit</a>
+    </mat-expansion-panel>
+  </mat-accordion>
+
   <a mat-button routerLink="/articles" routerLinkActive="active" (click)="closeMobileNav()">Articles</a>
   <a mat-button routerLink="/about" routerLinkActive="active" (click)="closeMobileNav()">About</a>
   <mat-slide-toggle [checked]="isLight" (change)="onToggleTheme($event.checked)" color="accent"
-    aria-label="Toggle light theme">
+    aria-label="Toggle light theme" style="margin-left: 16px; margin-top: 8px;">
     Light
   </mat-slide-toggle>
 </nav>

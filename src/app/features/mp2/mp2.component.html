@@ -59,6 +59,26 @@
                     <strong>₱{{ totals.accumulated | number:'1.2-2' }}</strong>
                 </div>
             </mat-card>
+
+            <mat-card class="action-card" style="margin-top: 1rem;">
+                <mat-card-content style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <button mat-flat-button color="primary" (click)="saveCalculation()">
+                        <mat-icon>save</mat-icon> Save Calculation
+                    </button>
+                    <div *ngIf="saveSuccess" style="color: green; text-align: center; font-size: 0.85rem;">Saved to browser successfully!</div>
+                    
+                    <button mat-stroked-button color="accent" (click)="generateShareLink()">
+                        <mat-icon>share</mat-icon> Generate Share Link
+                    </button>
+                    
+                    <div *ngIf="shareUrl" class="share-box" style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <input matInput type="text" [value]="shareUrl" readonly style="flex: 1; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" />
+                        <button mat-icon-button color="primary" (click)="copyLink()" title="Copy to clipboard">
+                            <mat-icon>content_copy</mat-icon>
+                        </button>
+                    </div>
+                </mat-card-content>
+            </mat-card>
         </div>
 
         <!-- RIGHT COLUMN: RESULTS -->
@@ -76,15 +96,8 @@
             <!-- CHART VISUALIZATION -->
             <mat-card class="chart-card">
                 <h3>Growth Projection</h3>
-                <div class="chart-wrapper">
-                    <div class="chart-bars">
-                        <div class="bar-group" *ngFor="let row of results">
-                            <div class="bar-fill" [style.height]="getBarHeight(row.totalAccumulated)">
-                                <span class="bar-val">₱{{ row.totalAccumulated | number:'1.0-0' }}</span>
-                            </div>
-                            <div class="bar-label">Yr {{ row.year }}</div>
-                        </div>
-                    </div>
+                <div class="chart-wrapper" style="padding: 1rem 0;">
+                    <canvas #chartCanvas></canvas>
                 </div>
             </mat-card>
 

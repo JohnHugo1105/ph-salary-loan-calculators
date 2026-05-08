@@ -61,6 +61,27 @@ export class HomeComponent {
       icon: 'article',
       route: '/articles',
       color: 'primary'
+    },
+    {
+      title: 'SSS Salary Loan',
+      description: 'Compute SSS loan net proceeds and interest.',
+      icon: 'request_quote',
+      route: '/sss-salary-loan',
+      color: 'accent'
+    },
+    {
+      title: 'Pag-IBIG Housing Loan',
+      description: 'Estimate housing loan monthly amortization.',
+      icon: 'real_estate_agent',
+      route: '/pagibig-housing-loan',
+      color: 'primary'
+    },
+    {
+      title: 'SSS Maternity',
+      description: 'Calculate your maternity benefit allowance.',
+      icon: 'child_care',
+      route: '/sss-maternity-benefit',
+      color: 'warn'
     }
   ];
 }

@@ -15,6 +15,9 @@ import { PagibigVsMpfArticleComponent } from './features/articles/pagibig-vs-mpf
 import { LoanAmortizationPhArticleComponent } from './features/articles/loan-amortization-ph.component';
 import { ThirteenthMonthComponent } from './features/thirteenth-month/thirteenth-month.component';
 import { Mp2Component } from './features/mp2/mp2.component';
+import { SssSalaryLoanComponent } from './features/sss-salary-loan/sss-salary-loan.component';
+import { PagibigHousingLoanComponent } from './features/pagibig-housing-loan/pagibig-housing-loan.component';
+import { SssMaternityComponent } from './features/sss-maternity/sss-maternity.component';
 
 import { TaxTablesComponent } from './features/tax-tables/tax-tables.component';
 
@@ -25,6 +28,9 @@ export const routes: Routes = [
   { path: '13th-month-pay', component: ThirteenthMonthComponent, title: '13th Month Pay Calculator Philippines', data: { description: 'Compute your 13th-month pay with pro-rated calculator for resigned employees or new hires.' } },
   { path: 'mp2-calculator', component: Mp2Component, title: 'Pag-IBIG MP2 Calculator', data: { description: 'Estimate your MP2 savings growth with annual payout or 5-year compounding options.' } },
   { path: 'amortization', component: AmortizationComponent, title: 'Loan Amortization Calculators', data: { description: 'Calculate monthly payments and schedules for housing, car, and salary loans.' } },
+  { path: 'sss-salary-loan', component: SssSalaryLoanComponent, title: 'SSS Salary Loan Calculator', data: { description: 'Compute SSS salary loan net proceeds and monthly amortization.' } },
+  { path: 'pagibig-housing-loan', component: PagibigHousingLoanComponent, title: 'Pag-IBIG Housing Loan Calculator', data: { description: 'Estimate Pag-IBIG housing loan amortization based on 2026 rates.' } },
+  { path: 'sss-maternity-benefit', component: SssMaternityComponent, title: 'SSS Maternity Benefit Calculator', data: { description: 'Calculate your SSS maternity allowance and ADSC.' } },
   { path: 'tax-tables', component: TaxTablesComponent, title: '2026 Tax Tables & SSS Contributions', data: { description: 'Official 2026 BIR Income Tax Tables and SSS Contribution Schedule with examples.' } },
   { path: 'about', component: AboutComponent, title: 'About • PH Calculators', data: { description: 'About PH Calculators: mission, ownership, and transparency for AdSense compliance.' } },
   { path: 'contact', component: ContactComponent, title: 'Contact • PH Calculators', data: { description: 'Contact PH Calculators for inquiries, feedback, or corrections.' } },

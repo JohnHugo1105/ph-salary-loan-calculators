@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -7,11 +7,13 @@ import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
 import { SeoService } from '../../shared/seo.service';
 import { calculateMP2, MP2Row, round2 } from '../../shared/ph-calculators.util';
 import { MatIconModule } from '@angular/material/icon';
+import { Chart } from 'chart.js/auto';
+import { SaveShareService } from '../../shared/services/save-share.service';
 
 @Component({
   selector: 'app-mp2',
@@ -32,7 +34,12 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './mp2.component.html',
   styleUrl: './mp2.component.scss'
 })
-export class Mp2Component implements OnInit {
+export class Mp2Component implements OnInit, AfterViewInit {
+  @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
+  chart: any;
+  shareUrl: string = '';
+  saveSuccess: boolean = false;
+
   form = this.fb.group({
     monthlyContribution: [500, [Validators.required, Validators.min(500)]],
     rate: [7.05, [Validators.required, Validators.min(0)]],
@@ -48,7 +55,12 @@ export class Mp2Component implements OnInit {
 
   chartMax = 0; // For scaling CSS bars
 
-  constructor(private fb: FormBuilder, private seo: SeoService) {
+  constructor(
+    private fb: FormBuilder, 
+    private seo: SeoService,
+    private saveShare: SaveShareService,
+    private route: ActivatedRoute
+  ) {
     this.seo.setSchema([
       {
         '@context': 'https://schema.org',
@@ -93,8 +105,28 @@ export class Mp2Component implements OnInit {
   }
 
   ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      if (params['data']) {
+        const decoded = this.saveShare.decodeSharedData(params['data']);
+        if (decoded) {
+          this.form.patchValue({
+            monthlyContribution: decoded.monthlyContribution,
+            rate: decoded.rate,
+            mode: decoded.mode
+          });
+        }
+      }
+    });
     this.compute();
-    this.form.valueChanges.subscribe(() => this.compute());
+    this.form.valueChanges.subscribe(() => {
+      this.compute();
+      this.shareUrl = '';
+      this.saveSuccess = false;
+    });
+  }
+
+  ngAfterViewInit() {
+    this.initChart();
   }
 
   compute() {
@@ -119,6 +151,72 @@ export class Mp2Component implements OnInit {
 
       // Find max value for chart scaling (either accumulated or a bit higher)
       this.chartMax = last.totalAccumulated * 1.1;
+    }
+    
+    if (this.chart) {
+      this.updateChart();
+    }
+  }
+
+  initChart() {
+    if (!this.chartCanvas) return;
+    
+    this.chart = new Chart(this.chartCanvas.nativeElement, {
+      type: 'line',
+      data: {
+        labels: this.results.map(r => `Year ${r.year}`),
+        datasets: [{
+          label: 'Total Value',
+          data: this.results.map(r => r.totalAccumulated),
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          fill: true,
+          tension: 0.1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  updateChart() {
+    this.chart.data.labels = this.results.map(r => `Year ${r.year}`);
+    this.chart.data.datasets[0].data = this.results.map(r => r.totalAccumulated);
+    this.chart.update();
+  }
+
+  saveCalculation() {
+    const data = {
+      type: 'mp2',
+      monthlyContribution: this.form.value.monthlyContribution,
+      rate: this.form.value.rate,
+      mode: this.form.value.mode,
+      accumulated: this.totals.accumulated
+    };
+    this.saveSuccess = this.saveShare.saveCalculation('mp2', data);
+    setTimeout(() => this.saveSuccess = false, 3000);
+  }
+
+  generateShareLink() {
+    const data = {
+      monthlyContribution: this.form.value.monthlyContribution,
+      rate: this.form.value.rate,
+      mode: this.form.value.mode
+    };
+    this.shareUrl = this.saveShare.generateShareLink(data);
+  }
+
+  copyLink() {
+    if (this.shareUrl) {
+      navigator.clipboard.writeText(this.shareUrl);
+      alert('Link copied to clipboard!');
     }
   }
 

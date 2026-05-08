@@ -1,0 +1,71 @@
+<header class="hero">
+    <div class="hero-content">
+        <h1>Pag-IBIG Housing Loan Calculator</h1>
+        <p class="subtitle">Estimate your monthly amortization and required income based on latest 2026 repricing rates.</p>
+    </div>
+</header>
+
+<section class="container">
+    <div class="calc-layout">
+        <!-- INPUTS -->
+        <div class="input-col">
+            <mat-card class="input-card">
+                <mat-card-header>
+                    <mat-card-title>Housing Loan Details</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <form [formGroup]="form" class="grid-form">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Loan Amount (₱)</mat-label>
+                            <input matInput type="text" appThousandsSeparator formControlName="amount" />
+                            <mat-hint>Max up to ₱6,000,000</mat-hint>
+                        </mat-form-field>
+                        
+                        <div class="form-row">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Loan Term (Years)</mat-label>
+                                <input matInput type="number" formControlName="termYears" min="1" max="30" />
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline">
+                                <mat-label>Repricing Period</mat-label>
+                                <mat-select formControlName="repricingPeriod">
+                                    <mat-option [value]="1">1 Year Fixed (5.75%)</mat-option>
+                                    <mat-option [value]="3">3 Years Fixed (6.25%)</mat-option>
+                                    <mat-option [value]="5">5 Years Fixed (6.50%)</mat-option>
+                                    <mat-option [value]="10">10 Years Fixed (7.125%)</mat-option>
+                                    <mat-option [value]="15">15 Years Fixed (7.75%)</mat-option>
+                                    <mat-option [value]="20">20 Years Fixed (8.50%)</mat-option>
+                                    <mat-option [value]="25">25 Years Fixed (9.125%)</mat-option>
+                                    <mat-option [value]="30">30 Years Fixed (9.75%)</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </form>
+                </mat-card-content>
+            </mat-card>
+        </div>
+
+        <!-- RESULTS -->
+        <div class="result-col">
+            <mat-card class="result-card">
+                <div class="result-label">Estimated Monthly Amortization</div>
+                <div class="result-value">₱{{ results.monthlyAmortization | number:'1.2-2' }}</div>
+                <div class="result-sub">Excludes insurances (MRI, Fire) and upgrade fees.</div>
+            </mat-card>
+
+            <mat-card class="table-card" style="margin-top: 1rem; padding: 1rem;">
+                <div style="margin-bottom: 1rem;">
+                    <strong>Applicable Interest Rate:</strong> <span class="highlight">{{ results.interestRate }}% p.a.</span>
+                </div>
+                <div>
+                    <strong>Required Gross Monthly Income:</strong> 
+                    <span style="display: block; font-size: 1.5rem; font-weight: bold; color: #4ade80;">
+                        ₱{{ results.requiredIncome | number:'1.2-2' }}
+                    </span>
+                    <span style="font-size: 0.85rem; color: #888;">(Amortization must not exceed 35% of your gross income)</span>
+                </div>
+            </mat-card>
+        </div>
+    </div>
+</section>

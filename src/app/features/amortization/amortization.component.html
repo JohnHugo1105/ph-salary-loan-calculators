@@ -35,6 +35,30 @@
         <div class="result-label">Estimated Monthly Payment</div>
         <div class="result-value">₱{{ schedule.payment | number:'1.2-2' }}</div>
       </mat-card>
+
+      <mat-card class="chart-card" style="margin-top: 1rem; padding: 1rem;">
+        <canvas #chartCanvas></canvas>
+      </mat-card>
+
+      <mat-card class="action-card" style="margin-top: 1rem;">
+        <mat-card-content style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <button mat-flat-button color="primary" (click)="saveCalculation()">
+            <mat-icon>save</mat-icon> Save Calculation
+          </button>
+          <div *ngIf="saveSuccess" style="color: green; text-align: center; font-size: 0.85rem;">Saved to browser successfully!</div>
+          
+          <button mat-stroked-button color="accent" (click)="generateShareLink()">
+            <mat-icon>share</mat-icon> Generate Share Link
+          </button>
+          
+          <div *ngIf="shareUrl" class="share-box" style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <input matInput type="text" [value]="shareUrl" readonly style="flex: 1; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" />
+            <button mat-icon-button color="primary" (click)="copyLink()" title="Copy to clipboard">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
     </div>
 
     <!-- TABLE RESULT -->

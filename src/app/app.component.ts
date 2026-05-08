@@ -5,6 +5,9 @@ import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatIconModule } from '@angular/material/icon';
 
 import { CookieConsentComponent } from './shared/components/cookie-consent/cookie-consent.component';
 import { AdComponent } from './shared/components/ad/ad.component';
@@ -12,7 +15,7 @@ import { AdComponent } from './shared/components/ad/ad.component';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, MatToolbarModule, MatButtonModule, MatSlideToggleModule, CookieConsentComponent, AdComponent],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, MatToolbarModule, MatButtonModule, MatSlideToggleModule, MatMenuModule, MatExpansionModule, MatIconModule, CookieConsentComponent, AdComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   animations: []
