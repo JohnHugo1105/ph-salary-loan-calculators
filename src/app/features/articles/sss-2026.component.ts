@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-article-sss-2025',
+  selector: 'app-article-sss-2026',
   standalone: true,
   imports: [CommonModule, RouterLink],
-  templateUrl: './sss-2025.component.html',
-  styleUrl: './sss-2025.component.scss'
+  templateUrl: './sss-2026.component.html',
+  styleUrl: './sss-2026.component.scss'
 })
-export class Sss2025ArticleComponent {}
+export class Sss2026ArticleComponent {}

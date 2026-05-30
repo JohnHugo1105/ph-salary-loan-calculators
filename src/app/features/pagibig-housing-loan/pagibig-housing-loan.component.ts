@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
 import { SeoService } from '../../shared/seo.service';
+import { APP_CONSTANTS } from '../../shared/app.constants';
 
 @Component({
   selector: 'app-pagibig-housing-loan',
@@ -23,7 +24,7 @@ import { SeoService } from '../../shared/seo.service';
 })
 export class PagibigHousingLoanComponent {
   form = this.fb.group({
-    amount: [1000000, [Validators.required, Validators.min(100000)]],
+    amount: [1000000, [Validators.required, Validators.min(100000), Validators.max(APP_CONSTANTS.PAGIBIG_HOUSING_LOAN_MAX_AMOUNT)]],
     termYears: [20, [Validators.required, Validators.min(1), Validators.max(30)]],
     repricingPeriod: [3, [Validators.required]]
   });

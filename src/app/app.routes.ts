@@ -10,7 +10,7 @@ import { PrivacyPolicyComponent } from './features/privacy-policy/privacy-policy
 import { TermsComponent } from './features/terms/terms.component';
 import { DisclaimerComponent } from './features/disclaimer/disclaimer.component';
 import { ArticlesListComponent } from './features/articles/articles-list.component';
-import { Sss2025ArticleComponent } from './features/articles/sss-2025.component';
+import { Sss2026ArticleComponent } from './features/articles/sss-2026.component';
 import { PagibigVsMpfArticleComponent } from './features/articles/pagibig-vs-mpf.component';
 import { LoanAmortizationPhArticleComponent } from './features/articles/loan-amortization-ph.component';
 import { ThirteenthMonthComponent } from './features/thirteenth-month/thirteenth-month.component';
@@ -38,7 +38,7 @@ export const routes: Routes = [
   { path: 'terms', component: TermsComponent, title: 'Terms of Service • PH Calculators', data: { description: 'Terms and conditions for using PH Calculators.' } },
   { path: 'disclaimer', component: DisclaimerComponent, title: 'Disclaimer • PH Calculators', data: { description: 'Financial disclaimer: informational purposes only, not financial or legal advice.' } },
   { path: 'articles', component: ArticlesListComponent, title: 'Articles • PH Calculators', data: { description: 'Guides on SSS, Pag-IBIG, MPF, taxes, and loans in the Philippines.' } },
-  { path: 'articles/sss-contribution-2025', component: Sss2025ArticleComponent, title: 'How to compute your SSS contribution in 2025', data: { description: 'Step-by-step guide to estimate SSS contributions in 2025 with examples.' } },
+  { path: 'articles/sss-contribution-2026', component: Sss2026ArticleComponent, title: 'How to compute your SSS contribution in 2026', data: { description: 'Step-by-step guide to estimate SSS contributions in 2026 with examples.' } },
   { path: 'articles/pagibig-vs-mpf', component: PagibigVsMpfArticleComponent, title: 'Pag-IBIG vs MPF explained', data: { description: 'Understand differences between Pag-IBIG and SSS MPF, with pros/cons.' } },
   { path: 'articles/loan-amortization-ph', component: LoanAmortizationPhArticleComponent, title: 'How loan amortization works in the Philippines', data: { description: 'Guide to amortization basics, interest, principal, and sample schedules.' } },
   { path: '**', component: NotFoundComponent, title: 'Page not found', data: { description: 'The page you’re looking for doesn’t exist.' } }

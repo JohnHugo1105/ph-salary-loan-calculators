@@ -41,6 +41,11 @@
                                 </mat-select>
                             </mat-form-field>
                         </div>
+                        <div class="form-row" style="margin-top: 10px;">
+                            <mat-checkbox formControlName="rollover" color="primary">
+                                Enable Auto-Rollover (10 Years Projection)
+                            </mat-checkbox>
+                        </div>
                     </form>
                 </mat-card-content>
             </mat-card>
@@ -55,7 +60,7 @@
                     <strong>₱{{ totals.dividend | number:'1.2-2' }}</strong>
                 </div>
                 <div class="summary-item total">
-                    <span>Total Value (Year 5)</span>
+                    <span>Total Value (Year {{ form.value.rollover ? '10' : '5' }})</span>
                     <strong>₱{{ totals.accumulated | number:'1.2-2' }}</strong>
                 </div>
             </mat-card>
@@ -86,7 +91,7 @@
 
             <!-- HERO RESULT CARD -->
             <mat-card class="result-card">
-                <div class="result-label">Projected Total Value (5 Years)</div>
+                <div class="result-label">Projected Total Value ({{ form.value.rollover ? '10' : '5' }} Years)</div>
                 <div class="result-value">₱{{ totals.accumulated | number:'1.2-2' }}</div>
                 <div class="result-sub">
                     Dividends earned: <span class="accent-text">₱{{ totals.dividend | number:'1.2-2' }}</span>
@@ -232,8 +237,8 @@
                 will only receive 50% of your total earned dividends.</p>
 
             <h3>Is there a limit to how much I can save in MP2?</h3>
-            <p>No, there is absolutely no maximum limit to how much you can invest in the Pag-IBIG MP2 program. However,
-                for one-time remittances or lump sums exceeding ₱500,000, you are legally required by Pag-IBIG to
+            <p>Under <strong>Circular No. 487 (effective Feb 2026)</strong>, the maximum limit for total aggregated MP2 principal savings is <strong>₱20,000,000</strong>. Any excess beyond this is refunded to the member. You also now have the option to opt into a one-time <strong>automatic rollover</strong> of your principal savings and dividends upon maturity, rolling the funds directly into another 5-year cycle.</p>
+            <p>Please note: For one-time remittances or lump sums exceeding ₱500,000, you are legally required by Pag-IBIG to
                 present proof of your income source (e.g., land title deed of sale, official payslips, inheritance
                 documents) to strictly comply with the Anti-Money Laundering Act (AMLA).</p>
 

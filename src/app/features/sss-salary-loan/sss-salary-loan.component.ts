@@ -10,6 +10,7 @@ import { RouterModule } from '@angular/router';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
 import { SeoService } from '../../shared/seo.service';
 import { MatIconModule } from '@angular/material/icon';
+import { APP_CONSTANTS } from '../../shared/app.constants';
 
 @Component({
   selector: 'app-sss-salary-loan',
@@ -51,18 +52,25 @@ export class SssSalaryLoanComponent {
 
   compute() {
     const avgMsc = Number(this.form.value.averageMsc) || 0;
-    const type = Number(this.form.value.loanType) || 1;
+    const typeValue = Number(this.form.value.loanType) || 1;
+    
+    // Type 3 is Emergency Loan (1 month equivalent amount, but different rules)
+    const multiplier = typeValue === 2 ? 2 : 1; 
 
-    const loanableAmount = avgMsc * type;
+    const loanableAmount = avgMsc * multiplier;
     const serviceFee = loanableAmount * 0.01;
     
+    // Emergency Loan uses 7%, Regular uses 10%
+    const annualRate = typeValue === 3 ? APP_CONSTANTS.SSS_EMERGENCY_LOAN_INTEREST_RATE : APP_CONSTANTS.SSS_REGULAR_SALARY_LOAN_INTEREST_RATE;
+    const rateDecimal = annualRate / 100;
+
     // SSS deducts 1st month interest in advance
-    const advanceInterest = loanableAmount * (0.10 / 12);
+    const advanceInterest = loanableAmount * (rateDecimal / 12);
     
     const netProceeds = loanableAmount - serviceFee - advanceInterest;
 
-    // Amortization (24 months, 10% per annum diminishing)
-    const r = 0.10 / 12;
+    // Amortization (24 months, diminishing)
+    const r = rateDecimal / 12;
     const n = 24;
     const pmt = loanableAmount * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
 

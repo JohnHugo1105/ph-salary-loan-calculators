@@ -75,7 +75,7 @@ export class ContributionsComponent {
           },
           {
             '@type': 'Question',
-            'name': 'Did PhilHealth rates increase in 2025?',
+            'name': 'Did PhilHealth rates increase in 2026?',
             'acceptedAnswer': {
               '@type': 'Answer',
               'text': 'Yes, as mandated by the Universal Health Care (UHC) Law, the PhilHealth premium rate was scheduled to increase to 5.0% of the basic monthly income, with the income ceiling adjusting to ₱90,000-₱100,000 depending on the final BIR/PhilHealth circular releases for the year.'

@@ -11,7 +11,9 @@ import { RouterModule, ActivatedRoute } from '@angular/router';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
 import { SeoService } from '../../shared/seo.service';
 import { calculateMP2, MP2Row, round2 } from '../../shared/ph-calculators.util';
+import { APP_CONSTANTS } from '../../shared/app.constants';
 import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Chart } from 'chart.js/auto';
 import { SaveShareService } from '../../shared/services/save-share.service';
 
@@ -29,6 +31,7 @@ import { SaveShareService } from '../../shared/services/save-share.service';
     MatTooltipModule,
     ThousandsSeparatorDirective,
     MatIconModule,
+    MatCheckboxModule,
     RouterModule
   ],
   templateUrl: './mp2.component.html',
@@ -41,9 +44,10 @@ export class Mp2Component implements OnInit, AfterViewInit {
   saveSuccess: boolean = false;
 
   form = this.fb.group({
-    monthlyContribution: [500, [Validators.required, Validators.min(500)]],
+    monthlyContribution: [500, [Validators.required, Validators.min(500), Validators.max(APP_CONSTANTS.MP2_MAX_MONTHLY_CONTRIBUTION)]],
     rate: [7.05, [Validators.required, Validators.min(0)]],
-    mode: ['compounded'] // 'compounded' | 'annual'
+    mode: ['compounded'], // 'compounded' | 'annual'
+    rollover: [false]
   });
 
   results: MP2Row[] = [];
@@ -89,7 +93,7 @@ export class Mp2Component implements OnInit, AfterViewInit {
             'name': 'Is there a limit to how much I can save in MP2?',
             'acceptedAnswer': {
               '@type': 'Answer',
-              'text': 'There is no maximum limit to how much you can invest in the MP2 program. However, for one-time remittances exceeding ₱500,000, you are legally required by Pag-IBIG to present proof of your income source (e.g., deed of sale, payslips) to comply with anti-money laundering regulations.'
+              'text': 'Under Circular No. 487 (effective Feb 2026), the maximum limit for total aggregated MP2 principal savings is ₱20,000,000. Any excess beyond this is refunded. For one-time remittances exceeding ₱500,000, you are still legally required by Pag-IBIG to present proof of your income source.'
             }
           },
           {
@@ -113,7 +117,8 @@ export class Mp2Component implements OnInit, AfterViewInit {
           this.form.patchValue({
             monthlyContribution: decoded.monthlyContribution,
             rate: decoded.rate,
-            mode: decoded.mode
+            mode: decoded.mode,
+            rollover: decoded.rollover || false
           });
         }
       }
@@ -135,8 +140,9 @@ export class Mp2Component implements OnInit, AfterViewInit {
     const monthly = Number(val.monthlyContribution) || 0;
     const rate = Number(val.rate) || 0;
     const mode = (val.mode as 'compounded' | 'annual') || 'compounded';
+    const rollover = !!val.rollover;
 
-    this.results = calculateMP2(monthly, rate, mode);
+    this.results = calculateMP2(monthly, rate, mode, rollover);
 
     if (this.results.length > 0) {
       const last = this.results[this.results.length - 1];
@@ -200,6 +206,7 @@ export class Mp2Component implements OnInit, AfterViewInit {
       monthlyContribution: this.form.value.monthlyContribution,
       rate: this.form.value.rate,
       mode: this.form.value.mode,
+      rollover: this.form.value.rollover,
       accumulated: this.totals.accumulated
     };
     this.saveSuccess = this.saveShare.saveCalculation('mp2', data);
@@ -210,7 +217,8 @@ export class Mp2Component implements OnInit, AfterViewInit {
     const data = {
       monthlyContribution: this.form.value.monthlyContribution,
       rate: this.form.value.rate,
-      mode: this.form.value.mode
+      mode: this.form.value.mode,
+      rollover: this.form.value.rollover
     };
     this.shareUrl = this.saveShare.generateShareLink(data);
   }

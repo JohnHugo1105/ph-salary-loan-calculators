@@ -22,10 +22,10 @@ export class ArticlesListComponent {
 
   articles = [
     {
-      title: 'SSS Contribution 2025',
+      title: 'SSS Contribution 2026',
       description: 'Step-by-step guide to compute your SSS contribution for the new year.',
       icon: 'calculate',
-      route: '/articles/sss-contribution-2025',
+      route: '/articles/sss-contribution-2026',
       color: 'primary'
     },
     {

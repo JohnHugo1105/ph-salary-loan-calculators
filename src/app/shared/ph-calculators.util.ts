@@ -413,13 +413,14 @@ export function computeMP2(monthlyContribution: number, ratePct: number, years =
 // Improved MP2 Logic handling both modes
 export type MP2Row = { year: number; cumulativeContrib: number; annualDividend: number; totalAccumulated: number };
 
-export function calculateMP2(monthlyContribution: number, ratePct: number, mode: 'compounded' | 'annual'): MP2Row[] {
+export function calculateMP2(monthlyContribution: number, ratePct: number, mode: 'compounded' | 'annual', rollover: boolean = false): MP2Row[] {
   const rate = ratePct / 100;
   let currentBalance = 0;
   let cumulativeContrib = 0;
   const rows: MP2Row[] = [];
+  const years = rollover ? 10 : 5;
 
-  for (let y = 1; y <= 5; y++) {
+  for (let y = 1; y <= years; y++) {
     const yearContrib = monthlyContribution * 12;
     cumulativeContrib += yearContrib;
 
