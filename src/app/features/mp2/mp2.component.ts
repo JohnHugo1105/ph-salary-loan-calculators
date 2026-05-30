@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -59,7 +59,8 @@ export class Mp2Component implements OnInit, AfterViewInit {
     private fb: FormBuilder, 
     private seo: SeoService,
     private saveShare: SaveShareService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.seo.setSchema([
       {
@@ -159,7 +160,7 @@ export class Mp2Component implements OnInit, AfterViewInit {
   }
 
   initChart() {
-    if (!this.chartCanvas) return;
+    if (!this.chartCanvas || !isPlatformBrowser(this.platformId)) return;
     
     this.chart = new Chart(this.chartCanvas.nativeElement, {
       type: 'line',
@@ -187,6 +188,7 @@ export class Mp2Component implements OnInit, AfterViewInit {
   }
 
   updateChart() {
+    if (!this.chart || !isPlatformBrowser(this.platformId)) return;
     this.chart.data.labels = this.results.map(r => `Year ${r.year}`);
     this.chart.data.datasets[0].data = this.results.map(r => r.totalAccumulated);
     this.chart.update();

@@ -1,8 +1,9 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, OnInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { computeAmortization } from '../../shared/ph-calculators.util';
+import { isPlatformBrowser } from '@angular/common';
 import { trigger, transition, style, query, stagger, animate } from '@angular/animations';
 import { Chart } from 'chart.js/auto';
 import { SaveShareService } from '../../shared/services/save-share.service';
@@ -53,7 +54,8 @@ export class AmortizationComponent implements OnInit, AfterViewInit {
     private fb: FormBuilder, 
     private seo: SeoService,
     private saveShare: SaveShareService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.form.valueChanges.subscribe(v => {
       const amount = Number(v.amount) || 0;
@@ -147,7 +149,7 @@ export class AmortizationComponent implements OnInit, AfterViewInit {
   }
 
   initChart() {
-    if (!this.chartCanvas) return;
+    if (!this.chartCanvas || !isPlatformBrowser(this.platformId)) return;
     
     const totalPrincipal = this.schedule.schedule.reduce((sum, row) => sum + row.principal, 0);
     const totalInterest = this.schedule.schedule.reduce((sum, row) => sum + row.interest, 0);
@@ -172,7 +174,7 @@ export class AmortizationComponent implements OnInit, AfterViewInit {
   }
 
   updateChart() {
-    if (!this.chart) return;
+    if (!this.chart || !isPlatformBrowser(this.platformId)) return;
     const totalPrincipal = this.schedule.schedule.reduce((sum, row) => sum + row.principal, 0);
     const totalInterest = this.schedule.schedule.reduce((sum, row) => sum + row.interest, 0);
     

@@ -1,4 +1,5 @@
 {
+  "trailingSlash": "never",
   "navigationFallback": {
     "rewrite": "/index.html",
     "exclude": [

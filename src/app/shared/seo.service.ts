@@ -63,15 +63,15 @@ export class SeoService {
 
   private getCanonicalUrl(): string {
     try {
-      const { origin, pathname, hostname } = this.doc.location;
+      const { origin, hostname } = this.doc.location;
 
       // Enforce production domain if not on localhost
       const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
       // FIX: Force WWW for production to consolidate signals
       const canonicalOrigin = isLocal ? origin : 'https://www.phcalculators.com';
 
-      // Remove trailing slash if present (except for root)
-      let cleanPath = pathname || '/';
+      // Use router URL for accurate path during prerendering
+      let cleanPath = this.router.url.split('?')[0] || '/';
       if (cleanPath.length > 1 && cleanPath.endsWith('/')) {
         cleanPath = cleanPath.slice(0, -1);
       }
