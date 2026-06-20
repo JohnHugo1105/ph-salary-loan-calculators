@@ -18,10 +18,10 @@
 }
 
 // Angular Material dark theme (blue primary, amber accent)
-$primary: mat.define-palette(mat.$blue-palette, 600);
-$accent: mat.define-palette(mat.$amber-palette, 600);
-$warn: mat.define-palette(mat.$red-palette);
-$theme: mat.define-dark-theme((color: (primary: $primary,
+$primary: mat.m2-define-palette(mat.$m2-blue-palette, 600);
+$accent: mat.m2-define-palette(mat.$m2-amber-palette, 600);
+$warn: mat.m2-define-palette(mat.$m2-red-palette);
+$theme: mat.m2-define-dark-theme((color: (primary: $primary,
         accent: $accent,
         warn: $warn,
       ),
@@ -30,7 +30,7 @@ $theme: mat.define-dark-theme((color: (primary: $primary,
 @include mat.all-component-themes($theme);
 
 // Light theme (colors only) scoped to body.light-theme
-$light-theme: mat.define-light-theme((color: (primary: $primary,
+$light-theme: mat.m2-define-light-theme((color: (primary: $primary,
         accent: $accent,
         warn: $warn,
       ),
