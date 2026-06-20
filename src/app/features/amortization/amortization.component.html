@@ -45,18 +45,22 @@
           <button mat-flat-button color="primary" (click)="saveCalculation()">
             <mat-icon>save</mat-icon> Save Calculation
           </button>
-          <div *ngIf="saveSuccess" style="color: green; text-align: center; font-size: 0.85rem;">Saved to browser successfully!</div>
-          
+          @if (saveSuccess) {
+            <div style="color: green; text-align: center; font-size: 0.85rem;">Saved to browser successfully!</div>
+          }
+
           <button mat-stroked-button color="accent" (click)="generateShareLink()">
             <mat-icon>share</mat-icon> Generate Share Link
           </button>
-          
-          <div *ngIf="shareUrl" class="share-box" style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
-            <input matInput type="text" [value]="shareUrl" readonly style="flex: 1; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" />
-            <button mat-icon-button color="primary" (click)="copyLink()" title="Copy to clipboard">
-              <mat-icon>content_copy</mat-icon>
-            </button>
-          </div>
+
+          @if (shareUrl) {
+            <div class="share-box" style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+              <input matInput type="text" [value]="shareUrl" readonly style="flex: 1; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" />
+              <button mat-icon-button color="primary" (click)="copyLink()" title="Copy to clipboard">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
+          }
         </mat-card-content>
       </mat-card>
     </div>
@@ -76,13 +80,15 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let r of pagedRows">
-                <td>{{ r.period }}</td>
-                <td>₱{{ r.payment | number:'1.2-2' }}</td>
-                <td>₱{{ r.interest | number:'1.2-2' }}</td>
-                <td>₱{{ r.principal | number:'1.2-2' }}</td>
-                <td>₱{{ r.balance | number:'1.2-2' }}</td>
-              </tr>
+              @for (r of pagedRows; track r) {
+                <tr>
+                  <td>{{ r.period }}</td>
+                  <td>₱{{ r.payment | number:'1.2-2' }}</td>
+                  <td>₱{{ r.interest | number:'1.2-2' }}</td>
+                  <td>₱{{ r.principal | number:'1.2-2' }}</td>
+                  <td>₱{{ r.balance | number:'1.2-2' }}</td>
+                </tr>
+              }
             </tbody>
           </table>
         </div>
@@ -149,7 +155,7 @@
         <strong>Interest</strong>.
       </li>
       <li>As you continue to make monthly payments, your principal balance decreases. Because the principal is
-        smaller, the interest charged computation also shrinks.</li>
+      smaller, the interest charged computation also shrinks.</li>
       <li>Towards the end of your loan term, almost your entire monthly payment goes towards wiping out the remaining
         <strong>Principal</strong>.
       </li>
@@ -158,7 +164,7 @@
       <em>Note: This is vastly different from "Add-on Rate" loans (often used for quick cash loans, credit card
         installment plans, or appliance financing), where the interest is fixed on the original principal amount for
         the entire duration. The diminishing balance method is generally much fairer and cheaper for borrowers on
-        long-term loans.</em>
+      long-term loans.</em>
     </p>
 
     <h2>Practical Example: 5-Year Car Loan vs. 20-Year Housing Loan</h2>
@@ -168,7 +174,7 @@
         <li><strong>Monthly Payment:</strong> ₱20,276.40</li>
         <li><strong>Total Interest Paid over 5 Years:</strong> ₱216,583.74</li>
         <li style="margin-top: 0.5rem"><em>Notice how the monthly payment is high, but the total interest is kept
-            relatively low because the principal is paid off quickly over 60 months.</em></li>
+        relatively low because the principal is paid off quickly over 60 months.</em></li>
       </ul>
 
       <h3 style="margin-top: 1.5rem">Scenario B: 20-Year Housing Loan (₱1,000,000 at 8% per annum)</h3>
@@ -176,8 +182,8 @@
         <li><strong>Monthly Payment:</strong> ₱8,364.40</li>
         <li><strong>Total Interest Paid over 20 Years:</strong> ₱1,007,456.36</li>
         <li style="margin-top: 0.5rem"><em>Notice how the monthly payment is much more affordable. However, because
-            you are stretching the debt over 240 months, you end up paying more in interest than the actual principal
-            borrowed.</em></li>
+          you are stretching the debt over 240 months, you end up paying more in interest than the actual principal
+        borrowed.</em></li>
       </ul>
     </div>
 
@@ -188,57 +194,57 @@
     </p>
     <ul class="styled-list">
       <li><strong>Extend the Loan Term:</strong> Stretching a housing loan from 10 years to 20 years will
-        significantly drop your monthly bill. Just remember the trade-off: you will pay significantly more total
-        interest over the life of the loan.</li>
-      <li><strong>Increase Your Downpayment:</strong> Paying 30% upfront instead of the minimum 20% drastically
-        reduces the principal amount you need to borrow, thus shrinking both your monthly payments and total interest.
-      </li>
-      <li><strong>Improve Your Credit Score for a Lower Rate:</strong> Banks reserve their lowest promotional rates
-        for "prime" clients with excellent credit histories or those offering highly liquid collateral.</li>
-      <li><strong>Compare Rates:</strong> Pag-IBIG frequently offers subsidized, lower interest rates for low-income
-        earners compared to aggressive commercial banks. Always request sample computations from at least three
-        institutions.</li>
-      <li><strong>Make Advance Payments to Principal:</strong> Check your loan contract. If your bank allows it
-        without heavy penalties, making lump-sum payments applied directly to the principal can drastically shorten
-        your loan term and cut interest costs.</li>
-    </ul>
+      significantly drop your monthly bill. Just remember the trade-off: you will pay significantly more total
+    interest over the life of the loan.</li>
+    <li><strong>Increase Your Downpayment:</strong> Paying 30% upfront instead of the minimum 20% drastically
+    reduces the principal amount you need to borrow, thus shrinking both your monthly payments and total interest.
+  </li>
+  <li><strong>Improve Your Credit Score for a Lower Rate:</strong> Banks reserve their lowest promotional rates
+for "prime" clients with excellent credit histories or those offering highly liquid collateral.</li>
+<li><strong>Compare Rates:</strong> Pag-IBIG frequently offers subsidized, lower interest rates for low-income
+earners compared to aggressive commercial banks. Always request sample computations from at least three
+institutions.</li>
+<li><strong>Make Advance Payments to Principal:</strong> Check your loan contract. If your bank allows it
+without heavy penalties, making lump-sum payments applied directly to the principal can drastically shorten
+your loan term and cut interest costs.</li>
+</ul>
 
-    <h3>Understanding Fixing and Repricing Periods</h3>
-    <p>
-      In the Philippines, very few housing loans offer a completely fixed rate for 20 years. Instead, banks offer a
-      "Fixing Period" or "Repricing Period."
-    </p>
-    <p>
-      For example, if you choose a <strong>3-year fixing period</strong> on a 15-year loan at 6.5%, that 6.5% rate is
-      guaranteed for the first 36 months. On your 37th month, the bank will "reprice" or adjust your rate based on
-      current BSP benchmark rates and market conditions. If inflation is high, your rate might jump to 8.0%, suddenly
-      increasing your monthly amortization. Always budget with a margin of safety for potential future rate hikes.
-    </p>
+<h3>Understanding Fixing and Repricing Periods</h3>
+<p>
+  In the Philippines, very few housing loans offer a completely fixed rate for 20 years. Instead, banks offer a
+  "Fixing Period" or "Repricing Period."
+</p>
+<p>
+  For example, if you choose a <strong>3-year fixing period</strong> on a 15-year loan at 6.5%, that 6.5% rate is
+  guaranteed for the first 36 months. On your 37th month, the bank will "reprice" or adjust your rate based on
+  current BSP benchmark rates and market conditions. If inflation is high, your rate might jump to 8.0%, suddenly
+  increasing your monthly amortization. Always budget with a margin of safety for potential future rate hikes.
+</p>
 
-    <hr style="margin: 3rem 0; border: 0; border-top: 1px solid #eee;">
+<hr style="margin: 3rem 0; border: 0; border-top: 1px solid #eee;">
 
-    <h2>Frequently Asked Questions (FAQs)</h2>
-    <div class="faq-section">
-      <h3>What is a diminishing balance interest rate?</h3>
-      <p>A diminishing balance interest rate means that the interest is calculated based on the remaining principal
-        balance of the loan each month, not the original borrowed amount. As you pay off the principal with every
-        monthly amortization, the interest portion of your payment steadily decreases.</p>
+<h2>Frequently Asked Questions (FAQs)</h2>
+<div class="faq-section">
+  <h3>What is a diminishing balance interest rate?</h3>
+  <p>A diminishing balance interest rate means that the interest is calculated based on the remaining principal
+    balance of the loan each month, not the original borrowed amount. As you pay off the principal with every
+  monthly amortization, the interest portion of your payment steadily decreases.</p>
 
-      <h3>What is a repricing period for a housing loan?</h3>
-      <p>A repricing period (also known as a fixing period) is the duration for which your initial interest rate is
-        contractually guaranteed to stay the same. After this period (e.g., 1 year, 3 years, 5 years), the bank will
-        adjust or 'reprice' your interest rate based on current economic market conditions. This repricing can either
-        increase or decrease your required monthly amortization.</p>
+  <h3>What is a repricing period for a housing loan?</h3>
+  <p>A repricing period (also known as a fixing period) is the duration for which your initial interest rate is
+    contractually guaranteed to stay the same. After this period (e.g., 1 year, 3 years, 5 years), the bank will
+    adjust or 'reprice' your interest rate based on current economic market conditions. This repricing can either
+  increase or decrease your required monthly amortization.</p>
 
-      <h3>Is it better to have a 5-year or 20-year loan term?</h3>
-      <p>It depends entirely on your monthly cash flow versus your long-term goals. A 5-year term will demand
-        significantly higher monthly payments, but you will pay drastically less total interest to the bank. A 20-year
-        term spreads the payments out to be much lower and more budget-friendly month-to-month, but yields much higher
-        total interest costs overall (often doubling the price of the property).</p>
-    </div>
+  <h3>Is it better to have a 5-year or 20-year loan term?</h3>
+  <p>It depends entirely on your monthly cash flow versus your long-term goals. A 5-year term will demand
+    significantly higher monthly payments, but you will pay drastically less total interest to the bank. A 20-year
+    term spreads the payments out to be much lower and more budget-friendly month-to-month, but yields much higher
+  total interest costs overall (often doubling the price of the property).</p>
+</div>
 
-    <div class="cta-wrapper" style="margin-top: 2rem;">
-      <a mat-stroked-button color="primary" routerLink="/articles">View All Financial Guides</a>
-    </div>
-  </article>
+<div class="cta-wrapper" style="margin-top: 2rem;">
+  <a mat-stroked-button color="primary" routerLink="/articles">View All Financial Guides</a>
+</div>
+</article>
 </section>

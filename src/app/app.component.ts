@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { SeoService } from './shared/seo.service';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -14,7 +14,7 @@ import { AdComponent } from './shared/components/ad/ad.component';
 
 @Component({
     selector: 'app-root',
-    imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, MatToolbarModule, MatButtonModule, MatSlideToggleModule, MatMenuModule, MatExpansionModule, MatIconModule, CookieConsentComponent, AdComponent],
+    imports: [RouterOutlet, RouterLink, RouterLinkActive, MatToolbarModule, MatButtonModule, MatSlideToggleModule, MatMenuModule, MatExpansionModule, MatIconModule, CookieConsentComponent, AdComponent],
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss',
     animations: []

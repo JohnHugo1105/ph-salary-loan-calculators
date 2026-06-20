@@ -46,27 +46,29 @@
 
             <mat-checkbox formControlName="includeHolidayPays" color="primary">Include Holiday Pay</mat-checkbox>
 
-            <div *ngIf="form.value.includeHolidayPays" class="holiday-section">
-              <h4>Holiday Days</h4>
-              <div class="grid-2">
-                <mat-form-field appearance="outline">
-                  <mat-label>Reg (Unworked)</mat-label>
-                  <input matInput type="number" formControlName="regHolUnworkedDays" min="0" />
-                </mat-form-field>
-                <mat-form-field appearance="outline">
-                  <mat-label>Reg (Worked)</mat-label>
-                  <input matInput type="number" formControlName="regHolWorkedDays" min="0" />
-                </mat-form-field>
-                <mat-form-field appearance="outline">
-                  <mat-label>Spec (Unworked)</mat-label>
-                  <input matInput type="number" formControlName="specHolUnworkedDays" min="0" />
-                </mat-form-field>
-                <mat-form-field appearance="outline">
-                  <mat-label>Spec (Worked)</mat-label>
-                  <input matInput type="number" formControlName="specHolWorkedDays" min="0" />
-                </mat-form-field>
+            @if (form.value.includeHolidayPays) {
+              <div class="holiday-section">
+                <h4>Holiday Days</h4>
+                <div class="grid-2">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Reg (Unworked)</mat-label>
+                    <input matInput type="number" formControlName="regHolUnworkedDays" min="0" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Reg (Worked)</mat-label>
+                    <input matInput type="number" formControlName="regHolWorkedDays" min="0" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Spec (Unworked)</mat-label>
+                    <input matInput type="number" formControlName="specHolUnworkedDays" min="0" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Spec (Worked)</mat-label>
+                    <input matInput type="number" formControlName="specHolWorkedDays" min="0" />
+                  </mat-form-field>
+                </div>
               </div>
-            </div>
+            }
 
             <div class="advanced-settings">
               <span class="label">Advanced Settings</span>
@@ -105,16 +107,20 @@
             <div class="row">
               <span>Basic ({{ view.payFrequency }})</span>
               <span class="num">₱{{ (view.payFrequency === 'semi-monthly' ? view.grossMonthly / 2 : view.grossMonthly) |
-                number:'1.2-2' }}</span>
+              number:'1.2-2' }}</span>
             </div>
-            <div class="row" *ngIf="view.overtimePay > 0">
-              <span>Overtime</span>
-              <span class="num">₱{{ view.overtimePay | number:'1.2-2' }}</span>
-            </div>
-            <div class="row" *ngIf="view.includeHolidayPays">
-              <span>Holiday Pay</span>
-              <span class="num">₱{{ view.holidayPays.total | number:'1.2-2' }}</span>
-            </div>
+            @if (view.overtimePay > 0) {
+              <div class="row">
+                <span>Overtime</span>
+                <span class="num">₱{{ view.overtimePay | number:'1.2-2' }}</span>
+              </div>
+            }
+            @if (view.includeHolidayPays) {
+              <div class="row">
+                <span>Holiday Pay</span>
+                <span class="num">₱{{ view.holidayPays.total | number:'1.2-2' }}</span>
+              </div>
+            }
             <div class="row total">
               <span>Gross Total</span>
               <span class="num">₱{{ view.grossPeriod | number:'1.2-2' }}</span>
@@ -207,83 +213,83 @@
     <h3>4. Withholding Tax (Income Tax)</h3>
     <p>
       After SSS, PhilHealth, and Pag-IBIG are deducted from your gross pay, the remaining amount is your <strong>Taxable
-        Income</strong>. This is the figure used against the Bureau of Internal Revenue (BIR) tax tables. Under the
-      TRAIN Law (effective Jan 1, 2023 onwards), the income tax brackets were adjusted to lower the tax burden on
-      middle-income earners. Those earning ₱250,000 annually (or roughly ₱20,833 monthly) and below are completely
-      exempt from paying income tax.
-    </p>
+    Income</strong>. This is the figure used against the Bureau of Internal Revenue (BIR) tax tables. Under the
+    TRAIN Law (effective Jan 1, 2023 onwards), the income tax brackets were adjusted to lower the tax burden on
+    middle-income earners. Those earning ₱250,000 annually (or roughly ₱20,833 monthly) and below are completely
+    exempt from paying income tax.
+  </p>
 
-    <h2>Practical Example: Computing Net Pay</h2>
-    <div class="example-box">
-      <h3>Scenario: Juan earns ₱30,000 a month</h3>
-      <p>Juan works in Metro Manila and has a basic salary of ₱30,000 with no other allowances.</p>
-      <ul style="margin-bottom: 0;">
-        <li><strong>Gross Pay:</strong> ₱30,000</li>
-        <li><strong>SSS Deduction (Employee Share):</strong> ~₱1,350</li>
-        <li><strong>PhilHealth Deduction (Employee Share):</strong> ~₱750</li>
-        <li><strong>Pag-IBIG Deduction:</strong> ₱200</li>
-        <li><em>Total Government Deductions:</em> ₱2,300</li>
-      </ul>
-      <p style="margin-top: 1rem;"><strong>Taxable Income:</strong> ₱30,000 - ₱2,300 = ₱27,700</p>
-      <p>Using the BIR Train Law regular tables, the tax on ₱27,700 is approximately ₱1,035.</p>
-      <p><strong>Juan's Take-Home Net Pay:</strong> ₱30,000 - ₱2,300 (Govt) - ₱1,035 (Tax) = <strong>₱26,665</strong>
-      </p>
-    </div>
-
-    <h2>Are Allowances Taxable? (De Minimis Benefits)</h2>
-    <p>
-      Not all allowances are subject to income tax. <strong>De Minimis benefits</strong> are facilities or privileges
-      furnished or offered by an employer to its employees that are of relatively small value and are offered merely as
-      a means of promoting health, goodwill, contentment, or efficiency of employees.
-    </p>
-    <p>Because they are <strong>exempt from income tax</strong>, they are a great way for employers to increase your
-      take-home pay without increasing your tax burden. Common examples include:</p>
-    <ul class="styled-list">
-      <li><strong>Rice Subsidy:</strong> Up to ₱2,000 per month.</li>
-      <li><strong>Uniform/Clothing Allowance:</strong> Up to ₱6,000 per year.</li>
-      <li><strong>Medical Cash Allowance:</strong> Up to ₱1,500 per semester (for dependents).</li>
-      <li><strong>Laundry Allowance:</strong> Up to ₱300 per month.</li>
-      <li><strong>Monetized Vacation Leave:</strong> Up to 10 days of unused leave credits.</li>
+  <h2>Practical Example: Computing Net Pay</h2>
+  <div class="example-box">
+    <h3>Scenario: Juan earns ₱30,000 a month</h3>
+    <p>Juan works in Metro Manila and has a basic salary of ₱30,000 with no other allowances.</p>
+    <ul style="margin-bottom: 0;">
+      <li><strong>Gross Pay:</strong> ₱30,000</li>
+      <li><strong>SSS Deduction (Employee Share):</strong> ~₱1,350</li>
+      <li><strong>PhilHealth Deduction (Employee Share):</strong> ~₱750</li>
+      <li><strong>Pag-IBIG Deduction:</strong> ₱200</li>
+      <li><em>Total Government Deductions:</em> ₱2,300</li>
     </ul>
+    <p style="margin-top: 1rem;"><strong>Taxable Income:</strong> ₱30,000 - ₱2,300 = ₱27,700</p>
+    <p>Using the BIR Train Law regular tables, the tax on ₱27,700 is approximately ₱1,035.</p>
+    <p><strong>Juan's Take-Home Net Pay:</strong> ₱30,000 - ₱2,300 (Govt) - ₱1,035 (Tax) = <strong>₱26,665</strong>
+  </p>
+</div>
 
-    <h2>Is My 13th Month Pay Taxable?</h2>
-    <p>
-      Under Philippine tax law, 13th-month pay and other equivalent benefits (like Christmas bonuses or productivity
-      incentives) are <strong>exempt from income tax up to a maximum of ₱90,000</strong>.
-    </p>
-    <p>
-      For example, if your 13th-month pay is ₱50,000 and you receive a Christmas bonus of ₱20,000 (Total: ₱70,000), the
-      entire amount is tax-free because it is under the ₱90,000 threshold. However, if your 13th-month pay is ₱100,000,
-      the first ₱90,000 is tax-free, and the remaining ₱10,000 will be added to your gross taxable income for that
-      respective period.
-    </p>
+<h2>Are Allowances Taxable? (De Minimis Benefits)</h2>
+<p>
+  Not all allowances are subject to income tax. <strong>De Minimis benefits</strong> are facilities or privileges
+  furnished or offered by an employer to its employees that are of relatively small value and are offered merely as
+  a means of promoting health, goodwill, contentment, or efficiency of employees.
+</p>
+<p>Because they are <strong>exempt from income tax</strong>, they are a great way for employers to increase your
+take-home pay without increasing your tax burden. Common examples include:</p>
+<ul class="styled-list">
+  <li><strong>Rice Subsidy:</strong> Up to ₱2,000 per month.</li>
+  <li><strong>Uniform/Clothing Allowance:</strong> Up to ₱6,000 per year.</li>
+  <li><strong>Medical Cash Allowance:</strong> Up to ₱1,500 per semester (for dependents).</li>
+  <li><strong>Laundry Allowance:</strong> Up to ₱300 per month.</li>
+  <li><strong>Monetized Vacation Leave:</strong> Up to 10 days of unused leave credits.</li>
+</ul>
 
-    <hr style="margin: 3rem 0; border: 0; border-top: 1px solid #eee;">
+<h2>Is My 13th Month Pay Taxable?</h2>
+<p>
+  Under Philippine tax law, 13th-month pay and other equivalent benefits (like Christmas bonuses or productivity
+  incentives) are <strong>exempt from income tax up to a maximum of ₱90,000</strong>.
+</p>
+<p>
+  For example, if your 13th-month pay is ₱50,000 and you receive a Christmas bonus of ₱20,000 (Total: ₱70,000), the
+  entire amount is tax-free because it is under the ₱90,000 threshold. However, if your 13th-month pay is ₱100,000,
+  the first ₱90,000 is tax-free, and the remaining ₱10,000 will be added to your gross taxable income for that
+  respective period.
+</p>
 
-    <h2>Frequently Asked Questions (FAQs)</h2>
-    <div class="faq-section">
-      <h3>What is the difference between Gross Pay and Net Pay in the Philippines?</h3>
-      <p>Gross pay is your total earned income before any deductions are made (including basic rate, overtime, and
-        allowances). Net pay, often called take-home pay, is the final amount deposited into your bank account after
-        mandatory government contributions (SSS, PhilHealth, Pag-IBIG/HDMF) and BIR withholding taxes have been
-        deducted.</p>
+<hr style="margin: 3rem 0; border: 0; border-top: 1px solid #eee;">
 
-      <h3>Are de minimis benefits taxable?</h3>
-      <p>No. De minimis benefits (such as rice subsidy, clothing allowance, and medical cash allowance) are considered
-        reasonably small facilities or privileges furnished by an employer to its employees and are completely exempt
-        from income tax, making them a highly tax-efficient form of compensation.</p>
+<h2>Frequently Asked Questions (FAQs)</h2>
+<div class="faq-section">
+  <h3>What is the difference between Gross Pay and Net Pay in the Philippines?</h3>
+  <p>Gross pay is your total earned income before any deductions are made (including basic rate, overtime, and
+    allowances). Net pay, often called take-home pay, is the final amount deposited into your bank account after
+    mandatory government contributions (SSS, PhilHealth, Pag-IBIG/HDMF) and BIR withholding taxes have been
+  deducted.</p>
 
-      <h3>Is holiday pay legally required in the Philippines?</h3>
-      <p>Yes, the Philippine Labor Code specifically mandates holiday pay. If you do not work on a regular holiday, you
-        are still entitled to 100% of your daily wage. If you work on a regular holiday, you must be paid 200%. For
-        special non-working days, the "no work, no pay" principle applies; however, if you are required to work, you are
-        entitled to an additional 30% premium on top of your basic daily wage.</p>
-    </div>
+  <h3>Are de minimis benefits taxable?</h3>
+  <p>No. De minimis benefits (such as rice subsidy, clothing allowance, and medical cash allowance) are considered
+    reasonably small facilities or privileges furnished by an employer to its employees and are completely exempt
+  from income tax, making them a highly tax-efficient form of compensation.</p>
 
-    <p class="note" style="margin-top: 2rem;">
-      <strong>Disclaimer:</strong> This tool is for estimation and educational purposes only. Actual deductions may vary
-      based on specific company policies, tardiness/absences, night differential, and other localized adjustments.
-      Always verify your final computed pay with your company's HR or Payroll department.
-    </p>
-  </article>
+  <h3>Is holiday pay legally required in the Philippines?</h3>
+  <p>Yes, the Philippine Labor Code specifically mandates holiday pay. If you do not work on a regular holiday, you
+    are still entitled to 100% of your daily wage. If you work on a regular holiday, you must be paid 200%. For
+    special non-working days, the "no work, no pay" principle applies; however, if you are required to work, you are
+  entitled to an additional 30% premium on top of your basic daily wage.</p>
+</div>
+
+<p class="note" style="margin-top: 2rem;">
+  <strong>Disclaimer:</strong> This tool is for estimation and educational purposes only. Actual deductions may vary
+  based on specific company policies, tardiness/absences, night differential, and other localized adjustments.
+  Always verify your final computed pay with your company's HR or Payroll department.
+</p>
+</article>
 </section>

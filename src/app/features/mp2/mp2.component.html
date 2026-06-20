@@ -1,257 +1,265 @@
 <header class="hero">
-    <div class="hero-content">
-        <h1>MP2 Savings Calculator</h1>
-        <p class="subtitle">Project your earnings with Pag-IBIG's 5-year modified savings program.</p>
-    </div>
+  <div class="hero-content">
+    <h1>MP2 Savings Calculator</h1>
+    <p class="subtitle">Project your earnings with Pag-IBIG's 5-year modified savings program.</p>
+  </div>
 </header>
 
 <section class="container">
-    <div class="calc-layout">
-        <!-- LEFT COLUMN: INPUTS -->
-        <div class="input-col">
-            <mat-card class="input-card">
-                <mat-card-header>
-                    <mat-card-title>Savings Plan</mat-card-title>
-                </mat-card-header>
-                <mat-card-content>
-                    <form [formGroup]="form" class="grid-form">
-                        <p class="desc-text">
-                            MP2 (Modified Pag-IBIG 2) is a special voluntary savings facility with a 5-year maturity,
-                            designed for higher dividends.
-                        </p>
+  <div class="calc-layout">
+    <!-- LEFT COLUMN: INPUTS -->
+    <div class="input-col">
+      <mat-card class="input-card">
+        <mat-card-header>
+          <mat-card-title>Savings Plan</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="form" class="grid-form">
+            <p class="desc-text">
+              MP2 (Modified Pag-IBIG 2) is a special voluntary savings facility with a 5-year maturity,
+              designed for higher dividends.
+            </p>
 
-                        <mat-form-field appearance="outline">
-                            <mat-label>Monthly Contribution (₱)</mat-label>
-                            <input matInput type="text" appThousandsSeparator formControlName="monthlyContribution"
-                                inputmode="decimal" />
-                            <mat-hint>Minimum ₱500</mat-hint>
-                        </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Monthly Contribution (₱)</mat-label>
+              <input matInput type="text" appThousandsSeparator formControlName="monthlyContribution"
+                inputmode="decimal" />
+              <mat-hint>Minimum ₱500</mat-hint>
+            </mat-form-field>
 
-                        <div class="form-row">
-                            <mat-form-field appearance="outline">
-                                <mat-label>Dividend Rate (%)</mat-label>
-                                <input matInput type="number" formControlName="rate" step="0.01" />
-                            </mat-form-field>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Dividend Rate (%)</mat-label>
+                <input matInput type="number" formControlName="rate" step="0.01" />
+              </mat-form-field>
 
-                            <mat-form-field appearance="outline">
-                                <mat-label>Payout Mode</mat-label>
-                                <mat-select formControlName="mode">
-                                    <mat-option value="compounded">Compounded (5 Years)</mat-option>
-                                    <mat-option value="annual">Annual Payout</mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        </div>
-                        <div class="form-row" style="margin-top: 10px;">
-                            <mat-checkbox formControlName="rollover" color="primary">
-                                Enable Auto-Rollover (10 Years Projection)
-                            </mat-checkbox>
-                        </div>
-                    </form>
-                </mat-card-content>
-            </mat-card>
+              <mat-form-field appearance="outline">
+                <mat-label>Payout Mode</mat-label>
+                <mat-select formControlName="mode">
+                  <mat-option value="compounded">Compounded (5 Years)</mat-option>
+                  <mat-option value="annual">Annual Payout</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="form-row" style="margin-top: 10px;">
+              <mat-checkbox formControlName="rollover" color="primary">
+                Enable Auto-Rollover (10 Years Projection)
+              </mat-checkbox>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
 
-            <mat-card class="result-summary mobile-only" *ngIf="totals.accumulated > 0">
-                <div class="summary-item">
-                    <span>Total Contribution</span>
-                    <strong>₱{{ totals.contribution | number:'1.0-0' }}</strong>
-                </div>
-                <div class="summary-item highlight">
-                    <span>Total Dividends</span>
-                    <strong>₱{{ totals.dividend | number:'1.2-2' }}</strong>
-                </div>
-                <div class="summary-item total">
-                    <span>Total Value (Year {{ form.value.rollover ? '10' : '5' }})</span>
-                    <strong>₱{{ totals.accumulated | number:'1.2-2' }}</strong>
-                </div>
-            </mat-card>
+      @if (totals.accumulated > 0) {
+        <mat-card class="result-summary mobile-only">
+          <div class="summary-item">
+            <span>Total Contribution</span>
+            <strong>₱{{ totals.contribution | number:'1.0-0' }}</strong>
+          </div>
+          <div class="summary-item highlight">
+            <span>Total Dividends</span>
+            <strong>₱{{ totals.dividend | number:'1.2-2' }}</strong>
+          </div>
+          <div class="summary-item total">
+            <span>Total Value (Year {{ form.value.rollover ? '10' : '5' }})</span>
+            <strong>₱{{ totals.accumulated | number:'1.2-2' }}</strong>
+          </div>
+        </mat-card>
+      }
 
-            <mat-card class="action-card" style="margin-top: 1rem;">
-                <mat-card-content style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    <button mat-flat-button color="primary" (click)="saveCalculation()">
-                        <mat-icon>save</mat-icon> Save Calculation
-                    </button>
-                    <div *ngIf="saveSuccess" style="color: green; text-align: center; font-size: 0.85rem;">Saved to browser successfully!</div>
-                    
-                    <button mat-stroked-button color="accent" (click)="generateShareLink()">
-                        <mat-icon>share</mat-icon> Generate Share Link
-                    </button>
-                    
-                    <div *ngIf="shareUrl" class="share-box" style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                        <input matInput type="text" [value]="shareUrl" readonly style="flex: 1; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" />
-                        <button mat-icon-button color="primary" (click)="copyLink()" title="Copy to clipboard">
-                            <mat-icon>content_copy</mat-icon>
-                        </button>
-                    </div>
-                </mat-card-content>
-            </mat-card>
-        </div>
+      <mat-card class="action-card" style="margin-top: 1rem;">
+        <mat-card-content style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <button mat-flat-button color="primary" (click)="saveCalculation()">
+            <mat-icon>save</mat-icon> Save Calculation
+          </button>
+          @if (saveSuccess) {
+            <div style="color: green; text-align: center; font-size: 0.85rem;">Saved to browser successfully!</div>
+          }
 
-        <!-- RIGHT COLUMN: RESULTS -->
-        <div class="result-col">
+          <button mat-stroked-button color="accent" (click)="generateShareLink()">
+            <mat-icon>share</mat-icon> Generate Share Link
+          </button>
 
-            <!-- HERO RESULT CARD -->
-            <mat-card class="result-card">
-                <div class="result-label">Projected Total Value ({{ form.value.rollover ? '10' : '5' }} Years)</div>
-                <div class="result-value">₱{{ totals.accumulated | number:'1.2-2' }}</div>
-                <div class="result-sub">
-                    Dividends earned: <span class="accent-text">₱{{ totals.dividend | number:'1.2-2' }}</span>
-                </div>
-            </mat-card>
-
-            <!-- CHART VISUALIZATION -->
-            <mat-card class="chart-card">
-                <h3>Growth Projection</h3>
-                <div class="chart-wrapper" style="padding: 1rem 0;">
-                    <canvas #chartCanvas></canvas>
-                </div>
-            </mat-card>
-
-            <!-- TABLE DETAILS -->
-            <mat-card class="table-card">
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Year</th>
-                                <th class="num">Contrib</th>
-                                <th class="num">Dividend</th>
-                                <th class="num">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let row of results">
-                                <td>{{ row.year }}</td>
-                                <td class="num">{{ row.cumulativeContrib | number:'1.0-0' }}</td>
-                                <td class="num highlight">+{{ row.annualDividend | number:'1.2-2' }}</td>
-                                <td class="num bold">{{ row.totalAccumulated | number:'1.2-2' }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </mat-card>
-        </div>
+          @if (shareUrl) {
+            <div class="share-box" style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+              <input matInput type="text" [value]="shareUrl" readonly style="flex: 1; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" />
+              <button mat-icon-button color="primary" (click)="copyLink()" title="Copy to clipboard">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
     </div>
 
-    <hr class="divider">
+    <!-- RIGHT COLUMN: RESULTS -->
+    <div class="result-col">
 
-    <!-- SEO CONTENT -->
-    <article class="content-article">
-        <h2>The Complete Pag-IBIG MP2 Investment Guide (2026)</h2>
-        <p>
-            The <strong>Modified Pag-IBIG 2 (MP2)</strong> Savings is a special, voluntary savings facility with a
-            strict 5-year maturity period, designed explicitly for active Pag-IBIG Fund members who wish to save more
-            and earn higher dividends compared to the regular Pag-IBIG Savings Program.
-        </p>
-        <p>
-            Because it is government-guaranteed and entirely <strong>tax-free</strong>, it has become one of the most
-            popular, risk-free investment vehicles for Filipinos, often beating commercial bank time deposits and
-            traditional savings accounts.
-        </p>
-
-        <h3>How MP2 Dividends are Computed</h3>
-        <p>
-            Your dividends are calculated based on your <strong>Average Monthly Balance (AMB)</strong> multiplied by the
-            dividend rate declared by Pag-IBIG for that specific year.
-        </p>
-        <ul class="styled-list">
-            <li><strong>The AMB Rule:</strong> For your very first year, your monthly contributions slowly accumulate. A
-                ₱1,000 contribution made in January earns interest for 12 months, but a ₱1,000 contribution made in
-                December only earns interest for 1 month. Therefore, a lump sum payment at the start of the year will
-                always yield higher returns than staggered monthly payments.</li>
-            <li><strong>Years 2 to 5:</strong> If you chose Compound Savings, your entire Capital + Earned Dividends
-                from the previous year becomes your new starting Capital. This total amount earns the full annual
-                dividend rate for the entire year because it sits untouched in the fund.</li>
-        </ul>
-
-        <h2>Understanding the Power of Compounding</h2>
-        <div class="example-box">
-            <h3>Scenario: ₱500 Monthly (Compounded vs. Annual Payout)</h3>
-            <p>Assuming a constant 7.00% dividend rate over 5 years.</p>
-
-            <h4 style="margin-top: 1rem;">Option A: Compounded Earnings (Re-invested)</h4>
-            <ul style="margin-bottom: 0;">
-                <li>Total Capital Contributed: ₱30,000</li>
-                <li><strong>Total Dividends Earned: ₱5,836.00</strong></li>
-                <li><em>Why?</em> Because the dividends you earn in Year 1 are added to your principal, meaning you earn
-                    "interest on top of your interest" in Years 2, 3, 4, and 5. This is highly recommended for wealth
-                    building.</li>
-            </ul>
-
-            <h4 style="margin-top: 1.5rem">Option B: Annual Payout (Withdrawn Yearly)</h4>
-            <ul style="margin-bottom: 0;">
-                <li>Total Capital Contributed: ₱30,000</li>
-                <li><strong>Total Dividends Earned: ₱5,425.00</strong></li>
-                <li><em>Why?</em> Because you withdraw your earnings every year through your enrolled bank account
-                    (Loyalty Card Plus), your principal never grows beyond your monthly deposits. You lose the snowball
-                    effect of compounding interest, but gain immediate annual passive cash flow.</li>
-            </ul>
+      <!-- HERO RESULT CARD -->
+      <mat-card class="result-card">
+        <div class="result-label">Projected Total Value ({{ form.value.rollover ? '10' : '5' }} Years)</div>
+        <div class="result-value">₱{{ totals.accumulated | number:'1.2-2' }}</div>
+        <div class="result-sub">
+          Dividends earned: <span class="accent-text">₱{{ totals.dividend | number:'1.2-2' }}</span>
         </div>
+      </mat-card>
 
-        <h3>Historical MP2 Dividend Rates</h3>
-        <p>
-            The dividend rate changes annually based on Pag-IBIG's net income for the year. By law, Pag-IBIG must return
-            at least 70% of its annual net income to its members in the form of dividends. While past performance is not
-            a guarantee of future returns, MP2 has consistently outperformed inflation.
-        </p>
-        <div class="table-responsive" style="max-width: 300px;">
-            <table class="data-table" style="margin-bottom: 1.5rem;">
-                <thead>
-                    <tr>
-                        <th>Year</th>
-                        <th>Dividend Rate</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>2023</strong></td>
-                        <td>7.05%</td>
-                    </tr>
-                    <tr>
-                        <td><strong>2022</strong></td>
-                        <td>7.03%</td>
-                    </tr>
-                    <tr>
-                        <td><strong>2021</strong></td>
-                        <td>6.00%</td>
-                    </tr>
-                    <tr>
-                        <td><strong>2020</strong></td>
-                        <td>6.12%</td>
-                    </tr>
-                    <tr>
-                        <td><strong>2019</strong></td>
-                        <td>7.23%</td>
-                    </tr>
-                </tbody>
-            </table>
+      <!-- CHART VISUALIZATION -->
+      <mat-card class="chart-card">
+        <h3>Growth Projection</h3>
+        <div class="chart-wrapper" style="padding: 1rem 0;">
+          <canvas #chartCanvas></canvas>
         </div>
+      </mat-card>
 
-        <hr style="margin: 3rem 0; border: 0; border-top: 1px solid #eee;">
-
-        <h2>Frequently Asked Questions (FAQs)</h2>
-        <div class="faq-section">
-            <h3>Can I withdraw my MP2 savings before 5 years?</h3>
-            <p>Yes, but early withdrawal is completely unrestricted only for valid, critical reasons (e.g., total
-                disability, insanity, termination from employment due to health, retirement, or expatriation). If you
-                insist on a voluntary early withdrawal for non-critical reasons, you will incur a massive penalty: you
-                will only receive 50% of your total earned dividends.</p>
-
-            <h3>Is there a limit to how much I can save in MP2?</h3>
-            <p>Under <strong>Circular No. 487 (effective Feb 2026)</strong>, the maximum limit for total aggregated MP2 principal savings is <strong>₱20,000,000</strong>. Any excess beyond this is refunded to the member. You also now have the option to opt into a one-time <strong>automatic rollover</strong> of your principal savings and dividends upon maturity, rolling the funds directly into another 5-year cycle.</p>
-            <p>Please note: For one-time remittances or lump sums exceeding ₱500,000, you are legally required by Pag-IBIG to
-                present proof of your income source (e.g., land title deed of sale, official payslips, inheritance
-                documents) to strictly comply with the Anti-Money Laundering Act (AMLA).</p>
-
-            <h3>Can I open multiple MP2 accounts at the same time?</h3>
-            <p>Yes! Pag-IBIG allows members to open and simultaneously maintain multiple MP2 accounts. This feature is
-                highly utilized by financially savvy Filipinos to earmark different accounts for distinct, time-bound
-                financial goals (e.g., maintaining one account for a future car downpayment, and a separate account for
-                a child's college tuition).</p>
+      <!-- TABLE DETAILS -->
+      <mat-card class="table-card">
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th class="num">Contrib</th>
+                <th class="num">Dividend</th>
+                <th class="num">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of results; track row) {
+                <tr>
+                  <td>{{ row.year }}</td>
+                  <td class="num">{{ row.cumulativeContrib | number:'1.0-0' }}</td>
+                  <td class="num highlight">+{{ row.annualDividend | number:'1.2-2' }}</td>
+                  <td class="num bold">{{ row.totalAccumulated | number:'1.2-2' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
         </div>
+      </mat-card>
+    </div>
+  </div>
 
-        <div class="cta-wrapper" style="margin-top: 2rem;">
-            <a mat-stroked-button color="primary" routerLink="/articles/pagibig-vs-mpf">Read more: Pag-IBIG vs SSS
-                MPF</a>
-        </div>
-    </article>
+  <hr class="divider">
+
+  <!-- SEO CONTENT -->
+  <article class="content-article">
+    <h2>The Complete Pag-IBIG MP2 Investment Guide (2026)</h2>
+    <p>
+      The <strong>Modified Pag-IBIG 2 (MP2)</strong> Savings is a special, voluntary savings facility with a
+      strict 5-year maturity period, designed explicitly for active Pag-IBIG Fund members who wish to save more
+      and earn higher dividends compared to the regular Pag-IBIG Savings Program.
+    </p>
+    <p>
+      Because it is government-guaranteed and entirely <strong>tax-free</strong>, it has become one of the most
+      popular, risk-free investment vehicles for Filipinos, often beating commercial bank time deposits and
+      traditional savings accounts.
+    </p>
+
+    <h3>How MP2 Dividends are Computed</h3>
+    <p>
+      Your dividends are calculated based on your <strong>Average Monthly Balance (AMB)</strong> multiplied by the
+      dividend rate declared by Pag-IBIG for that specific year.
+    </p>
+    <ul class="styled-list">
+      <li><strong>The AMB Rule:</strong> For your very first year, your monthly contributions slowly accumulate. A
+      ₱1,000 contribution made in January earns interest for 12 months, but a ₱1,000 contribution made in
+      December only earns interest for 1 month. Therefore, a lump sum payment at the start of the year will
+    always yield higher returns than staggered monthly payments.</li>
+    <li><strong>Years 2 to 5:</strong> If you chose Compound Savings, your entire Capital + Earned Dividends
+    from the previous year becomes your new starting Capital. This total amount earns the full annual
+  dividend rate for the entire year because it sits untouched in the fund.</li>
+</ul>
+
+<h2>Understanding the Power of Compounding</h2>
+<div class="example-box">
+  <h3>Scenario: ₱500 Monthly (Compounded vs. Annual Payout)</h3>
+  <p>Assuming a constant 7.00% dividend rate over 5 years.</p>
+
+  <h4 style="margin-top: 1rem;">Option A: Compounded Earnings (Re-invested)</h4>
+  <ul style="margin-bottom: 0;">
+    <li>Total Capital Contributed: ₱30,000</li>
+    <li><strong>Total Dividends Earned: ₱5,836.00</strong></li>
+    <li><em>Why?</em> Because the dividends you earn in Year 1 are added to your principal, meaning you earn
+    "interest on top of your interest" in Years 2, 3, 4, and 5. This is highly recommended for wealth
+  building.</li>
+</ul>
+
+<h4 style="margin-top: 1.5rem">Option B: Annual Payout (Withdrawn Yearly)</h4>
+<ul style="margin-bottom: 0;">
+  <li>Total Capital Contributed: ₱30,000</li>
+  <li><strong>Total Dividends Earned: ₱5,425.00</strong></li>
+  <li><em>Why?</em> Because you withdraw your earnings every year through your enrolled bank account
+  (Loyalty Card Plus), your principal never grows beyond your monthly deposits. You lose the snowball
+effect of compounding interest, but gain immediate annual passive cash flow.</li>
+</ul>
+</div>
+
+<h3>Historical MP2 Dividend Rates</h3>
+<p>
+  The dividend rate changes annually based on Pag-IBIG's net income for the year. By law, Pag-IBIG must return
+  at least 70% of its annual net income to its members in the form of dividends. While past performance is not
+  a guarantee of future returns, MP2 has consistently outperformed inflation.
+</p>
+<div class="table-responsive" style="max-width: 300px;">
+  <table class="data-table" style="margin-bottom: 1.5rem;">
+    <thead>
+      <tr>
+        <th>Year</th>
+        <th>Dividend Rate</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>2023</strong></td>
+        <td>7.05%</td>
+      </tr>
+      <tr>
+        <td><strong>2022</strong></td>
+        <td>7.03%</td>
+      </tr>
+      <tr>
+        <td><strong>2021</strong></td>
+        <td>6.00%</td>
+      </tr>
+      <tr>
+        <td><strong>2020</strong></td>
+        <td>6.12%</td>
+      </tr>
+      <tr>
+        <td><strong>2019</strong></td>
+        <td>7.23%</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<hr style="margin: 3rem 0; border: 0; border-top: 1px solid #eee;">
+
+<h2>Frequently Asked Questions (FAQs)</h2>
+<div class="faq-section">
+  <h3>Can I withdraw my MP2 savings before 5 years?</h3>
+  <p>Yes, but early withdrawal is completely unrestricted only for valid, critical reasons (e.g., total
+    disability, insanity, termination from employment due to health, retirement, or expatriation). If you
+    insist on a voluntary early withdrawal for non-critical reasons, you will incur a massive penalty: you
+  will only receive 50% of your total earned dividends.</p>
+
+  <h3>Is there a limit to how much I can save in MP2?</h3>
+  <p>Under <strong>Circular No. 487 (effective Feb 2026)</strong>, the maximum limit for total aggregated MP2 principal savings is <strong>₱20,000,000</strong>. Any excess beyond this is refunded to the member. You also now have the option to opt into a one-time <strong>automatic rollover</strong> of your principal savings and dividends upon maturity, rolling the funds directly into another 5-year cycle.</p>
+  <p>Please note: For one-time remittances or lump sums exceeding ₱500,000, you are legally required by Pag-IBIG to
+    present proof of your income source (e.g., land title deed of sale, official payslips, inheritance
+  documents) to strictly comply with the Anti-Money Laundering Act (AMLA).</p>
+
+  <h3>Can I open multiple MP2 accounts at the same time?</h3>
+  <p>Yes! Pag-IBIG allows members to open and simultaneously maintain multiple MP2 accounts. This feature is
+    highly utilized by financially savvy Filipinos to earmark different accounts for distinct, time-bound
+    financial goals (e.g., maintaining one account for a future car downpayment, and a separate account for
+  a child's college tuition).</p>
+</div>
+
+<div class="cta-wrapper" style="margin-top: 2rem;">
+  <a mat-stroked-button color="primary" routerLink="/articles/pagibig-vs-mpf">Read more: Pag-IBIG vs SSS
+  MPF</a>
+</div>
+</article>
 </section>

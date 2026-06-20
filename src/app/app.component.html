@@ -7,7 +7,7 @@
   <span class="spacer"></span>
   <nav class="nav-links">
     <a mat-button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
-    
+
     <button mat-button [matMenuTriggerFor]="salaryTaxesMenu">Salary & Taxes <mat-icon iconPositionEnd>arrow_drop_down</mat-icon></button>
     <mat-menu #salaryTaxesMenu="matMenu">
       <a mat-menu-item routerLink="/net-pay" routerLinkActive="active">Net Pay</a>
@@ -43,56 +43,56 @@
   </button>
 </mat-toolbar>
 
-<nav class="mobile-nav" *ngIf="showMobileNav">
-  <a mat-button routerLink="/" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active" (click)="closeMobileNav()">Home</a>
-  
-  <mat-accordion class="mobile-accordion" displayMode="flat">
-    <mat-expansion-panel class="mat-elevation-z0" style="background: transparent;">
-      <mat-expansion-panel-header>
-        <mat-panel-title>Salary & Taxes</mat-panel-title>
-      </mat-expansion-panel-header>
-      <a mat-menu-item routerLink="/net-pay" routerLinkActive="active" (click)="closeMobileNav()">Net Pay</a>
-      <a mat-menu-item routerLink="/13th-month-pay" routerLinkActive="active" (click)="closeMobileNav()">13th Month Pay</a>
-      <a mat-menu-item routerLink="/tax-tables" routerLinkActive="active" (click)="closeMobileNav()">2026 Tax Tables</a>
-    </mat-expansion-panel>
+@if (showMobileNav) {
+  <nav class="mobile-nav">
+    <a mat-button routerLink="/" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active" (click)="closeMobileNav()">Home</a>
+    <mat-accordion class="mobile-accordion" displayMode="flat">
+      <mat-expansion-panel class="mat-elevation-z0" style="background: transparent;">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Salary & Taxes</mat-panel-title>
+        </mat-expansion-panel-header>
+        <a mat-menu-item routerLink="/net-pay" routerLinkActive="active" (click)="closeMobileNav()">Net Pay</a>
+        <a mat-menu-item routerLink="/13th-month-pay" routerLinkActive="active" (click)="closeMobileNav()">13th Month Pay</a>
+        <a mat-menu-item routerLink="/tax-tables" routerLinkActive="active" (click)="closeMobileNav()">2026 Tax Tables</a>
+      </mat-expansion-panel>
+      <mat-expansion-panel class="mat-elevation-z0" style="background: transparent;">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Loans & Mortgages</mat-panel-title>
+        </mat-expansion-panel-header>
+        <a mat-menu-item routerLink="/amortization" routerLinkActive="active" (click)="closeMobileNav()">General Amortization</a>
+        <a mat-menu-item routerLink="/sss-salary-loan" routerLinkActive="active" (click)="closeMobileNav()">SSS Salary Loan</a>
+        <a mat-menu-item routerLink="/pagibig-housing-loan" routerLinkActive="active" (click)="closeMobileNav()">Pag-IBIG Housing Loan</a>
+      </mat-expansion-panel>
+      <mat-expansion-panel class="mat-elevation-z0" style="background: transparent;">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Savings & Benefits</mat-panel-title>
+        </mat-expansion-panel-header>
+        <a mat-menu-item routerLink="/contributions" routerLinkActive="active" (click)="closeMobileNav()">Contributions</a>
+        <a mat-menu-item routerLink="/mp2-calculator" routerLinkActive="active" (click)="closeMobileNav()">MP2 Savings</a>
+        <a mat-menu-item routerLink="/sss-maternity-benefit" routerLinkActive="active" (click)="closeMobileNav()">SSS Maternity Benefit</a>
+      </mat-expansion-panel>
+    </mat-accordion>
+    <a mat-button routerLink="/articles" routerLinkActive="active" (click)="closeMobileNav()">Articles</a>
+    <a mat-button routerLink="/about" routerLinkActive="active" (click)="closeMobileNav()">About</a>
+    <mat-slide-toggle [checked]="isLight" (change)="onToggleTheme($event.checked)" color="accent"
+      aria-label="Toggle light theme" style="margin-left: 16px; margin-top: 8px;">
+      Light
+    </mat-slide-toggle>
+  </nav>
+}
 
-    <mat-expansion-panel class="mat-elevation-z0" style="background: transparent;">
-      <mat-expansion-panel-header>
-        <mat-panel-title>Loans & Mortgages</mat-panel-title>
-      </mat-expansion-panel-header>
-      <a mat-menu-item routerLink="/amortization" routerLinkActive="active" (click)="closeMobileNav()">General Amortization</a>
-      <a mat-menu-item routerLink="/sss-salary-loan" routerLinkActive="active" (click)="closeMobileNav()">SSS Salary Loan</a>
-      <a mat-menu-item routerLink="/pagibig-housing-loan" routerLinkActive="active" (click)="closeMobileNav()">Pag-IBIG Housing Loan</a>
-    </mat-expansion-panel>
-
-    <mat-expansion-panel class="mat-elevation-z0" style="background: transparent;">
-      <mat-expansion-panel-header>
-        <mat-panel-title>Savings & Benefits</mat-panel-title>
-      </mat-expansion-panel-header>
-      <a mat-menu-item routerLink="/contributions" routerLinkActive="active" (click)="closeMobileNav()">Contributions</a>
-      <a mat-menu-item routerLink="/mp2-calculator" routerLinkActive="active" (click)="closeMobileNav()">MP2 Savings</a>
-      <a mat-menu-item routerLink="/sss-maternity-benefit" routerLinkActive="active" (click)="closeMobileNav()">SSS Maternity Benefit</a>
-    </mat-expansion-panel>
-  </mat-accordion>
-
-  <a mat-button routerLink="/articles" routerLinkActive="active" (click)="closeMobileNav()">Articles</a>
-  <a mat-button routerLink="/about" routerLinkActive="active" (click)="closeMobileNav()">About</a>
-  <mat-slide-toggle [checked]="isLight" (change)="onToggleTheme($event.checked)" color="accent"
-    aria-label="Toggle light theme" style="margin-left: 16px; margin-top: 8px;">
-    Light
-  </mat-slide-toggle>
-</nav>
-
-<section class="notice" *ngIf="showDisclaimer">
-  <div class="notice__inner">
-    <span>
-      Estimates only. Not official. Not financial advice. Calculations are for guidance and may not reflect latest
-      tables. Please verify with official sources.
-    </span>
-    <button mat-raised-button color="accent" class="notice__dismiss" (click)="dismissDisclaimer()"
+@if (showDisclaimer) {
+  <section class="notice">
+    <div class="notice__inner">
+      <span>
+        Estimates only. Not official. Not financial advice. Calculations are for guidance and may not reflect latest
+        tables. Please verify with official sources.
+      </span>
+      <button mat-raised-button color="accent" class="notice__dismiss" (click)="dismissDisclaimer()"
       aria-label="Dismiss disclaimer">Dismiss</button>
-  </div>
-</section>
+    </div>
+  </section>
+}
 
 <main class="container">
   <router-outlet />

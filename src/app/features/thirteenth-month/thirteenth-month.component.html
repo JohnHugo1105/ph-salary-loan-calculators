@@ -1,215 +1,221 @@
 <header class="hero">
-    <div class="hero-content">
-        <h1>13th Month Pay Calculator</h1>
-        <p class="subtitle">Quickly compute your pro-rated 13th-month pay and check for tax exemptions.</p>
-    </div>
+  <div class="hero-content">
+    <h1>13th Month Pay Calculator</h1>
+    <p class="subtitle">Quickly compute your pro-rated 13th-month pay and check for tax exemptions.</p>
+  </div>
 </header>
 
 <section class="container">
-    <div class="calc-layout">
-        <!-- LEFT COLUMN: INPUTS -->
-        <div class="input-col">
-            <form [formGroup]="form">
-                <mat-card class="input-card">
-                    <mat-card-header>
-                        <mat-card-title>Configuration</mat-card-title>
-                    </mat-card-header>
-                    <mat-card-content>
-                        <div class="toggle-wrapper">
-                            <mat-button-toggle-group formControlName="mode" appearance="standard">
-                                <mat-button-toggle value="simple">Simple (Full Year)</mat-button-toggle>
-                                <mat-button-toggle value="detailed">Pro-rated (Monthly)</mat-button-toggle>
-                            </mat-button-toggle-group>
-                        </div>
+  <div class="calc-layout">
+    <!-- LEFT COLUMN: INPUTS -->
+    <div class="input-col">
+      <form [formGroup]="form">
+        <mat-card class="input-card">
+          <mat-card-header>
+            <mat-card-title>Configuration</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="toggle-wrapper">
+              <mat-button-toggle-group formControlName="mode" appearance="standard">
+                <mat-button-toggle value="simple">Simple (Full Year)</mat-button-toggle>
+                <mat-button-toggle value="detailed">Pro-rated (Monthly)</mat-button-toggle>
+              </mat-button-toggle-group>
+            </div>
 
-                        <p class="hint-text" *ngIf="form.value.mode === 'detailed'">
-                            Enter your <strong>Basic Pay</strong> for each month you were employed. Leave 0 for months
-                            unworked.
-                        </p>
+            @if (form.value.mode === 'detailed') {
+              <p class="hint-text">
+                Enter your <strong>Basic Pay</strong> for each month you were employed. Leave 0 for months
+                unworked.
+              </p>
+            }
 
-                        <div class="form-content">
-                            <ng-container *ngIf="form.value.mode === 'simple'">
-                                <mat-form-field appearance="outline">
-                                    <mat-label>Current Monthly Basic Pay (₱)</mat-label>
-                                    <input matInput type="text" appThousandsSeparator formControlName="monthlyBasic"
-                                        inputmode="decimal" />
-                                    <mat-hint>Assumes 12 months employment</mat-hint>
-                                </mat-form-field>
-                            </ng-container>
+            <div class="form-content">
+              @if (form.value.mode === 'simple') {
+                <mat-form-field appearance="outline">
+                  <mat-label>Current Monthly Basic Pay (₱)</mat-label>
+                  <input matInput type="text" appThousandsSeparator formControlName="monthlyBasic"
+                    inputmode="decimal" />
+                  <mat-hint>Assumes 12 months employment</mat-hint>
+                </mat-form-field>
+              }
 
-                            <ng-container *ngIf="form.value.mode === 'detailed'">
-                                <div class="months-grid" formArrayName="history">
-                                    <mat-form-field *ngFor="let month of months; let i = index" appearance="outline"
-                                        class="density-sm">
-                                        <mat-label>{{ month.slice(0, 3) }}</mat-label>
-                                        <input matInput type="text" appThousandsSeparator [formControlName]="i"
-                                            inputmode="decimal" />
-                                    </mat-form-field>
-                                </div>
-                            </ng-container>
-                        </div>
-                    </mat-card-content>
-                </mat-card>
-            </form>
-        </div>
-
-        <!-- RIGHT COLUMN: RESULTS -->
-        <div class="result-col">
-            <mat-card class="result-card">
-                <div class="result-label">Estimated 13th Month Pay</div>
-                <div class="result-value">₱{{ result.gross13th | number:'1.2-2' }}</div>
-            </mat-card>
-
-            <mat-card class="detail-card">
-                <mat-card-header>
-                    <mat-card-title>Tax Analysis</mat-card-title>
-                </mat-card-header>
-                <mat-card-content>
-                    <div class="row">
-                        <span>Tax-Exempt Portion</span>
-                        <span class="num">₱{{ result.nonTaxable | number:'1.2-2' }}</span>
-                    </div>
-
-                    <div *ngIf="result.taxable > 0" class="taxable-section">
-                        <div class="row warn">
-                            <span>Taxable Excess (Over ₱90k)</span>
-                            <span class="num">₱{{ result.taxable | number:'1.2-2' }}</span>
-                        </div>
-
-                        <div class="tax-estimator">
-                            <div class="row small">
-                                <span>Est. Tax Rate (%)</span>
-                                <input type="number" [formControl]="$any(form).controls.taxRate" class="inline-input" />
-                            </div>
-                            <div class="row small">
-                                <span>Est. Tax Due</span>
-                                <span class="num warn">- ₱{{ result.taxDue | number:'1.2-2' }}</span>
-                            </div>
-                        </div>
-
-                        <div class="row total">
-                            <span>Net 13th Month Pay</span>
-                            <span class="num primary">₱{{ result.net13th | number:'1.2-2' }}</span>
-                        </div>
-                    </div>
-
-                    <div *ngIf="result.taxable === 0" class="row total">
-                        <span class="success-text"><mat-icon inline>check_circle</mat-icon> Fully Tax-Exempt</span>
-                    </div>
-                </mat-card-content>
-            </mat-card>
-        </div>
+              @if (form.value.mode === 'detailed') {
+                <div class="months-grid" formArrayName="history">
+                  @for (month of months; track month; let i = $index) {
+                    <mat-form-field appearance="outline"
+                      class="density-sm">
+                      <mat-label>{{ month.slice(0, 3) }}</mat-label>
+                      <input matInput type="text" appThousandsSeparator [formControlName]="i"
+                        inputmode="decimal" />
+                    </mat-form-field>
+                  }
+                </div>
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </form>
     </div>
 
-    <app-ad type="finmerkado"></app-ad>
+    <!-- RIGHT COLUMN: RESULTS -->
+    <div class="result-col">
+      <mat-card class="result-card">
+        <div class="result-label">Estimated 13th Month Pay</div>
+        <div class="result-value">₱{{ result.gross13th | number:'1.2-2' }}</div>
+      </mat-card>
 
-    <hr class="divider">
+      <mat-card class="detail-card">
+        <mat-card-header>
+          <mat-card-title>Tax Analysis</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="row">
+            <span>Tax-Exempt Portion</span>
+            <span class="num">₱{{ result.nonTaxable | number:'1.2-2' }}</span>
+          </div>
 
-    <!-- SEO CONTENT -->
-    <article class="content-article">
-        <h2>The Complete Guide to 13th-Month Pay in the Philippines</h2>
-        <p>
-            The 13th-month pay is one of the most anticipated financial benefits for Filipino workers, serving as a
-            crucial booster for holiday spending or end-of-year savings. Legally mandated by Presidential Decree No.
-            851, every rank-and-file employee in the private sector is entitled to receive this bonus, provided they
-            have rendered at least one (1) month of service during the calendar year.
-        </p>
-        <p>
-            By law, employers are required to disburse the 13th-month pay no later than <strong>December 24</strong> of
-            each year. Failure to do so can result in legal action from the Department of Labor and Employment (DOLE).
-        </p>
+          @if (result.taxable > 0) {
+            <div class="taxable-section">
+              <div class="row warn">
+                <span>Taxable Excess (Over ₱90k)</span>
+                <span class="num">₱{{ result.taxable | number:'1.2-2' }}</span>
+              </div>
+              <div class="tax-estimator">
+                <div class="row small">
+                  <span>Est. Tax Rate (%)</span>
+                  <input type="number" [formControl]="$any(form).controls.taxRate" class="inline-input" />
+                </div>
+                <div class="row small">
+                  <span>Est. Tax Due</span>
+                  <span class="num warn">- ₱{{ result.taxDue | number:'1.2-2' }}</span>
+                </div>
+              </div>
+              <div class="row total">
+                <span>Net 13th Month Pay</span>
+                <span class="num primary">₱{{ result.net13th | number:'1.2-2' }}</span>
+              </div>
+            </div>
+          }
 
-        <h3>The General Computation Formula</h3>
-        <p>
-            The fundamental rule for computing the 13th-month pay is straightforward:
-            <strong>Total Basic Salary Earned during the calendar year ÷ 12 months</strong>.
-        </p>
-        <p>
-            However, defining "Total Basic Salary" can be tricky. This includes all remunerations or earnings paid by an
-            employer for services rendered, but <strong>strictly excludes</strong> allowances and monetary benefits not
-            considered part of your basic pay.
-            <br>
-            <strong>Excluded Items:</strong>
-        </p>
-        <ul class="styled-list">
-            <li>Cash equivalent of unused vacation and sick leave credits (Leave Conversions)</li>
-            <li>Overtime pay and Premium pay</li>
-            <li>Night shift differential</li>
-            <li>Holiday pay</li>
-            <li>Cost of Living Allowances (COLA)</li>
-        </ul>
+          @if (result.taxable === 0) {
+            <div class="row total">
+              <span class="success-text"><mat-icon inline>check_circle</mat-icon> Fully Tax-Exempt</span>
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
 
-        <h2>Practical Examples of 13th-Month Computations</h2>
+  <app-ad type="finmerkado"></app-ad>
 
-        <div class="example-box">
-            <h3>Scenario A: Full-Year Employee (No Absences)</h3>
-            <p>Juan has a basic salary of ₱30,000 per month. He worked from January 1 to December 31 without any unpaid
-                absences or late deductions.</p>
-            <ul style="margin-bottom: 0;">
-                <li><strong>Total Basic Salary Earned:</strong> ₱30,000 x 12 = ₱360,000</li>
-                <li><strong>Computation:</strong> ₱360,000 / 12</li>
-                <li><strong>13th-Month Pay:</strong> <strong>₱30,000</strong> (Exactly equivalent to one month's salary)
-                </li>
-            </ul>
+  <hr class="divider">
 
-            <h3 style="margin-top: 1.5rem">Scenario B: Pro-rated (New Hire or Resigned)</h3>
-            <p>Maria was hired on August 1 with a basic salary of ₱25,000. She worked perfectly until the end of the
-                year.</p>
-            <ul style="margin-bottom: 0;">
-                <li><strong>Months Worked:</strong> August to December (5 months)</li>
-                <li><strong>Total Basic Salary Earned:</strong> ₱25,000 x 5 = ₱125,000</li>
-                <li><strong>Computation:</strong> ₱125,000 / 12</li>
-                <li><strong>13th-Month Pay:</strong> <strong>₱10,416.67</strong></li>
-            </ul>
+  <!-- SEO CONTENT -->
+  <article class="content-article">
+    <h2>The Complete Guide to 13th-Month Pay in the Philippines</h2>
+    <p>
+      The 13th-month pay is one of the most anticipated financial benefits for Filipino workers, serving as a
+      crucial booster for holiday spending or end-of-year savings. Legally mandated by Presidential Decree No.
+      851, every rank-and-file employee in the private sector is entitled to receive this bonus, provided they
+      have rendered at least one (1) month of service during the calendar year.
+    </p>
+    <p>
+      By law, employers are required to disburse the 13th-month pay no later than <strong>December 24</strong> of
+      each year. Failure to do so can result in legal action from the Department of Labor and Employment (DOLE).
+    </p>
 
-            <h3 style="margin-top: 1.5rem">Scenario C: Full-Year with Unpaid Absences (Leave Without Pay)</h3>
-            <p>Pedro earns ₱40,000 monthly but took a 2-week Leave Without Pay (LWOP) in October, reducing his October
-                basic pay to only ₱20,000.</p>
-            <ul style="margin-bottom: 0;">
-                <li><strong>Total Earned:</strong> (₱40,000 x 11 months) + ₱20,000 = ₱460,000</li>
-                <li><strong>Computation:</strong> ₱460,000 / 12</li>
-                <li><strong>13th-Month Pay:</strong> <strong>₱38,333.33</strong></li>
-            </ul>
-        </div>
+    <h3>The General Computation Formula</h3>
+    <p>
+      The fundamental rule for computing the 13th-month pay is straightforward:
+      <strong>Total Basic Salary Earned during the calendar year ÷ 12 months</strong>.
+    </p>
+    <p>
+      However, defining "Total Basic Salary" can be tricky. This includes all remunerations or earnings paid by an
+      employer for services rendered, but <strong>strictly excludes</strong> allowances and monetary benefits not
+      considered part of your basic pay.
+      <br>
+        <strong>Excluded Items:</strong>
+      </p>
+      <ul class="styled-list">
+        <li>Cash equivalent of unused vacation and sick leave credits (Leave Conversions)</li>
+        <li>Overtime pay and Premium pay</li>
+        <li>Night shift differential</li>
+        <li>Holiday pay</li>
+        <li>Cost of Living Allowances (COLA)</li>
+      </ul>
 
-        <h3>The ₱90,000 Tax Exemption Rule (TRAIN Law)</h3>
-        <p>
-            Under the Tax Reform for Acceleration and Inclusion (TRAIN) Law, your 13th-month pay and other benefits are
-            <strong>tax-exempt up to a combined maximum of ₱90,000</strong>. This ceiling applies to the sum total of
-            your 13th-month pay, Christmas bonuses, productivity incentives, and other similar benefits received during
-            the year.
-        </p>
-        <p>
-            If your 13th-month pay alone is ₱100,000, the first ₱90,000 is tax-free. The excess ₱10,000 will be added to
-            your regular taxable gross income for the year, and will be subjected to the standard graduating income tax
-            rates.
-        </p>
+      <h2>Practical Examples of 13th-Month Computations</h2>
 
-        <hr style="margin: 3rem 0; border: 0; border-top: 1px solid #eee;">
+      <div class="example-box">
+        <h3>Scenario A: Full-Year Employee (No Absences)</h3>
+        <p>Juan has a basic salary of ₱30,000 per month. He worked from January 1 to December 31 without any unpaid
+        absences or late deductions.</p>
+        <ul style="margin-bottom: 0;">
+          <li><strong>Total Basic Salary Earned:</strong> ₱30,000 x 12 = ₱360,000</li>
+          <li><strong>Computation:</strong> ₱360,000 / 12</li>
+          <li><strong>13th-Month Pay:</strong> <strong>₱30,000</strong> (Exactly equivalent to one month's salary)
+        </li>
+      </ul>
 
-        <h2>Frequently Asked Questions (FAQs)</h2>
-        <div class="faq-section">
-            <h3>Are managers or supervisory employees entitled to 13th-month pay?</h3>
-            <p>Under the strict letter of P.D. 851, only rank-and-file employees are legally entitled to 13th-month pay.
-                Employees in managerial or supervisory positions are not covered by the law. However, in practice, a
-                vast majority of employers in the Philippines continue to grant it to all levels voluntarily as a matter
-                of company policy or established practice.</p>
+      <h3 style="margin-top: 1.5rem">Scenario B: Pro-rated (New Hire or Resigned)</h3>
+      <p>Maria was hired on August 1 with a basic salary of ₱25,000. She worked perfectly until the end of the
+      year.</p>
+      <ul style="margin-bottom: 0;">
+        <li><strong>Months Worked:</strong> August to December (5 months)</li>
+        <li><strong>Total Basic Salary Earned:</strong> ₱25,000 x 5 = ₱125,000</li>
+        <li><strong>Computation:</strong> ₱125,000 / 12</li>
+        <li><strong>13th-Month Pay:</strong> <strong>₱10,416.67</strong></li>
+      </ul>
 
-            <h3>What happens if my 13th-month pay exceeds ₱90,000?</h3>
-            <p>If your combined 13th-month pay and other mandatory bonuses surpass the ₱90,000 threshold under the TRAIN
-                law, the excess amount is no longer tax-free. Your employer is required by the BIR to add that excess to
-                your regular gross taxable income for the calendar year, making it subject to your regular withholding
-                tax brackets.</p>
+      <h3 style="margin-top: 1.5rem">Scenario C: Full-Year with Unpaid Absences (Leave Without Pay)</h3>
+      <p>Pedro earns ₱40,000 monthly but took a 2-week Leave Without Pay (LWOP) in October, reducing his October
+      basic pay to only ₱20,000.</p>
+      <ul style="margin-bottom: 0;">
+        <li><strong>Total Earned:</strong> (₱40,000 x 11 months) + ₱20,000 = ₱460,000</li>
+        <li><strong>Computation:</strong> ₱460,000 / 12</li>
+        <li><strong>13th-Month Pay:</strong> <strong>₱38,333.33</strong></li>
+      </ul>
+    </div>
 
-            <h3>How is a pro-rated 13th-month pay calculated for new or resigned employees?</h3>
-            <p>Pro-rated computation applies when you haven't worked the full 12 months. It is calculated by summing up
-                your total basic salary earned during the active calendar months and dividing it by 12. For instance, if
-                you resigned in April and earned exactly ₱20,000 per month for 4 months, your final pay will include a
-                pro-rated 13th month of (₱20,000 * 4) / 12 = ₱6,666.67.</p>
-        </div>
+    <h3>The ₱90,000 Tax Exemption Rule (TRAIN Law)</h3>
+    <p>
+      Under the Tax Reform for Acceleration and Inclusion (TRAIN) Law, your 13th-month pay and other benefits are
+      <strong>tax-exempt up to a combined maximum of ₱90,000</strong>. This ceiling applies to the sum total of
+      your 13th-month pay, Christmas bonuses, productivity incentives, and other similar benefits received during
+      the year.
+    </p>
+    <p>
+      If your 13th-month pay alone is ₱100,000, the first ₱90,000 is tax-free. The excess ₱10,000 will be added to
+      your regular taxable gross income for the year, and will be subjected to the standard graduating income tax
+      rates.
+    </p>
 
-        <div class="cta-wrapper" style="margin-top: 2rem;">
-            <a mat-stroked-button color="primary" routerLink="/articles">View All Financial Guides</a>
-        </div>
-    </article>
+    <hr style="margin: 3rem 0; border: 0; border-top: 1px solid #eee;">
+
+    <h2>Frequently Asked Questions (FAQs)</h2>
+    <div class="faq-section">
+      <h3>Are managers or supervisory employees entitled to 13th-month pay?</h3>
+      <p>Under the strict letter of P.D. 851, only rank-and-file employees are legally entitled to 13th-month pay.
+        Employees in managerial or supervisory positions are not covered by the law. However, in practice, a
+        vast majority of employers in the Philippines continue to grant it to all levels voluntarily as a matter
+      of company policy or established practice.</p>
+
+      <h3>What happens if my 13th-month pay exceeds ₱90,000?</h3>
+      <p>If your combined 13th-month pay and other mandatory bonuses surpass the ₱90,000 threshold under the TRAIN
+        law, the excess amount is no longer tax-free. Your employer is required by the BIR to add that excess to
+        your regular gross taxable income for the calendar year, making it subject to your regular withholding
+      tax brackets.</p>
+
+      <h3>How is a pro-rated 13th-month pay calculated for new or resigned employees?</h3>
+      <p>Pro-rated computation applies when you haven't worked the full 12 months. It is calculated by summing up
+        your total basic salary earned during the active calendar months and dividing it by 12. For instance, if
+        you resigned in April and earned exactly ₱20,000 per month for 4 months, your final pay will include a
+      pro-rated 13th month of (₱20,000 * 4) / 12 = ₱6,666.67.</p>
+    </div>
+
+    <div class="cta-wrapper" style="margin-top: 2rem;">
+      <a mat-stroked-button color="primary" routerLink="/articles">View All Financial Guides</a>
+    </div>
+  </article>
 </section>

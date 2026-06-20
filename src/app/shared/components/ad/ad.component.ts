@@ -1,11 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatIconModule } from '@angular/material/icon';
 import { AD_PRESETS } from '../../config/ads.config';
 
 @Component({
     selector: 'app-ad',
-    imports: [CommonModule, MatIconModule],
+    imports: [MatIconModule],
     templateUrl: './ad.component.html',
     styleUrls: ['./ad.component.scss']
 })

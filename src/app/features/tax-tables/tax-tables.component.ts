@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
@@ -8,7 +8,7 @@ import { AdComponent } from '../../shared/components/ad/ad.component';
 
 @Component({
     selector: 'app-tax-tables',
-    imports: [CommonModule, MatCardModule, MatButtonModule, RouterModule, AdComponent],
+    imports: [MatCardModule, MatButtonModule, RouterModule, AdComponent],
     templateUrl: './tax-tables.component.html',
     styleUrls: ['./tax-tables.component.scss']
 })

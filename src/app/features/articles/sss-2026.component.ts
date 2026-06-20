@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterLink } from '@angular/router';
 
 @Component({
     selector: 'app-article-sss-2026',
-    imports: [CommonModule, RouterLink],
+    imports: [RouterLink],
     templateUrl: './sss-2026.component.html',
     styleUrl: './sss-2026.component.scss'
 })
