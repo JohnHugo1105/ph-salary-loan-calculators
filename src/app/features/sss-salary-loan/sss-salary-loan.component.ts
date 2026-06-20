@@ -13,15 +13,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { APP_CONSTANTS } from '../../shared/app.constants';
 
 @Component({
-  selector: 'app-sss-salary-loan',
-  standalone: true,
-  imports: [
-    CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, 
-    MatCardModule, MatSelectModule, MatButtonModule, ThousandsSeparatorDirective, 
-    MatIconModule, RouterModule
-  ],
-  templateUrl: './sss-salary-loan.component.html',
-  styleUrl: './sss-salary-loan.component.scss'
+    selector: 'app-sss-salary-loan',
+    imports: [
+        CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule,
+        MatCardModule, MatSelectModule, MatButtonModule, ThousandsSeparatorDirective,
+        MatIconModule, RouterModule
+    ],
+    templateUrl: './sss-salary-loan.component.html',
+    styleUrl: './sss-salary-loan.component.scss'
 })
 export class SssSalaryLoanComponent {
   form = this.fb.group({

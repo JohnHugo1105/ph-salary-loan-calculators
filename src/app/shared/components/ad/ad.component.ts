@@ -5,7 +5,6 @@ import { AD_PRESETS } from '../../config/ads.config';
 
 @Component({
     selector: 'app-ad',
-    standalone: true,
     imports: [CommonModule, MatIconModule],
     templateUrl: './ad.component.html',
     styleUrls: ['./ad.component.scss']

@@ -11,15 +11,14 @@ import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.di
 import { SeoService } from '../../shared/seo.service';
 
 @Component({
-  selector: 'app-sss-maternity',
-  standalone: true,
-  imports: [
-    CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, 
-    MatCardModule, MatSelectModule, MatButtonModule, ThousandsSeparatorDirective, 
-    RouterModule
-  ],
-  templateUrl: './sss-maternity.component.html',
-  styleUrl: './sss-maternity.component.scss'
+    selector: 'app-sss-maternity',
+    imports: [
+        CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule,
+        MatCardModule, MatSelectModule, MatButtonModule, ThousandsSeparatorDirective,
+        RouterModule
+    ],
+    templateUrl: './sss-maternity.component.html',
+    styleUrl: './sss-maternity.component.scss'
 })
 export class SssMaternityComponent {
   form = this.fb.group({

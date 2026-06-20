@@ -7,7 +7,6 @@ import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
     selector: 'app-cookie-consent',
-    standalone: true,
     imports: [CommonModule, MatButtonModule, MatIconModule, RouterLink],
     templateUrl: './cookie-consent.component.html',
     styleUrl: './cookie-consent.component.scss',

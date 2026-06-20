@@ -18,24 +18,23 @@ import { Chart } from 'chart.js/auto';
 import { SaveShareService } from '../../shared/services/save-share.service';
 
 @Component({
-  selector: 'app-mp2',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatCardModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatTooltipModule,
-    ThousandsSeparatorDirective,
-    MatIconModule,
-    MatCheckboxModule,
-    RouterModule
-  ],
-  templateUrl: './mp2.component.html',
-  styleUrl: './mp2.component.scss'
+    selector: 'app-mp2',
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatCardModule,
+        MatSelectModule,
+        MatButtonModule,
+        MatTooltipModule,
+        ThousandsSeparatorDirective,
+        MatIconModule,
+        MatCheckboxModule,
+        RouterModule
+    ],
+    templateUrl: './mp2.component.html',
+    styleUrl: './mp2.component.scss'
 })
 export class Mp2Component implements OnInit, AfterViewInit {
   @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;

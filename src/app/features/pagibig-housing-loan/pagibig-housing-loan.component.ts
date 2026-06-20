@@ -12,15 +12,14 @@ import { SeoService } from '../../shared/seo.service';
 import { APP_CONSTANTS } from '../../shared/app.constants';
 
 @Component({
-  selector: 'app-pagibig-housing-loan',
-  standalone: true,
-  imports: [
-    CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, 
-    MatCardModule, MatSelectModule, MatButtonModule, ThousandsSeparatorDirective, 
-    RouterModule
-  ],
-  templateUrl: './pagibig-housing-loan.component.html',
-  styleUrl: './pagibig-housing-loan.component.scss'
+    selector: 'app-pagibig-housing-loan',
+    imports: [
+        CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule,
+        MatCardModule, MatSelectModule, MatButtonModule, ThousandsSeparatorDirective,
+        RouterModule
+    ],
+    templateUrl: './pagibig-housing-loan.component.html',
+    styleUrl: './pagibig-housing-loan.component.scss'
 })
 export class PagibigHousingLoanComponent {
   form = this.fb.group({

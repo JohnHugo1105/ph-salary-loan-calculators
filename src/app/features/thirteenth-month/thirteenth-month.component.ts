@@ -14,23 +14,22 @@ import { AdComponent } from '../../shared/components/ad/ad.component';
 import { compute13thMonthProRated, estimate13thMonthPay, split13thMonthTaxability, round2 } from '../../shared/ph-calculators.util';
 
 @Component({
-  selector: 'app-thirteenth-month',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatCardModule,
-    MatButtonModule,
-    MatButtonToggleModule,
-    MatIconModule,
-    ThousandsSeparatorDirective,
-    RouterModule,
-    AdComponent
-  ],
-  templateUrl: './thirteenth-month.component.html',
-  styleUrl: './thirteenth-month.component.scss'
+    selector: 'app-thirteenth-month',
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatCardModule,
+        MatButtonModule,
+        MatButtonToggleModule,
+        MatIconModule,
+        ThousandsSeparatorDirective,
+        RouterModule,
+        AdComponent
+    ],
+    templateUrl: './thirteenth-month.component.html',
+    styleUrl: './thirteenth-month.component.scss'
 })
 export class ThirteenthMonthComponent implements OnInit {
   months = [

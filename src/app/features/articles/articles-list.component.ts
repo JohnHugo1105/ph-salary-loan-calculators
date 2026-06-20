@@ -6,17 +6,16 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
-  selector: 'app-articles-list',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink,
-    MatCardModule,
-    MatIconModule,
-    MatButtonModule
-  ],
-  templateUrl: './articles-list.component.html',
-  styleUrl: './articles-list.component.scss'
+    selector: 'app-articles-list',
+    imports: [
+        CommonModule,
+        RouterLink,
+        MatCardModule,
+        MatIconModule,
+        MatButtonModule
+    ],
+    templateUrl: './articles-list.component.html',
+    styleUrl: './articles-list.component.scss'
 })
 export class ArticlesListComponent {
 

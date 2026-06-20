@@ -13,12 +13,11 @@ import { CookieConsentComponent } from './shared/components/cookie-consent/cooki
 import { AdComponent } from './shared/components/ad/ad.component';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, MatToolbarModule, MatButtonModule, MatSlideToggleModule, MatMenuModule, MatExpansionModule, MatIconModule, CookieConsentComponent, AdComponent],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
-  animations: []
+    selector: 'app-root',
+    imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, MatToolbarModule, MatButtonModule, MatSlideToggleModule, MatMenuModule, MatExpansionModule, MatIconModule, CookieConsentComponent, AdComponent],
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.scss',
+    animations: []
 })
 export class AppComponent {
   title = 'PH Salary & Loan Calculators';

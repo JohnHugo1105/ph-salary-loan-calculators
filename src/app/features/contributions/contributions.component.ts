@@ -15,21 +15,20 @@ import { trigger, transition, style, query, stagger, animate } from '@angular/an
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-contributions',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, MatCardModule, MatButtonModule, MatIconModule, ThousandsSeparatorDirective, RouterModule],
-  templateUrl: './contributions.component.html',
-  styleUrl: './contributions.component.scss',
-  animations: [
-    trigger('cardsIn', [
-      transition(':enter', [
-        query('.card', [
-          style({ opacity: 0, transform: 'translateY(6px)' }),
-          stagger(60, animate('200ms ease-out', style({ opacity: 1, transform: 'none' })))
-        ], { optional: true })
-      ])
-    ])
-  ]
+    selector: 'app-contributions',
+    imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, MatCardModule, MatButtonModule, MatIconModule, ThousandsSeparatorDirective, RouterModule],
+    templateUrl: './contributions.component.html',
+    styleUrl: './contributions.component.scss',
+    animations: [
+        trigger('cardsIn', [
+            transition(':enter', [
+                query('.card', [
+                    style({ opacity: 0, transform: 'translateY(6px)' }),
+                    stagger(60, animate('200ms ease-out', style({ opacity: 1, transform: 'none' })))
+                ], { optional: true })
+            ])
+        ])
+    ]
 })
 export class ContributionsComponent {
   form = this.fb.group({

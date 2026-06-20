@@ -19,21 +19,20 @@ import { AdComponent } from '../../shared/components/ad/ad.component';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-amortization',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatCardModule, MatButtonModule, MatSelectModule, MatIconModule, ThousandsSeparatorDirective, RouterModule, AdComponent],
-  templateUrl: './amortization.component.html',
-  styleUrl: './amortization.component.scss',
-  animations: [
-    trigger('tableIn', [
-      transition(':enter', [
-        query('tbody tr', [
-          style({ opacity: 0, transform: 'translateY(6px)' }),
-          stagger(20, animate('160ms ease-out', style({ opacity: 1, transform: 'none' })))
-        ], { optional: true })
-      ])
-    ])
-  ]
+    selector: 'app-amortization',
+    imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatCardModule, MatButtonModule, MatSelectModule, MatIconModule, ThousandsSeparatorDirective, RouterModule, AdComponent],
+    templateUrl: './amortization.component.html',
+    styleUrl: './amortization.component.scss',
+    animations: [
+        trigger('tableIn', [
+            transition(':enter', [
+                query('tbody tr', [
+                    style({ opacity: 0, transform: 'translateY(6px)' }),
+                    stagger(20, animate('160ms ease-out', style({ opacity: 1, transform: 'none' })))
+                ], { optional: true })
+            ])
+        ])
+    ]
 })
 export class AmortizationComponent implements OnInit, AfterViewInit {
   @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;

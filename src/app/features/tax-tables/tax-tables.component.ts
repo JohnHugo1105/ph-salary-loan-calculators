@@ -8,7 +8,6 @@ import { AdComponent } from '../../shared/components/ad/ad.component';
 
 @Component({
     selector: 'app-tax-tables',
-    standalone: true,
     imports: [CommonModule, MatCardModule, MatButtonModule, RouterModule, AdComponent],
     templateUrl: './tax-tables.component.html',
     styleUrls: ['./tax-tables.component.scss']

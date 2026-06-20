@@ -14,32 +14,31 @@ import { SeoService } from '../../shared/seo.service';
 import { AdComponent } from '../../shared/components/ad/ad.component';
 
 @Component({
-  selector: 'app-net-pay',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatIconModule,
-    ThousandsSeparatorDirective,
-    AdComponent,
-  ],
-  templateUrl: './net-pay.component.html',
-  styleUrl: './net-pay.component.scss',
-  animations: [
-    trigger('cardsIn', [
-      transition(':enter', [
-        query('.card', [
-          style({ opacity: 0, transform: 'translateY(6px)' }),
-          stagger(60, animate('200ms ease-out', style({ opacity: 1, transform: 'none' })))
-        ], { optional: true })
-      ])
-    ])
-  ]
+    selector: 'app-net-pay',
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSelectModule,
+        MatCardModule,
+        MatCheckboxModule,
+        MatIconModule,
+        ThousandsSeparatorDirective,
+        AdComponent,
+    ],
+    templateUrl: './net-pay.component.html',
+    styleUrl: './net-pay.component.scss',
+    animations: [
+        trigger('cardsIn', [
+            transition(':enter', [
+                query('.card', [
+                    style({ opacity: 0, transform: 'translateY(6px)' }),
+                    stagger(60, animate('200ms ease-out', style({ opacity: 1, transform: 'none' })))
+                ], { optional: true })
+            ])
+        ])
+    ]
 })
 export class NetPayComponent {
   form = this.fb.group({
