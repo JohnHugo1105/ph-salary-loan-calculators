@@ -1,12 +1,12 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, ElementRef, OnInit, Inject, PLATFORM_ID, ChangeDetectionStrategy, computed, effect, viewChild, signal, untracked } from '@angular/core';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { computeAmortization } from '../../shared/ph-calculators.util';
 import { isPlatformBrowser } from '@angular/common';
 import { trigger, transition, style, query, stagger, animate } from '@angular/animations';
-import { Chart } from 'chart.js/auto';
 import { SaveShareService } from '../../shared/services/save-share.service';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
@@ -20,6 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
 
 @Component({
     selector: 'app-amortization',
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatCardModule, MatButtonModule, MatSelectModule, MatIconModule, ThousandsSeparatorDirective, RouterModule, AdComponent],
     templateUrl: './amortization.component.html',
     styleUrl: './amortization.component.scss',
@@ -34,8 +35,8 @@ import { MatIconModule } from '@angular/material/icon';
         ])
     ]
 })
-export class AmortizationComponent implements OnInit, AfterViewInit {
-  @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
+export class AmortizationComponent implements OnInit {
+  chartCanvas = viewChild<ElementRef<HTMLCanvasElement>>('chartCanvas');
   chart: any;
   shareUrl: string = '';
   saveSuccess: boolean = false;
@@ -45,9 +46,27 @@ export class AmortizationComponent implements OnInit, AfterViewInit {
     months: [240, [Validators.required, Validators.min(1)]]
   });
 
-  schedule = computeAmortization(1_000_000, 8, 240);
-  pageSize = 24;
-  page = 0;
+  formValue = toSignal(this.form.valueChanges, { initialValue: this.form.getRawValue() });
+
+  schedule = computed(() => {
+    const v = this.formValue();
+    const amount = Number(v.amount) || 0;
+    const rate = Number(v.annualRate) || 0;
+    const months = Number(v.months) || 1;
+    return computeAmortization(amount, rate, months);
+  });
+
+  pageSize = signal(24);
+  page = signal(0);
+
+  totalRows = computed(() => this.schedule().schedule.length);
+  totalPages = computed(() => Math.max(1, Math.ceil(this.totalRows() / this.pageSize())));
+  startIndex = computed(() => this.page() * this.pageSize());
+  endIndex = computed(() => Math.min(this.startIndex() + this.pageSize(), this.totalRows()));
+  pagedRows = computed(() => this.schedule().schedule.slice(this.startIndex(), this.endIndex()));
+
+  canPrev = computed(() => this.page() > 0);
+  canNext = computed(() => this.page() < this.totalPages() - 1);
 
   constructor(
     private fb: FormBuilder, 
@@ -56,15 +75,28 @@ export class AmortizationComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    this.form.valueChanges.subscribe(v => {
-      const amount = Number(v.amount) || 0;
-      const rate = Number(v.annualRate) || 0;
-      const months = Number(v.months) || 1;
-      this.schedule = computeAmortization(amount, rate, months);
-      this.page = 0;
-      this.updateChart();
+    this.form.valueChanges.subscribe(() => {
       this.shareUrl = ''; // reset share link when input changes
       this.saveSuccess = false;
+    });
+
+    effect(() => {
+      this.schedule();
+      untracked(() => this.page.set(0));
+    });
+
+    effect(() => {
+      const canvas = this.chartCanvas();
+      if (canvas && !this.chart) {
+        this.initChart(canvas.nativeElement);
+      }
+    });
+
+    effect(() => {
+      const s = this.schedule();
+      if (this.chart) {
+        this.updateChart(s);
+      }
     });
 
     this.seo.setSchema([
@@ -115,18 +147,11 @@ export class AmortizationComponent implements OnInit, AfterViewInit {
     ]);
   }
 
-  get totalRows() { return this.schedule.schedule.length; }
-  get startIndex() { return this.page * this.pageSize; }
-  get endIndex() { return Math.min(this.startIndex + this.pageSize, this.totalRows); }
-  get pagedRows() { return this.schedule.schedule.slice(this.startIndex, this.endIndex); }
-  get totalPages() { return Math.max(1, Math.ceil(this.totalRows / this.pageSize)); }
-  canPrev() { return this.page > 0; }
-  canNext() { return this.page < this.totalPages - 1; }
-  first() { this.page = 0; }
-  prev() { if (this.canPrev()) this.page--; }
-  next() { if (this.canNext()) this.page++; }
-  last() { this.page = this.totalPages - 1; }
-  setPageSize(size: number) { this.pageSize = size; this.page = 0; }
+  first() { this.page.set(0); }
+  prev() { if (this.canPrev()) this.page.update(p => p - 1); }
+  next() { if (this.canNext()) this.page.update(p => p + 1); }
+  last() { this.page.set(this.totalPages() - 1); }
+  setPageSize(size: number) { this.pageSize.set(size); this.page.set(0); }
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
@@ -143,17 +168,15 @@ export class AmortizationComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit() {
-    this.initChart();
-  }
-
-  initChart() {
-    if (!this.chartCanvas || !isPlatformBrowser(this.platformId)) return;
+  async initChart(canvasEl: HTMLCanvasElement) {
+    if (!isPlatformBrowser(this.platformId)) return;
     
-    const totalPrincipal = this.schedule.schedule.reduce((sum, row) => sum + row.principal, 0);
-    const totalInterest = this.schedule.schedule.reduce((sum, row) => sum + row.interest, 0);
+    const { Chart } = await import('chart.js/auto');
+    const s = this.schedule();
+    const totalPrincipal = s.schedule.reduce((sum, row) => sum + row.principal, 0);
+    const totalInterest = s.schedule.reduce((sum, row) => sum + row.interest, 0);
 
-    this.chart = new Chart(this.chartCanvas.nativeElement, {
+    this.chart = new Chart(canvasEl, {
       type: 'pie',
       data: {
         labels: ['Total Principal', 'Total Interest'],
@@ -172,10 +195,10 @@ export class AmortizationComponent implements OnInit, AfterViewInit {
     });
   }
 
-  updateChart() {
+  updateChart(s: any) {
     if (!this.chart || !isPlatformBrowser(this.platformId)) return;
-    const totalPrincipal = this.schedule.schedule.reduce((sum, row) => sum + row.principal, 0);
-    const totalInterest = this.schedule.schedule.reduce((sum, row) => sum + row.interest, 0);
+    const totalPrincipal = s.schedule.reduce((sum: number, row: any) => sum + row.principal, 0);
+    const totalInterest = s.schedule.reduce((sum: number, row: any) => sum + row.interest, 0);
     
     this.chart.data.datasets[0].data = [totalPrincipal, totalInterest];
     this.chart.update();
@@ -187,7 +210,7 @@ export class AmortizationComponent implements OnInit, AfterViewInit {
       amount: this.form.value.amount,
       annualRate: this.form.value.annualRate,
       months: this.form.value.months,
-      payment: this.schedule.payment
+      payment: this.schedule().payment
     };
     this.saveSuccess = this.saveShare.saveCalculation('amortization', data);
     setTimeout(() => this.saveSuccess = false, 3000);

@@ -50,19 +50,19 @@
         </mat-card-content>
       </mat-card>
 
-      @if (totals.accumulated > 0) {
+      @if (computedData().totals.accumulated > 0) {
         <mat-card class="result-summary mobile-only">
           <div class="summary-item">
             <span>Total Contribution</span>
-            <strong>₱{{ totals.contribution | number:'1.0-0' }}</strong>
+            <strong>₱{{ computedData().totals.contribution | number:'1.0-0' }}</strong>
           </div>
           <div class="summary-item highlight">
             <span>Total Dividends</span>
-            <strong>₱{{ totals.dividend | number:'1.2-2' }}</strong>
+            <strong>₱{{ computedData().totals.dividend | number:'1.2-2' }}</strong>
           </div>
           <div class="summary-item total">
             <span>Total Value (Year {{ form.value.rollover ? '10' : '5' }})</span>
-            <strong>₱{{ totals.accumulated | number:'1.2-2' }}</strong>
+            <strong>₱{{ computedData().totals.accumulated | number:'1.2-2' }}</strong>
           </div>
         </mat-card>
       }
@@ -98,19 +98,27 @@
       <!-- HERO RESULT CARD -->
       <mat-card class="result-card">
         <div class="result-label">Projected Total Value ({{ form.value.rollover ? '10' : '5' }} Years)</div>
-        <div class="result-value">₱{{ totals.accumulated | number:'1.2-2' }}</div>
+        <div class="result-value">₱{{ computedData().totals.accumulated | number:'1.2-2' }}</div>
         <div class="result-sub">
-          Dividends earned: <span class="accent-text">₱{{ totals.dividend | number:'1.2-2' }}</span>
+          Dividends earned: <span class="accent-text">₱{{ computedData().totals.dividend | number:'1.2-2' }}</span>
         </div>
       </mat-card>
 
       <!-- CHART VISUALIZATION -->
-      <mat-card class="chart-card">
-        <h3>Growth Projection</h3>
-        <div class="chart-wrapper" style="padding: 1rem 0;">
-          <canvas #chartCanvas></canvas>
-        </div>
-      </mat-card>
+      @defer (on viewport) {
+        <mat-card class="chart-card">
+          <h3>Growth Projection</h3>
+          <div class="chart-wrapper" style="padding: 1rem 0;">
+            <canvas #chartCanvas></canvas>
+          </div>
+        </mat-card>
+      } @placeholder {
+        <mat-card class="chart-card">
+          <div style="height: 300px; display: flex; align-items: center; justify-content: center;">
+            Loading chart...
+          </div>
+        </mat-card>
+      }
 
       <!-- TABLE DETAILS -->
       <mat-card class="table-card">
@@ -125,7 +133,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (row of results; track row) {
+              @for (row of computedData().results; track row) {
                 <tr>
                   <td>{{ row.year }}</td>
                   <td class="num">{{ row.cumulativeContrib | number:'1.0-0' }}</td>

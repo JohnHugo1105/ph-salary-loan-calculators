@@ -92,8 +92,8 @@
     <div class="result-col">
       <!-- NET PAY HERO CARD -->
       <mat-card class="result-card">
-        <div class="result-label">Estimated Net Pay ({{ view.payFrequency }})</div>
-        <div class="result-value">₱{{ view.netPay | number:'1.2-2' }}</div>
+        <div class="result-label">Estimated Net Pay ({{ view().payFrequency }})</div>
+        <div class="result-value">₱{{ view().netPay | number:'1.2-2' }}</div>
       </mat-card>
 
       <!-- BREAKDOWN CARDS -->
@@ -105,25 +105,25 @@
           </mat-card-header>
           <mat-card-content>
             <div class="row">
-              <span>Basic ({{ view.payFrequency }})</span>
-              <span class="num">₱{{ (view.payFrequency === 'semi-monthly' ? view.grossMonthly / 2 : view.grossMonthly) |
+              <span>Basic ({{ view().payFrequency }})</span>
+              <span class="num">₱{{ (view().payFrequency === 'semi-monthly' ? view().grossMonthly / 2 : view().grossMonthly) |
               number:'1.2-2' }}</span>
             </div>
-            @if (view.overtimePay > 0) {
+            @if (view().overtimePay > 0) {
               <div class="row">
                 <span>Overtime</span>
-                <span class="num">₱{{ view.overtimePay | number:'1.2-2' }}</span>
+                <span class="num">₱{{ view().overtimePay | number:'1.2-2' }}</span>
               </div>
             }
-            @if (view.includeHolidayPays) {
+            @if (view().includeHolidayPays) {
               <div class="row">
                 <span>Holiday Pay</span>
-                <span class="num">₱{{ view.holidayPays.total | number:'1.2-2' }}</span>
+                <span class="num">₱{{ view().holidayPays.total | number:'1.2-2' }}</span>
               </div>
             }
             <div class="row total">
               <span>Gross Total</span>
-              <span class="num">₱{{ view.grossPeriod | number:'1.2-2' }}</span>
+              <span class="num">₱{{ view().grossPeriod | number:'1.2-2' }}</span>
             </div>
           </mat-card-content>
         </mat-card>
@@ -135,23 +135,23 @@
           <mat-card-content>
             <div class="row">
               <span>SSS</span>
-              <span class="num">₱{{ view.contributions.sss.employee | number:'1.2-2' }}</span>
+              <span class="num">₱{{ view().contributions.sss.employee | number:'1.2-2' }}</span>
             </div>
             <div class="row">
               <span>PhilHealth</span>
-              <span class="num">₱{{ view.contributions.philhealth.employee | number:'1.2-2' }}</span>
+              <span class="num">₱{{ view().contributions.philhealth.employee | number:'1.2-2' }}</span>
             </div>
             <div class="row">
               <span>Pag-IBIG</span>
-              <span class="num">₱{{ view.contributions.pagibig.employee | number:'1.2-2' }}</span>
+              <span class="num">₱{{ view().contributions.pagibig.employee | number:'1.2-2' }}</span>
             </div>
             <div class="row">
               <span>Withholding Tax</span>
-              <span class="num">₱{{ view.tax | number:'1.2-2' }}</span>
+              <span class="num">₱{{ view().tax | number:'1.2-2' }}</span>
             </div>
             <div class="row total">
               <span>Total Deductions</span>
-              <span class="num">₱{{ (view.contribPeriod + view.tax) | number:'1.2-2' }}</span>
+              <span class="num">₱{{ (view().contribPeriod + view().tax) | number:'1.2-2' }}</span>
             </div>
           </mat-card-content>
         </mat-card>

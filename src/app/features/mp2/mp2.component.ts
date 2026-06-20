@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, Inject, PLATFORM_ID, computed, effect, viewChild, ElementRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -14,11 +14,12 @@ import { calculateMP2, MP2Row, round2 } from '../../shared/ph-calculators.util';
 import { APP_CONSTANTS } from '../../shared/app.constants';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { Chart } from 'chart.js/auto';
 import { SaveShareService } from '../../shared/services/save-share.service';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'app-mp2',
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
         ReactiveFormsModule,
@@ -36,8 +37,8 @@ import { SaveShareService } from '../../shared/services/save-share.service';
     templateUrl: './mp2.component.html',
     styleUrl: './mp2.component.scss'
 })
-export class Mp2Component implements OnInit, AfterViewInit {
-  @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
+export class Mp2Component implements OnInit {
+  chartCanvas = viewChild<ElementRef<HTMLCanvasElement>>('chartCanvas');
   chart: any;
   shareUrl: string = '';
   saveSuccess: boolean = false;
@@ -49,14 +50,34 @@ export class Mp2Component implements OnInit, AfterViewInit {
     rollover: [false]
   });
 
-  results: MP2Row[] = [];
-  totals = {
-    contribution: 0,
-    dividend: 0,
-    accumulated: 0
-  };
+  formValue = toSignal(this.form.valueChanges, { initialValue: this.form.getRawValue() });
 
-  chartMax = 0; // For scaling CSS bars
+  computedData = computed(() => {
+    const val = this.formValue();
+    const monthly = Number(val.monthlyContribution) || 0;
+    const rate = Number(val.rate) || 0;
+    const mode = (val.mode as 'compounded' | 'annual') || 'compounded';
+    const rollover = !!val.rollover;
+
+    const results = calculateMP2(monthly, rate, mode, rollover);
+    
+    let totals = { contribution: 0, dividend: 0, accumulated: 0 };
+    let chartMax = 0;
+
+    if (results.length > 0) {
+      const last = results[results.length - 1];
+      totals = {
+        contribution: last.cumulativeContrib,
+        dividend: mode === 'compounded'
+          ? round2(last.totalAccumulated - last.cumulativeContrib)
+          : round2(results.reduce((acc, r) => acc + r.annualDividend, 0)),
+        accumulated: last.totalAccumulated
+      };
+      chartMax = last.totalAccumulated * 1.1;
+    }
+
+    return { results, totals, chartMax };
+  });
 
   constructor(
     private fb: FormBuilder, 
@@ -65,6 +86,20 @@ export class Mp2Component implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
+    effect(() => {
+      const canvas = this.chartCanvas();
+      if (canvas && !this.chart) {
+        this.initChart(canvas.nativeElement);
+      }
+    });
+
+    effect(() => {
+      const data = this.computedData();
+      if (this.chart) {
+        this.updateChart(data.results);
+      }
+    });
+
     this.seo.setSchema([
       {
         '@context': 'https://schema.org',
@@ -122,58 +157,24 @@ export class Mp2Component implements OnInit, AfterViewInit {
         }
       }
     });
-    this.compute();
     this.form.valueChanges.subscribe(() => {
-      this.compute();
       this.shareUrl = '';
       this.saveSuccess = false;
     });
   }
 
-  ngAfterViewInit() {
-    this.initChart();
-  }
-
-  compute() {
-    const val = this.form.value;
-    const monthly = Number(val.monthlyContribution) || 0;
-    const rate = Number(val.rate) || 0;
-    const mode = (val.mode as 'compounded' | 'annual') || 'compounded';
-    const rollover = !!val.rollover;
-
-    this.results = calculateMP2(monthly, rate, mode, rollover);
-
-    if (this.results.length > 0) {
-      const last = this.results[this.results.length - 1];
-      this.totals = {
-        contribution: last.cumulativeContrib,
-        // For annual mode, total dividend is sum of annual dividends.
-        // For compounded, it's baked into totalAccumulated - contributions.
-        dividend: mode === 'compounded'
-          ? round2(last.totalAccumulated - last.cumulativeContrib)
-          : round2(this.results.reduce((acc, r) => acc + r.annualDividend, 0)),
-        accumulated: last.totalAccumulated
-      };
-
-      // Find max value for chart scaling (either accumulated or a bit higher)
-      this.chartMax = last.totalAccumulated * 1.1;
-    }
+  async initChart(canvasEl: HTMLCanvasElement) {
+    if (!isPlatformBrowser(this.platformId)) return;
     
-    if (this.chart) {
-      this.updateChart();
-    }
-  }
+    const { Chart } = await import('chart.js/auto');
 
-  initChart() {
-    if (!this.chartCanvas || !isPlatformBrowser(this.platformId)) return;
-    
-    this.chart = new Chart(this.chartCanvas.nativeElement, {
+    this.chart = new Chart(canvasEl, {
       type: 'line',
       data: {
-        labels: this.results.map(r => `Year ${r.year}`),
+        labels: this.computedData().results.map(r => `Year ${r.year}`),
         datasets: [{
-          label: 'Total Value',
-          data: this.results.map(r => r.totalAccumulated),
+          label: 'Total Value (₱)',
+          data: this.computedData().results.map(r => r.totalAccumulated),
           borderColor: '#3b82f6',
           backgroundColor: 'rgba(59, 130, 246, 0.1)',
           fill: true,
@@ -192,10 +193,10 @@ export class Mp2Component implements OnInit, AfterViewInit {
     });
   }
 
-  updateChart() {
+  updateChart(results: MP2Row[]) {
     if (!this.chart || !isPlatformBrowser(this.platformId)) return;
-    this.chart.data.labels = this.results.map(r => `Year ${r.year}`);
-    this.chart.data.datasets[0].data = this.results.map(r => r.totalAccumulated);
+    this.chart.data.labels = results.map(r => `Year ${r.year}`);
+    this.chart.data.datasets[0].data = results.map(r => r.totalAccumulated);
     this.chart.update();
   }
 
@@ -206,7 +207,7 @@ export class Mp2Component implements OnInit, AfterViewInit {
       rate: this.form.value.rate,
       mode: this.form.value.mode,
       rollover: this.form.value.rollover,
-      accumulated: this.totals.accumulated
+      accumulated: this.computedData().totals.accumulated
     };
     this.saveSuccess = this.saveShare.saveCalculation('mp2', data);
     setTimeout(() => this.saveSuccess = false, 3000);
@@ -231,7 +232,8 @@ export class Mp2Component implements OnInit, AfterViewInit {
 
   // Helper for Chart CSS height
   getBarHeight(value: number) {
-    if (this.chartMax === 0) return '0%';
-    return Math.min(100, (value / this.chartMax) * 100) + '%';
+    const max = this.computedData().chartMax;
+    if (max === 0) return '0%';
+    return Math.min(100, (value / max) * 100) + '%';
   }
 }

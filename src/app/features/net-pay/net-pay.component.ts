@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { computeContributions, computeOvertimePay, deriveHourlyRate, computeWithholdingTax, monthlyToSemiMonthly, computeHolidayPays } from '../../shared/ph-calculators.util';
@@ -15,6 +16,7 @@ import { AdComponent } from '../../shared/components/ad/ad.component';
 
 @Component({
     selector: 'app-net-pay',
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
         ReactiveFormsModule,
@@ -58,11 +60,10 @@ export class NetPayComponent {
     specHolRestWorkedDays: [0, [Validators.min(0)]]
   });
 
-  view = this.compute();
+  formValue = toSignal(this.form.valueChanges, { initialValue: this.form.getRawValue() });
+  view = computed(() => this.compute(this.formValue()));
 
   constructor(private fb: FormBuilder, private seo: SeoService) {
-    this.form.valueChanges.subscribe(() => this.view = this.compute());
-
     this.seo.setSchema([
       {
         '@context': 'https://schema.org',
@@ -111,8 +112,7 @@ export class NetPayComponent {
     ]);
   }
 
-  private compute() {
-    const v = this.form.getRawValue();
+  private compute(v: any) {
     const monthlyBasic = Number(v.monthlyBasic) || 0;
     const allowances = Number(v.allowances) || 0;
     const overtimeHours = Number(v.overtimeHours) || 0;

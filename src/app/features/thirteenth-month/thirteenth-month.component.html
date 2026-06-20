@@ -61,7 +61,7 @@
     <div class="result-col">
       <mat-card class="result-card">
         <div class="result-label">Estimated 13th Month Pay</div>
-        <div class="result-value">₱{{ result.gross13th | number:'1.2-2' }}</div>
+        <div class="result-value">₱{{ result().gross13th | number:'1.2-2' }}</div>
       </mat-card>
 
       <mat-card class="detail-card">
@@ -71,14 +71,14 @@
         <mat-card-content>
           <div class="row">
             <span>Tax-Exempt Portion</span>
-            <span class="num">₱{{ result.nonTaxable | number:'1.2-2' }}</span>
+            <span class="num">₱{{ result().nonTaxable | number:'1.2-2' }}</span>
           </div>
 
-          @if (result.taxable > 0) {
+          @if (result().taxable > 0) {
             <div class="taxable-section">
               <div class="row warn">
                 <span>Taxable Excess (Over ₱90k)</span>
-                <span class="num">₱{{ result.taxable | number:'1.2-2' }}</span>
+                <span class="num">₱{{ result().taxable | number:'1.2-2' }}</span>
               </div>
               <div class="tax-estimator">
                 <div class="row small">
@@ -87,17 +87,17 @@
                 </div>
                 <div class="row small">
                   <span>Est. Tax Due</span>
-                  <span class="num warn">- ₱{{ result.taxDue | number:'1.2-2' }}</span>
+                  <span class="num warn">- ₱{{ result().taxDue | number:'1.2-2' }}</span>
                 </div>
               </div>
               <div class="row total">
                 <span>Net 13th Month Pay</span>
-                <span class="num primary">₱{{ result.net13th | number:'1.2-2' }}</span>
+                <span class="num primary">₱{{ result().net13th | number:'1.2-2' }}</span>
               </div>
             </div>
           }
 
-          @if (result.taxable === 0) {
+          @if (result().taxable === 0) {
             <div class="row total">
               <span class="success-text"><mat-icon inline>check_circle</mat-icon> Fully Tax-Exempt</span>
             </div>
