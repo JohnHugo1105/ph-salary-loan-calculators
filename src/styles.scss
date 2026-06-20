@@ -435,9 +435,9 @@ mat-card h3 {
 }
 
 .mat-mdc-form-field {
-  --mdc-outlined-text-field-outline-color: #3a4a5f;
-  --mdc-outlined-text-field-hover-outline-color: #4a5b73;
-  --mdc-outlined-text-field-focus-outline-color: var(--primary);
+  --mat-form-field-outlined-outline-color: #3a4a5f;
+  --mat-form-field-outlined-hover-outline-color: #4a5b73;
+  --mat-form-field-outlined-focus-outline-color: var(--primary);
 }
 
 /* Remove custom focus glow that caused a taller overlapping border */
@@ -464,8 +464,8 @@ mat-card h3 {
 
 /* Light theme form field outline tuning */
 .light-theme .mat-mdc-form-field {
-  --mdc-outlined-text-field-outline-color: #c5ccd6;
-  --mdc-outlined-text-field-hover-outline-color: #9fb3d1;
+  --mat-form-field-outlined-outline-color: #c5ccd6;
+  --mat-form-field-outlined-hover-outline-color: #9fb3d1;
 }
 
 .light-theme .mat-mdc-form-field .mdc-notched-outline__leading,
