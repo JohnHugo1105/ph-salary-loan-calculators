@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { computeContributions, computeOvertimePay, deriveHourlyRate, computeWithholdingTax, monthlyToSemiMonthly, computeHolidayPays } from '../../shared/ph-calculators.util';
+import { computeContributions, computeOvertimePay, deriveHourlyRate, computeWithholdingTax, monthlyToSemiMonthly, computeHolidayPays } from '../../shared/utils/ph-calculators.util';
 import { trigger, transition, style, query, stagger, animate } from '@angular/animations';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,7 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
-import { SeoService } from '../../shared/seo.service';
+import { SeoService } from '../../core/services/seo.service';
 import { AdComponent } from '../../shared/components/ad/ad.component';
 
 @Component({

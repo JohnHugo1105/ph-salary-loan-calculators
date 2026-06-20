@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
-import { SeoService } from '../../shared/seo.service';
+import { SeoService } from '../../core/services/seo.service';
 import { AdComponent } from '../../shared/components/ad/ad.component';
 
 @Component({

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { SeoService } from './shared/seo.service';
+import { SeoService } from './core/services/seo.service';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 
 import { MatToolbarModule } from '@angular/material/toolbar';

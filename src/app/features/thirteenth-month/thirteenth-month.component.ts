@@ -9,9 +9,9 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
-import { SeoService } from '../../shared/seo.service';
+import { SeoService } from '../../core/services/seo.service';
 import { AdComponent } from '../../shared/components/ad/ad.component';
-import { compute13thMonthProRated, estimate13thMonthPay, split13thMonthTaxability, round2 } from '../../shared/ph-calculators.util';
+import { compute13thMonthProRated, estimate13thMonthPay, split13thMonthTaxability, round2 } from '../../shared/utils/ph-calculators.util';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({

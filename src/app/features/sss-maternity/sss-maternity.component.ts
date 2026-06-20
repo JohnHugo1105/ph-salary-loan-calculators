@@ -8,7 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
-import { SeoService } from '../../shared/seo.service';
+import { SeoService } from '../../core/services/seo.service';
 
 @Component({
     selector: 'app-sss-maternity',

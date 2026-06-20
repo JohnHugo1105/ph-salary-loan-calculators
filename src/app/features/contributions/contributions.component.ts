@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { computeContributions } from '../../shared/ph-calculators.util';
+import { computeContributions } from '../../shared/utils/ph-calculators.util';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -9,7 +9,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
-import { SeoService } from '../../shared/seo.service';
+import { SeoService } from '../../core/services/seo.service';
 import { trigger, transition, style, query, stagger, animate } from '@angular/animations';
 
 import { MatIconModule } from '@angular/material/icon';

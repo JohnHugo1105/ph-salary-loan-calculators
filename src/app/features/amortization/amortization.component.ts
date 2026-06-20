@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, Inject, PLATFORM_ID, ChangeDetectionStra
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { computeAmortization } from '../../shared/ph-calculators.util';
+import { computeAmortization } from '../../shared/utils/ph-calculators.util';
 import { isPlatformBrowser } from '@angular/common';
 import { trigger, transition, style, query, stagger, animate } from '@angular/animations';
 import { SaveShareService } from '../../shared/services/save-share.service';
@@ -13,7 +13,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
-import { SeoService } from '../../shared/seo.service';
+import { SeoService } from '../../core/services/seo.service';
 import { AdComponent } from '../../shared/components/ad/ad.component';
 
 import { MatIconModule } from '@angular/material/icon';

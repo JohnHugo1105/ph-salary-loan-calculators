@@ -8,9 +8,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
-import { SeoService } from '../../shared/seo.service';
+import { SeoService } from '../../core/services/seo.service';
 import { MatIconModule } from '@angular/material/icon';
-import { APP_CONSTANTS } from '../../shared/app.constants';
+import { APP_CONSTANTS } from '../../core/config/app.constants';
 
 @Component({
     selector: 'app-sss-salary-loan',

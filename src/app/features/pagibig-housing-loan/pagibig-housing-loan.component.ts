@@ -8,8 +8,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
-import { SeoService } from '../../shared/seo.service';
-import { APP_CONSTANTS } from '../../shared/app.constants';
+import { SeoService } from '../../core/services/seo.service';
+import { APP_CONSTANTS } from '../../core/config/app.constants';
 
 @Component({
     selector: 'app-pagibig-housing-loan',
