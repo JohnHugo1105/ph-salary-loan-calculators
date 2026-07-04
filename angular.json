@@ -52,7 +52,8 @@
               "src/assets",
               "src/robots.txt",
               "src/manifest.webmanifest",
-              "src/sitemap.xml"
+              "src/sitemap.xml",
+              "src/8f82a9d2b28c467a9159048a97b2d56a.txt"
             ],
             "styles": [
               "src/styles.scss"
@@ -140,7 +141,8 @@
               "src/assets",
               "src/robots.txt",
               "src/manifest.webmanifest",
-              "src/sitemap.xml"
+              "src/sitemap.xml",
+              "src/8f82a9d2b28c467a9159048a97b2d56a.txt"
             ],
             "styles": [
               "src/styles.scss"
