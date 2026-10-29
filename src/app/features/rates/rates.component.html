@@ -1,0 +1,94 @@
+<div class="container">
+  <app-page-header title="Rates &amp; sources"
+    lede="Every rate and limit these calculators use, with its effective date and where it comes from.">
+    <span class="badge badge--brand">Last reviewed {{ reviewed }}</span>
+  </app-page-header>
+
+  <p class="prose" style="margin-bottom: var(--space-5)">
+    Rates were reviewed against published schedules and independent reports. Rule sets marked
+    <span class="badge badge--warn">Confirm with agency</span> depend on secondary sources or on rules that change often, so check
+    them before you rely on them. If you spot a rate that has changed, please <a routerLink="/contact">tell us</a>.
+  </p>
+
+  <div class="stack stack--l">
+    @for (g of groups; track g.id) {
+      <section class="card" [attr.aria-labelledby]="'rate-' + g.id">
+        <div class="card__head">
+          <h2 class="card__title" [id]="'rate-' + g.id">{{ g.title }}</h2>
+          @if (g.status === 'checked') {
+            <span class="badge badge--pos">Cross-checked</span>
+          } @else {
+            <span class="badge badge--warn">Confirm with agency</span>
+          }
+        </div>
+        <p class="field__hint" style="margin: calc(var(--space-2) * -1) 0 var(--space-3)">Effective: {{ g.effective }}</p>
+
+        <div class="table-wrap" tabindex="0" role="region" [attr.aria-label]="g.title + ' details'">
+          <table class="table">
+            <caption class="sr-only">{{ g.title }}</caption>
+            <tbody>
+              @for (row of g.rows; track row.label) {
+                <tr><th scope="row">{{ row.label }}</th><td>{{ row.value }}</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        @if (g.id === 'bir') {
+          <h3 style="font-size: var(--step-1); margin: var(--space-5) 0 var(--space-2)">Monthly table</h3>
+          <div class="table-wrap" tabindex="0" role="region" aria-label="Monthly withholding tax table">
+            <table class="table">
+              <thead><tr><th scope="col">Taxable pay a month</th><th scope="col">Tax</th></tr></thead>
+              <tbody>
+                @for (b of monthlyTax; track b.over; let i = $index) {
+                  <tr>
+                    <td>
+                      @if (b.rate === 0) { Up to ₱{{ upper(monthlyTax, i) | number: '1.0-0' }} }
+                      @else if (upper(monthlyTax, i) !== null) { ₱{{ b.over | number: '1.0-0' }} to below ₱{{ upper(monthlyTax, i) | number: '1.0-0' }} }
+                      @else { ₱{{ b.over | number: '1.0-0' }} and above }
+                    </td>
+                    <td>
+                      @if (b.rate === 0) { No tax }
+                      @else { ₱{{ b.base | number: '1.2-2' }} + {{ b.rate * 100 }}% of the excess over ₱{{ b.over | number: '1.0-0' }} }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+          <h3 style="font-size: var(--step-1); margin: var(--space-5) 0 var(--space-2)">Semi-monthly table</h3>
+          <div class="table-wrap" tabindex="0" role="region" aria-label="Semi-monthly withholding tax table">
+            <table class="table">
+              <thead><tr><th scope="col">Taxable pay per period</th><th scope="col">Tax</th></tr></thead>
+              <tbody>
+                @for (b of semiMonthlyTax; track b.over; let i = $index) {
+                  <tr>
+                    <td>
+                      @if (b.rate === 0) { Up to ₱{{ upper(semiMonthlyTax, i) | number: '1.0-0' }} }
+                      @else if (upper(semiMonthlyTax, i) !== null) { ₱{{ b.over | number: '1.0-0' }} to below ₱{{ upper(semiMonthlyTax, i) | number: '1.0-0' }} }
+                      @else { ₱{{ b.over | number: '1.0-0' }} and above }
+                    </td>
+                    <td>
+                      @if (b.rate === 0) { No tax }
+                      @else { ₱{{ b.base | number: '1.2-2' }} + {{ b.rate * 100 }}% of the excess over ₱{{ b.over | number: '1.0-0' }} }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+
+        @if (g.note) {
+          <p class="field__hint" style="margin-top: var(--space-3)">{{ g.note }}</p>
+        }
+        <p style="margin-top: var(--space-3); font-size: var(--step--1)">
+          Source:
+          @for (s of g.sources; track s.label; let last = $last) {
+            @if (s.url) { <a [href]="s.url" target="_blank" rel="noopener">{{ s.label }}</a> } @else { {{ s.label }} }@if (!last) {, }
+          }
+        </p>
+      </section>
+    }
+  </div>
+</div>

@@ -1,149 +1,111 @@
-<header class="hero">
-    <div class="hero-content">
-        <h1>SSS Salary Loan Calculator</h1>
-        <p class="subtitle">Compute your loanable amount, net proceeds, and monthly amortization.</p>
-    </div>
-</header>
+<div class="container">
+  <app-page-header title="SSS salary &amp; emergency loan calculator" section="Loans"
+    lede="Estimate your loanable amount, the cash you actually receive, and your monthly payment.">
+    <span class="badge badge--brand">Salary loan 8% or 10%</span>
+    <span class="badge">Emergency loan 7%</span>
+    <a class="badge" routerLink="/rates">Rates &amp; sources</a>
+  </app-page-header>
 
-<section class="container">
-    <div class="calc-layout">
-        <!-- INPUTS -->
-        <div class="input-col">
-            <mat-card class="input-card">
-                <mat-card-header>
-                    <mat-card-title>Loan Details</mat-card-title>
-                </mat-card-header>
-                <mat-card-content>
-                    <form [formGroup]="form" class="grid-form">
-                        <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                            <mat-label>Average Monthly Salary Credit (MSC)</mat-label>
-                            <input matInput type="text" appThousandsSeparator formControlName="averageMsc" />
-                            <mat-hint>Average of your last 12 MSCs (max ₱{{ rules.salaryLoan.regularMscCap | number:'1.0-0' }})</mat-hint>
-                            @if (form.controls.averageMsc.errors?.['max']) {
-                                <mat-error>Maximum is ₱{{ rules.salaryLoan.regularMscCap | number:'1.0-0' }}</mat-error>
-                            }
-                        </mat-form-field>
-                        
-                        <mat-form-field appearance="outline">
-                            <mat-label>Loan Term / Type</mat-label>
-                            <mat-select formControlName="loanType">
-                                <mat-option [value]="1">1-Month Salary Loan (36+ Contribs)</mat-option>
-                                <mat-option [value]="2">2-Month Salary Loan (72+ Contribs)</mat-option>
-                                <mat-option [value]="3">Emergency Loan (18+ Contribs)</mat-option>
-                            </mat-select>
-                        </mat-form-field>
+  <div class="tool">
+    <form class="tool__inputs" [formGroup]="form" novalidate (submit)="$event.preventDefault()">
+      <section class="card" aria-labelledby="inputs-title">
+        <h2 id="inputs-title" class="card__title">Loan details</h2>
+        <div class="stack">
+          <div>
+            <span class="field__label">Loan type</span>
+            <app-segmented formControlName="loanType" [options]="loanTypes" label="Loan type" />
+            <p class="field__hint">{{ eligibility[form.value.loanType ?? 1] }}</p>
+          </div>
 
-                        @if (!isEmergency) {
-                            <mat-form-field appearance="outline">
-                                <mat-label>Interest Rate (per year)</mat-label>
-                                <mat-select formControlName="salaryLoanRate">
-                                    <mat-option [value]="8">8% — first loan, or renewal with no penalty condonation in the past 5 years</mat-option>
-                                    <mat-option [value]="10">10% — renewal within 5 years of a penalty condonation</mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        } @else {
-                            <mat-form-field appearance="outline">
-                                <mat-label>Loan Amount Basis</mat-label>
-                                <mat-select formControlName="emergencyShare">
-                                    <mat-option [value]="1">100% of average MSC</mat-option>
-                                    <mat-option [value]="0.5">50% of average MSC</mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        }
-                    </form>
-                </mat-card-content>
-            </mat-card>
+          <app-field label="Average monthly salary credit (MSC)" prefix="₱" [control]="form.controls.averageMsc"
+            [errors]="{ required: 'Enter your average MSC', min: 'At least ₱1,000', max: 'SSS counts up to ₱20,000' }"
+            hint="Average of your last 12 posted MSCs (max ₱20,000).">
+            <input type="text" inputmode="decimal" formControlName="averageMsc" appThousandsSeparator [appThousandsSeparatorDecimals]="0" autocomplete="off" />
+          </app-field>
 
-            <mat-card class="result-summary mobile-only">
-                <div class="summary-item">
-                    <span>Loanable Amount</span>
-                    <strong>₱{{ results.loanableAmount | number:'1.2-2' }}</strong>
-                </div>
-                <div class="summary-item highlight">
-                    <span>Net Proceeds</span>
-                    <strong>₱{{ results.netProceeds | number:'1.2-2' }}</strong>
-                </div>
-                <div class="summary-item total">
-                    <span>Monthly Amortization</span>
-                    <strong>₱{{ results.monthlyAmortization | number:'1.2-2' }}</strong>
-                </div>
-            </mat-card>
+          @if (!isEmergency) {
+            <app-field label="Interest rate per year" hint="SSS charges 10% on renewals within 5 years of a penalty condonation.">
+              <select formControlName="salaryLoanRate">
+                <option [ngValue]="8">8% (standard)</option>
+                <option [ngValue]="10">10% (after a penalty condonation)</option>
+              </select>
+            </app-field>
+          } @else {
+            <app-field label="Loan amount basis">
+              <select formControlName="emergencyShare">
+                <option [ngValue]="1">100% of average MSC</option>
+                <option [ngValue]="0.5">50% of average MSC</option>
+              </select>
+            </app-field>
+          }
+        </div>
+      </section>
+      <app-result-bar label="You receive" [value]="form.invalid ? '—' : '₱' + (results().netProceeds | number: '1.2-2')" />
+    </form>
+
+    <div class="tool__results" id="results" tabindex="-1">
+      @if (form.invalid) {
+        <app-callout kind="neg">Some inputs need fixing. Average MSC must be between ₱1,000 and ₱20,000.</app-callout>
+      }
+      <div class="stack" [class.is-stale]="form.invalid">
+        <section class="result" aria-live="polite">
+          <div class="result__label">You receive</div>
+          <div class="result__value">₱{{ results().netProceeds | number: '1.2-2' }}</div>
+          <p class="result__sub">From a ₱{{ results().loanableAmount | number: '1.2-2' }} loan at {{ results().annualRatePct }}% a year.</p>
+        </section>
+
+        <div class="stats">
+          <div class="stat"><div class="stat__label">Monthly payment</div><div class="stat__value">₱{{ results().monthlyAmortization | number: '1.2-2' }}</div></div>
+          <div class="stat"><div class="stat__label">Total repaid</div><div class="stat__value">₱{{ results().totalRepaid | number: '1.2-2' }}</div></div>
+          <div class="stat"><div class="stat__label">Total interest</div><div class="stat__value">₱{{ results().totalInterest | number: '1.2-2' }}</div></div>
         </div>
 
-        <!-- RESULTS -->
-        <div class="result-col">
-            <mat-card class="result-card">
-                <div class="result-label">Estimated Net Proceeds</div>
-                <div class="result-value">₱{{ results.netProceeds | number:'1.2-2' }}</div>
-                <div class="result-sub">Amount you will receive in your bank account.</div>
-            </mat-card>
+        <section class="card" aria-labelledby="how-title">
+          <h2 id="how-title" class="card__title">How it is computed</h2>
+          <app-breakdown [rows]="results().rows" />
+        </section>
 
-            <mat-card class="table-card">
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Breakdown</th>
-                                <th class="num">Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Gross Loanable Amount</td>
-                                <td class="num">₱{{ results.loanableAmount | number:'1.2-2' }}</td>
-                            </tr>
-                            @if (!results.isEmergency) {
-                                <tr>
-                                    <td>Less: 1% Service Fee</td>
-                                    <td class="num text-red">-₱{{ results.serviceFee | number:'1.2-2' }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Less: Advance Interest (est. 1 month)</td>
-                                    <td class="num text-red">-₱{{ results.advanceInterest | number:'1.2-2' }}</td>
-                                </tr>
-                            } @else {
-                                <tr>
-                                    <td>Service Fee / Advance Interest</td>
-                                    <td class="num">None</td>
-                                </tr>
-                            }
-                            <tr class="bold highlight-row">
-                                <td>Net Proceeds</td>
-                                <td class="num">₱{{ results.netProceeds | number:'1.2-2' }}</td>
-                            </tr>
-                            @if (results.isEmergency) {
-                                <tr>
-                                    <td>Payment Moratorium</td>
-                                    <td class="num">{{ results.moratoriumMonths }} months</td>
-                                </tr>
-                                <tr>
-                                    <td>Interest accrued during moratorium (assumed)</td>
-                                    <td class="num">₱{{ results.interestDuringMoratorium | number:'1.2-2' }}</td>
-                                </tr>
-                            }
-                            <tr>
-                                <td><strong>Monthly Amortization ({{ results.termMonths }} Mos{{ results.isEmergency ? ' after moratorium' : '' }})</strong></td>
-                                <td class="num"><strong>₱{{ results.monthlyAmortization | number:'1.2-2' }}</strong></td>
-                            </tr>
-                            <tr>
-                                <td>Interest Rate</td>
-                                <td class="num">{{ results.annualRatePct }}% per year</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <p class="note" style="padding: 0 1rem 1rem; font-size: 0.85rem;">
-                    Estimate only. @if (results.isEmergency) {
-                        Emergency loan terms (7%, no service fee, 6-month moratorium, 24 monthly payments) follow SSS
-                        guidelines as reported; this calculator assumes interest accrues during the moratorium and is
-                        added to the balance, and the loanable amount and eligibility are set by SSS.
-                    } @else {
-                        SSS computes the exact loanable amount, pro-rated interest and deductions for any
-                        outstanding loan when you apply.
-                    }
-                    Verify the rates and limits in the current SSS circulars or through My.SSS before borrowing.
-                </p>
-            </mat-card>
-        </div>
+        @if (isEmergency) {
+          <app-callout kind="warn">
+            <strong>Check the terms.</strong> The emergency loan follows SSS guidelines as reported (7%, no service fee,
+            6-month moratorium, 24 monthly payments). The loan amount and eligibility are set by SSS and may change by
+            circular. Confirm in My.SSS before you borrow.
+          </app-callout>
+        } @else {
+          <app-callout kind="note">
+            <strong>Estimate.</strong> SSS computes the exact loanable amount, the pro-rated interest and any balance of an
+            earlier loan when you apply. Loan limits and rates can change by circular, so confirm them in My.SSS.
+          </app-callout>
+        }
+
+        <app-result-actions [summary]="summary()" [shareData]="shareData()" saveKey="sss-loan" />
+      </div>
     </div>
-</section>
+  </div>
+
+  <article class="prose section" aria-label="How SSS salary and emergency loans work">
+    <h2>How SSS loans are computed</h2>
+    <p>
+      An SSS salary loan is based on the average of your latest 12 monthly salary credits. A one-month loan is about one
+      average MSC and a two-month loan about two, subject to SSS limits. SSS deducts a 1% service fee and the interest due
+      until your first payment, so the cash you receive is lower than the loan amount. The balance is repaid in 24 monthly
+      payments on a diminishing balance.
+    </p>
+    <div class="formula-box example-box">
+      <h3>The formula</h3>
+      <strong>You receive</strong> = loan amount − 1% service fee − advance interest<br>
+      <strong>Monthly payment</strong> = standard loan payment formula over 24 months at the annual rate
+    </div>
+    <h3>Salary loan or emergency loan?</h3>
+    <p>
+      The emergency loan is a separate program with its own eligibility, a lower interest rate, no service fee and a
+      payment moratorium before repayment starts. Use the loan type switch above to compare them.
+    </p>
+    <p class="note">
+      Rates, limits and eligibility are set by SSS circulars and can change. Treat this as a planning estimate and verify it
+      on the SSS website or My.SSS.
+    </p>
+  </article>
+
+  <div class="section"><app-sponsored type="cashExpress" /></div>
+</div>

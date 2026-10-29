@@ -1,199 +1,192 @@
-<header class="hero">
-    <div class="hero-content">
-        <h1>2026 Tax & Contribution Tables</h1>
-        <p class="subtitle">Official reference tables for BIR Income Tax, SSS, and PhilHealth.</p>
+<div class="container">
+  <app-page-header title="2026 tax &amp; SSS contribution tables" section="Salary &amp; tax"
+    lede="The BIR withholding brackets and the SSS contribution schedule, generated from the same rules the calculators use.">
+    <span class="badge badge--brand">BIR table effective 2023</span>
+    <span class="badge">SSS 15% schedule</span>
+    <a class="badge" routerLink="/rates">Rates &amp; sources</a>
+  </app-page-header>
+  <article class="prose">
+    <h2>1. Overview of the Revised Withholding Tax Table (TRAIN Law)</h2>
+    <p>
+        The Tax Reform for Acceleration and Inclusion (TRAIN) Law, officially Republic Act No. 10963, brought
+        monumental shifts to the Philippine taxation system. One of its most celebrated features was the
+        restructuring of personal income tax brackets to significantly increase the take-home pay of millions of
+        Filipino workers.
+    </p>
+    <p>
+        Effective January 1, 2023, the Philippines transitioned into the second phase of this tax reform, lowering
+        the rates even further for most low to middle-class earners. The simplified, graduated schedule below
+        applies to all compensation income earners:
+    </p>
+
+    <div class="table-responsive" tabindex="0" role="region" aria-label="Annual income tax brackets">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Annual Income</th>
+                    <th>Tax Rate</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>₱250,000 and below</strong></td>
+                    <td><strong>0% (Tax Exempt)</strong></td>
+                </tr>
+                <tr>
+                    <td>Over ₱250,000 to ₱400,000</td>
+                    <td>15% of the excess over ₱250,000</td>
+                </tr>
+                <tr>
+                    <td>Over ₱400,000 to ₱800,000</td>
+                    <td>₱22,500 + 20% of the excess over ₱400,000</td>
+                </tr>
+                <tr>
+                    <td>Over ₱800,000 to ₱2,000,000</td>
+                    <td>₱102,500 + 25% of the excess over ₱800,000</td>
+                </tr>
+                <tr>
+                    <td>Over ₱2,000,000 to ₱8,000,000</td>
+                    <td>₱402,500 + 30% of the excess over ₱2,000,000</td>
+                </tr>
+                <tr>
+                    <td>Over ₱8,000,000</td>
+                    <td>₱2,202,500 + 35% of the excess over ₱8,000,000</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-</header>
 
-<section class="container">
-    <article class="content-article">
+    <h3>How to Compute Your Tax (Sample Calculation)</h3>
+    <p>
+        Tax computation is progressive. Let's say your <strong>Taxable Income</strong> (Gross Pay minus non-taxable
+        SSS, PhilHealth, and Pag-IBIG contributions) is exactly <strong>₱500,000</strong> per year.
+    </p>
+    <ol class="styled-list">
+        <li>Find your bracket: ₱500,000 falls in the range <strong>"Over ₱400,000 to ₱800,000"</strong>.</li>
+        <li><strong>Base Fixed Tax:</strong> Look at the flat amount for that tier, which is ₱22,500.</li>
+        <li><strong>Excess Calculation:</strong> ₱500,000 - the floor of ₱400,000 = ₱100,000 excess.</li>
+        <li><strong>Rate on Excess:</strong> Multiply 20% rate by the ₱100,000 excess = ₱20,000.</li>
+        <li><strong>Total Annual Tax:</strong> ₱22,500 + ₱20,000 = <strong>₱42,500</strong>.</li>
+    </ol>
+    <p>
+        To find your estimated monthly tax deduction, simply divide by 12: <strong>₱3,541.67</strong> per month.
+        <em>Remember: A proper 13th-month pay (up to ₱90,000) is excluded from this taxable income.</em>
+    </p>
 
-        <!-- AD PLACEMENT -->
-        <app-ad type="cashSpace"></app-ad>
+    <hr>
 
-        <h2>1. Overview of the Revised Withholding Tax Table (TRAIN Law)</h2>
-        <p>
-            The Tax Reform for Acceleration and Inclusion (TRAIN) Law, officially Republic Act No. 10963, brought
-            monumental shifts to the Philippine taxation system. One of its most celebrated features was the
-            restructuring of personal income tax brackets to significantly increase the take-home pay of millions of
-            Filipino workers.
-        </p>
-        <p>
-            Effective January 1, 2023, the Philippines transitioned into the second phase of this tax reform, lowering
-            the rates even further for most low to middle-class earners. The simplified, graduated schedule below
-            applies to all compensation income earners:
-        </p>
+    <h3>Monthly Withholding Tax Table</h3>
+    <p>
+        Employers withhold tax on the <strong>monthly</strong> taxable compensation (gross pay less mandatory
+        SSS, PhilHealth, and Pag-IBIG contributions) using this table (BIR RR 11-2018, Annex E, effective
+        2023 onwards):
+    </p>
+    <div class="table-responsive" tabindex="0" role="region" aria-label="Monthly withholding tax table">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Monthly Taxable Compensation</th>
+                    <th>Withholding Tax</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (row of monthlyTaxRows; track row.from) {
+                <tr>
+                    <td>
+                        @if (row.rate === 0) {
+                        ₱{{ row.to | number:'1.0-0' }} and below
+                        } @else if (row.to !== null) {
+                        ₱{{ row.from | number:'1.0-0' }} to below ₱{{ row.to | number:'1.0-0' }}
+                        } @else {
+                        ₱{{ row.from | number:'1.0-0' }} and above
+                        }
+                    </td>
+                    <td>
+                        @if (row.rate === 0) {
+                        <strong>0% (Tax Exempt)</strong>
+                        } @else {
+                        ₱{{ row.base | number:'1.2-2' }} + {{ row.rate }}% of the excess over ₱{{ row.from | number:'1.0-0' }}
+                        }
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 
-        <div class="table-responsive">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Annual Income</th>
-                        <th>Tax Rate</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>P250,000 and below</strong></td>
-                        <td><strong>0% (Tax Exempt)</strong></td>
-                    </tr>
-                    <tr>
-                        <td>Over P250,000 to P400,000</td>
-                        <td>15% of the excess over P250,000</td>
-                    </tr>
-                    <tr>
-                        <td>Over P400,000 to P800,000</td>
-                        <td>P22,500 + 20% of the excess over P400,000</td>
-                    </tr>
-                    <tr>
-                        <td>Over P800,000 to P2,000,000</td>
-                        <td>P102,500 + 25% of the excess over P800,000</td>
-                    </tr>
-                    <tr>
-                        <td>Over P2,000,000 to P8,000,000</td>
-                        <td>P402,500 + 30% of the excess over P2,000,000</td>
-                    </tr>
-                    <tr>
-                        <td>Over P8,000,000</td>
-                        <td>P2,202,500 + 35% of the excess over P8,000,000</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+    <hr>
 
-        <h3>How to Compute Your Tax (Sample Calculation)</h3>
-        <p>
-            Tax computation is progressive. Let's say your <strong>Taxable Income</strong> (Gross Pay minus non-taxable
-            SSS, PhilHealth, and Pag-IBIG contributions) is exactly <strong>P500,000</strong> per year.
-        </p>
-        <ol class="styled-list">
-            <li>Find your bracket: P500,000 falls in the range <strong>"Over P400,000 to P800,000"</strong>.</li>
-            <li><strong>Base Fixed Tax:</strong> Look at the flat amount for that tier, which is P22,500.</li>
-            <li><strong>Excess Calculation:</strong> P500,000 - the floor of P400,000 = P100,000 excess.</li>
-            <li><strong>Rate on Excess:</strong> Multiply 20% rate by the P100,000 excess = P20,000.</li>
-            <li><strong>Total Annual Tax:</strong> P22,500 + P20,000 = <strong>P42,500</strong>.</li>
-        </ol>
-        <p>
-            To find your estimated monthly tax deduction, simply divide by 12: <strong>P3,541.67</strong> per month.
-            <em>Remember: A proper 13th-month pay (up to P90,000) is excluded from this taxable income.</em>
-        </p>
+    <h2>2. SSS Contribution Schedule (15% Rate)</h2>
+    <p>
+        Pursuant to the Social Security Act of 2018 (Republic Act No. 11199), the Social Security System (SSS)
+        contribution rate rose in steps until it reached its final level in January 2025. The total contribution
+        rate is now <strong>15%</strong> of the Monthly Salary Credit (MSC): <strong>5% Employee share</strong> and
+        <strong>10% Employer share</strong>, on an MSC from ₱5,000 to ₱35,000.
+        <br><em>Note: The employee share below is the regular SS portion (MSC up to ₱20,000) plus the Mandatory
+            Provident Fund (WISP) portion on the MSC above ₱20,000. Together they equal 5% of the MSC. WISP is not
+            an additional charge.</em>
+    </p>
 
+    <div class="table-responsive" tabindex="0" role="region" aria-label="SSS contribution schedule">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Monthly Salary Credit (MSC)</th>
+                    <th>Regular SS (Employee)</th>
+                    <th>WISP (Employee)</th>
+                    <th>Total Employee Share</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (row of sssRows; track row.msc) {
+                <tr>
+                    <td>₱{{ row.msc | number:'1.0-0' }}</td>
+                    <td>₱{{ row.regular | number:'1.2-2' }}</td>
+                    <td>@if (row.wisp > 0) { ₱{{ row.wisp | number:'1.2-2' }} } @else { - }</td>
+                    <td><strong>₱{{ row.total | number:'1.2-2' }}</strong></td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <p class="note">
+        <em>*This shows selected salary credits only. Salaries are rounded to the nearest ₱500 MSC (for example, a
+            ₱24,750 to ₱25,249.99 salary has a ₱25,000 MSC). Use our <a routerLink="/contributions">SSS
+                Contributions Calculator</a> for any salary. Employers also pay a ₱10 or ₱30 EC premium.</em>
+    </p>
 
-        <hr class="divider">
+    <h3>Understanding The WISP Era</h3>
+    <p>
+        If your MSC is more than ₱20,000 per month, the excess (up to ₱35,000) is credited to the
+        <strong>Workers' Investment and Savings Program (WISP)</strong>. This serves as an additional savings and investment layer managed
+        by the government. It yields interest tax-free, and the accumulated amount is added on top of your regular
+        retirement pension later in life.
+    </p>
 
-        <h3>Monthly Withholding Tax Table</h3>
-        <p>
-            Employers withhold tax on the <strong>monthly</strong> taxable compensation (gross pay less mandatory
-            SSS, PhilHealth, and Pag-IBIG contributions) using this table (BIR RR 11-2018, Annex E, effective
-            2023 onwards):
-        </p>
-        <div class="table-responsive">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Monthly Taxable Compensation</th>
-                        <th>Withholding Tax</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (row of monthlyTaxRows; track row.from) {
-                    <tr>
-                        <td>
-                            @if (row.rate === 0) {
-                            P{{ row.to | number:'1.0-0' }} and below
-                            } @else if (row.to !== null) {
-                            P{{ row.from | number:'1.0-0' }} to below P{{ row.to | number:'1.0-0' }}
-                            } @else {
-                            P{{ row.from | number:'1.0-0' }} and above
-                            }
-                        </td>
-                        <td>
-                            @if (row.rate === 0) {
-                            <strong>0% (Tax Exempt)</strong>
-                            } @else {
-                            P{{ row.base | number:'1.2-2' }} + {{ row.rate }}% of the excess over P{{ row.from | number:'1.0-0' }}
-                            }
-                        </td>
-                    </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+    <hr>
 
-        <hr class="divider">
+    <h2>Frequently Asked Questions (FAQs)</h2>
+    <div class="faq-section">
+        <h3>What is the TRAIN law tax exemption limit?</h3>
+        <p>Under the TRAIN Law, compensation income earners with an annual taxable income of <strong>₱250,000 and
+                below</strong> are completely exempt from paying personal income tax. This means if your basic
+            taxable pay is roughly ₱20,833 or less per month, your income tax withholding is ₱0.</p>
 
-        <h2>2. SSS Contribution Schedule (15% Rate)</h2>
-        <p>
-            Pursuant to the Social Security Act of 2018 (Republic Act No. 11199), the Social Security System (SSS)
-            contribution rate rose in steps until it reached its final level in January 2025. The total contribution
-            rate is now <strong>15%</strong> of the Monthly Salary Credit (MSC): <strong>5% Employee share</strong> and
-            <strong>10% Employer share</strong>, on an MSC from P5,000 to P35,000.
-            <br><em>Note: The employee share below is the regular SS portion (MSC up to P20,000) plus the Mandatory
-                Provident Fund (WISP) portion on the MSC above P20,000. Together they equal 5% of the MSC. WISP is not
-                an additional charge.</em>
-        </p>
+        <h3>What happens if I have multiple employers?</h3>
+        <p>If you have multiple employers during the same calendar year—either concurrently or successively—you are
+            no longer eligible for "Substituted Filing." Even if your employers withheld the correct tax, you must
+            consolidate your income and file your own Annual Income Tax Return (BIR Form 1700) directly with the
+            Bureau of Internal Revenue on or before April 15 of the following year.</p>
 
-        <div class="table-responsive">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Monthly Salary Credit (MSC)</th>
-                        <th>Regular SS (Employee)</th>
-                        <th>WISP (Employee)</th>
-                        <th>Total Employee Share</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (row of sssRows; track row.msc) {
-                    <tr>
-                        <td>P{{ row.msc | number:'1.0-0' }}</td>
-                        <td>P{{ row.regular | number:'1.2-2' }}</td>
-                        <td>@if (row.wisp > 0) { P{{ row.wisp | number:'1.2-2' }} } @else { - }</td>
-                        <td><strong>P{{ row.total | number:'1.2-2' }}</strong></td>
-                    </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-        <p class="note">
-            <em>*This shows selected salary credits only. Salaries are rounded to the nearest P500 MSC (for example, a
-                P24,750 to P25,249.99 salary has a P25,000 MSC). Use our <a routerLink="/contributions">SSS
-                    Contributions Calculator</a> for any salary. Employers also pay a P10 or P30 EC premium.</em>
-        </p>
+        <h3>Are my SSS and PhilHealth contributions taxable?</h3>
+        <p>No. Your mandatory contributions to SSS, PhilHealth, and Pag-IBIG (up to the legally mandated limits) are
+            classified as non-taxable deductions. Your employer must deduct these amounts from your Gross Income
+            first; the resulting lower number is your true <i>Taxable Income</i>, upon which the BIR tax table is
+            applied.</p>
+    </div>
 
-        <h3>Understanding The WISP Era</h3>
-        <p>
-            If your MSC is more than P20,000 per month, the excess (up to P35,000) is credited to the
-            <strong>Workers' Investment and Savings Program (WISP)</strong>. This serves as an additional savings and investment layer managed
-            by the government. It yields interest tax-free, and the accumulated amount is added on top of your regular
-            retirement pension later in life.
-        </p>
-
-        <hr style="margin: 3rem 0; border: 0; border-top: 1px solid #eee;">
-
-        <h2>Frequently Asked Questions (FAQs)</h2>
-        <div class="faq-section">
-            <h3>What is the TRAIN law tax exemption limit?</h3>
-            <p>Under the TRAIN Law, compensation income earners with an annual taxable income of <strong>₱250,000 and
-                    below</strong> are completely exempt from paying personal income tax. This means if your basic
-                taxable pay is roughly ₱20,833 or less per month, your income tax withholding is ₱0.</p>
-
-            <h3>What happens if I have multiple employers?</h3>
-            <p>If you have multiple employers during the same calendar year—either concurrently or successively—you are
-                no longer eligible for "Substituted Filing." Even if your employers withheld the correct tax, you must
-                consolidate your income and file your own Annual Income Tax Return (BIR Form 1700) directly with the
-                Bureau of Internal Revenue on or before April 15 of the following year.</p>
-
-            <h3>Are my SSS and PhilHealth contributions taxable?</h3>
-            <p>No. Your mandatory contributions to SSS, PhilHealth, and Pag-IBIG (up to the legally mandated limits) are
-                classified as non-taxable deductions. Your employer must deduct these amounts from your Gross Income
-                first; the resulting lower number is your true <i>Taxable Income</i>, upon which the BIR tax table is
-                applied.</p>
-        </div>
-
-        <div class="cta-wrapper" style="margin-top: 2rem;">
-            <a mat-flat-button color="primary" routerLink="/net-pay">Go to Calculator</a>
-        </div>
-
-    </article>
-</section>
+    <div class="cta-wrapper">
+        <a class="btn btn--primary" routerLink="/net-pay">Go to Calculator</a>
+    </div>
+  </article>
+</div>

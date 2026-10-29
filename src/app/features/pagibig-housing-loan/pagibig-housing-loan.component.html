@@ -1,71 +1,92 @@
-<header class="hero">
-    <div class="hero-content">
-        <h1>Pag-IBIG Housing Loan Calculator</h1>
-        <p class="subtitle">Estimate your monthly amortization and required income based on latest 2026 repricing rates.</p>
-    </div>
-</header>
+<div class="container">
+  <app-page-header title="Pag-IBIG housing loan calculator" section="Loans"
+    lede="Estimate your monthly amortization and the income you would need, based on the repricing period you choose.">
+    <span class="badge badge--brand">Up to ₱10,000,000</span>
+    <a class="badge" routerLink="/rates">Rates &amp; sources</a>
+  </app-page-header>
 
-<section class="container">
-    <div class="calc-layout">
-        <!-- INPUTS -->
-        <div class="input-col">
-            <mat-card class="input-card">
-                <mat-card-header>
-                    <mat-card-title>Housing Loan Details</mat-card-title>
-                </mat-card-header>
-                <mat-card-content>
-                    <form [formGroup]="form" class="grid-form">
-                        <mat-form-field appearance="outline">
-                            <mat-label>Loan Amount (₱)</mat-label>
-                            <input matInput type="text" appThousandsSeparator formControlName="amount" />
-                            <mat-hint>Max up to ₱10,000,000</mat-hint>
-                        </mat-form-field>
-                        
-                        <div class="form-row">
-                            <mat-form-field appearance="outline">
-                                <mat-label>Loan Term (Years)</mat-label>
-                                <input matInput type="number" formControlName="termYears" min="1" max="30" />
-                            </mat-form-field>
+  <div class="tool">
+    <form class="tool__inputs" [formGroup]="form" novalidate (submit)="$event.preventDefault()">
+      <section class="card" aria-labelledby="inputs-title">
+        <h2 id="inputs-title" class="card__title">Housing loan details</h2>
+        <div class="stack">
+          <app-field label="Loan amount" prefix="₱" [control]="form.controls.amount"
+            [errors]="{ required: 'Enter a loan amount', min: 'At least ₱100,000', max: 'Up to ₱10,000,000' }"
+            hint="₱100,000 to ₱10,000,000.">
+            <input type="text" inputmode="decimal" formControlName="amount" appThousandsSeparator [appThousandsSeparatorDecimals]="0" autocomplete="off" />
+          </app-field>
+          <div class="fields fields--2">
+            <app-field label="Loan term" suffix="years" [control]="form.controls.termYears" [errors]="{ required: 'Enter a term', min: 'At least 1 year', max: 'At most 30 years' }">
+              <input type="number" inputmode="numeric" min="1" max="30" formControlName="termYears" />
+            </app-field>
+            <app-field label="Repricing period">
+              <select formControlName="repricingPeriod">
+                @for (y of repricingOptions; track y) {
+                  <option [ngValue]="y">{{ y }} {{ y === 1 ? 'year' : 'years' }} fixed ({{ rates[y] }}%)</option>
+                }
+              </select>
+            </app-field>
+          </div>
+        </div>
+      </section>
+      <app-result-bar label="Monthly amortization" [value]="form.invalid ? '—' : '₱' + (results().payment | number: '1.2-2')" />
+    </form>
 
-                            <mat-form-field appearance="outline">
-                                <mat-label>Repricing Period</mat-label>
-                                <mat-select formControlName="repricingPeriod">
-                                    <mat-option [value]="1">1 Year Fixed (5.75%)</mat-option>
-                                    <mat-option [value]="3">3 Years Fixed (6.25%)</mat-option>
-                                    <mat-option [value]="5">5 Years Fixed (6.50%)</mat-option>
-                                    <mat-option [value]="10">10 Years Fixed (7.125%)</mat-option>
-                                    <mat-option [value]="15">15 Years Fixed (7.75%)</mat-option>
-                                    <mat-option [value]="20">20 Years Fixed (8.50%)</mat-option>
-                                    <mat-option [value]="25">25 Years Fixed (9.125%)</mat-option>
-                                    <mat-option [value]="30">30 Years Fixed (9.75%)</mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        </div>
-                    </form>
-                </mat-card-content>
-            </mat-card>
+    <div class="tool__results" id="results" tabindex="-1">
+      @if (form.invalid) {
+        <app-callout kind="neg">Some inputs need fixing. The loan must be between ₱100,000 and ₱10,000,000, for 1 to 30 years.</app-callout>
+      }
+      <div class="stack" [class.is-stale]="form.invalid">
+        <section class="result" aria-live="polite">
+          <div class="result__label">Estimated monthly amortization</div>
+          <div class="result__value">₱{{ results().payment | number: '1.2-2' }}</div>
+          <p class="result__sub">At {{ results().rate }}% a year for {{ results().years }} years. Excludes insurance (MRI, fire) and fees.</p>
+        </section>
+
+        <div class="stats">
+          <div class="stat"><div class="stat__label">Income you need</div><div class="stat__value">₱{{ results().requiredIncome | number: '1.2-2' }}</div></div>
+          <div class="stat"><div class="stat__label">Total interest</div><div class="stat__value">₱{{ results().totalInterest | number: '1.2-2' }}</div></div>
+          <div class="stat"><div class="stat__label">Total you pay</div><div class="stat__value">₱{{ results().totalPaid | number: '1.2-2' }}</div></div>
         </div>
 
-        <!-- RESULTS -->
-        <div class="result-col">
-            <mat-card class="result-card">
-                <div class="result-label">Estimated Monthly Amortization</div>
-                <div class="result-value">₱{{ results.monthlyAmortization | number:'1.2-2' }}</div>
-                <div class="result-sub">Excludes insurances (MRI, Fire) and upgrade fees.</div>
-            </mat-card>
+        <section class="card" aria-labelledby="how-title">
+          <h2 id="how-title" class="card__title">How it is computed</h2>
+          <app-breakdown [rows]="results().rows" />
+          <p class="field__hint" style="margin-top: var(--space-3)">
+            Income needed assumes the monthly amortization should not exceed 35% of your gross monthly income.
+          </p>
+        </section>
 
-            <mat-card class="table-card" style="margin-top: 1rem; padding: 1rem;">
-                <div style="margin-bottom: 1rem;">
-                    <strong>Applicable Interest Rate:</strong> <span class="highlight">{{ results.interestRate }}% p.a.</span>
-                </div>
-                <div>
-                    <strong>Required Gross Monthly Income:</strong> 
-                    <span style="display: block; font-size: 1.5rem; font-weight: bold; color: #4ade80;">
-                        ₱{{ results.requiredIncome | number:'1.2-2' }}
-                    </span>
-                    <span style="font-size: 0.85rem; color: #888;">(Amortization must not exceed 35% of your gross income)</span>
-                </div>
-            </mat-card>
-        </div>
+        <app-callout kind="warn">
+          <strong>Rates change.</strong> After the repricing period ends, Pag-IBIG resets the rate and your payment can go up
+          or down. The rates listed here are the ones this calculator uses, so confirm the current schedule with Pag-IBIG
+          before you apply.
+        </app-callout>
+
+        <app-result-actions [summary]="summary()" [shareData]="shareData()" saveKey="pagibig-housing" />
+      </div>
     </div>
-</section>
+  </div>
+
+  <article class="prose section" aria-label="How the Pag-IBIG housing loan works">
+    <h2>How the housing loan payment is worked out</h2>
+    <p>
+      A Pag-IBIG housing loan is repaid in equal monthly amortizations on a diminishing balance. The rate is fixed only for
+      the repricing period you choose (for example 3 or 5 years). After that, Pag-IBIG resets the rate for the remaining
+      term, so your payment can change. A longer repricing period gives you a steadier payment but usually a higher starting
+      rate.
+    </p>
+    <h3>Why the income needed matters</h3>
+    <p>
+      Lenders check that your monthly amortization is affordable. This calculator shows the gross monthly income you would
+      need if the payment should be no more than 35% of it. Your own approval also depends on your credit and other
+      requirements, so treat it as a rough guide.
+    </p>
+    <p class="note">
+      Not included: mortgage redemption insurance, fire insurance, processing and other fees. Compare any figure here with the
+      computation Pag-IBIG gives you.
+    </p>
+  </article>
+
+  <div class="section"><app-sponsored type="loanOnline" /></div>
+</div>

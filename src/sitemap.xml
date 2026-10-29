@@ -36,7 +36,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.phcalculators.com/articles/sss-contribution-2025</loc>
+    <loc>https://www.phcalculators.com/articles/sss-contribution-2026</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -79,5 +79,25 @@
     <loc>https://www.phcalculators.com/disclaimer</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://www.phcalculators.com/sss-salary-loan</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.phcalculators.com/pagibig-housing-loan</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.phcalculators.com/sss-maternity-benefit</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.phcalculators.com/rates</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
 </urlset>

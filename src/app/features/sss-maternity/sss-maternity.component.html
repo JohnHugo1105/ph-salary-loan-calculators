@@ -1,80 +1,106 @@
-<header class="hero">
-    <div class="hero-content">
-        <h1>SSS Maternity Benefit Calculator</h1>
-        <p class="subtitle">Compute your daily maternity allowance based on Expanded Maternity Leave Law (RA 11210).</p>
-    </div>
-</header>
+<div class="container">
+  <app-page-header title="SSS maternity benefit calculator" section="Government benefits"
+    lede="Estimate your daily maternity allowance and total benefit under the Expanded Maternity Leave Law (RA 11210).">
+    <span class="badge badge--brand">SSS salary credit up to ₱20,000</span>
+    <a class="badge" routerLink="/rates">Rates &amp; sources</a>
+  </app-page-header>
 
-<section class="container">
-    <div class="calc-layout">
-        <!-- INPUTS -->
-        <div class="input-col">
-            <mat-card class="input-card">
-                <mat-card-header>
-                    <mat-card-title>Maternity Leave Details</mat-card-title>
-                </mat-card-header>
-                <mat-card-content>
-                    <form [formGroup]="form" class="grid-form">
-                        <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                            <mat-label>Total of 6 Highest MSCs (₱)</mat-label>
-                            <input matInput type="text" appThousandsSeparator formControlName="totalMsc" />
-                            <mat-hint>Sum of your 6 highest MSCs (max ₱{{ maxTotalMsc | number:'1.0-0' }})</mat-hint>
-                            @if (form.controls.totalMsc.errors?.['max']) {
-                                <mat-error>Maximum is ₱{{ maxTotalMsc | number:'1.0-0' }}</mat-error>
-                            }
-                        </mat-form-field>
-                        
-                        <mat-form-field appearance="outline">
-                            <mat-label>Type of Delivery / Contingency</mat-label>
-                            <mat-select formControlName="deliveryType">
-                                <mat-option [value]="105">Normal / Caesarean Delivery (105 Days)</mat-option>
-                                <mat-option [value]="120">Solo Parent Delivery (120 Days)</mat-option>
-                                <mat-option [value]="60">Miscarriage / Emergency Termination (60 Days)</mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </form>
-                </mat-card-content>
-            </mat-card>
+  <div class="tool">
+    <form class="tool__inputs" [formGroup]="form" novalidate (submit)="$event.preventDefault()">
+      <section class="card" aria-labelledby="inputs-title">
+        <h2 id="inputs-title" class="card__title">Your contributions</h2>
+        <div class="stack">
+          <div>
+            <span class="field__label">I want to enter</span>
+            <app-segmented formControlName="entry" [options]="entries" label="How to enter your monthly salary credits" />
+          </div>
+
+          @if (form.value.entry === 'single') {
+            <app-field label="Monthly salary credit (MSC)" prefix="₱" [control]="form.controls.monthlyMsc"
+              [errors]="{ required: 'Enter your MSC', min: 'Enter an amount above ₱0' }"
+              hint="If your six highest MSCs are the same.">
+              <input type="text" inputmode="decimal" formControlName="monthlyMsc" appThousandsSeparator [appThousandsSeparatorDecimals]="0" autocomplete="off" />
+            </app-field>
+          } @else {
+            <app-field label="Total of your 6 highest MSCs" prefix="₱" [control]="form.controls.totalMsc"
+              [errors]="{ required: 'Enter the total', min: 'Enter an amount above ₱0' }"
+              hint="Highest six in the 12 months before the semester of delivery.">
+              <input type="text" inputmode="decimal" formControlName="totalMsc" appThousandsSeparator [appThousandsSeparatorDecimals]="0" autocomplete="off" />
+            </app-field>
+          }
+
+          <app-field label="Type of leave">
+            <select formControlName="deliveryType">
+              @for (t of leaveTypes; track t.value) {
+                <option [ngValue]="t.value">{{ t.label }}</option>
+              }
+            </select>
+          </app-field>
         </div>
+      </section>
+      <app-result-bar label="Estimated benefit" [value]="form.invalid ? '—' : '₱' + (results().benefit | number: '1.2-2')" />
+    </form>
 
-        <!-- RESULTS -->
-        <div class="result-col">
-            <mat-card class="result-card">
-                <div class="result-label">Total Maternity Benefit</div>
-                <div class="result-value">₱{{ results.totalBenefit | number:'1.2-2' }}</div>
-                <div class="result-sub">Paid out as cash allowance.</div>
-            </mat-card>
+    <div class="tool__results" id="results" tabindex="-1">
+      @if (form.invalid) {
+        <app-callout kind="neg">Enter an amount above ₱0 to see the benefit.</app-callout>
+      }
+      <div class="stack" [class.is-stale]="form.invalid">
+        <section class="result" aria-live="polite">
+          <div class="result__label">Estimated maternity benefit</div>
+          <div class="result__value">₱{{ results().benefit | number: '1.2-2' }}</div>
+          <p class="result__sub">{{ results().days }} days at ₱{{ results().adsc | number: '1.2-2' }} a day. Paid as a cash allowance.</p>
+        </section>
 
-            @if (results.capped) {
-                <mat-card class="table-card" style="margin-top: 1rem; padding: 1rem;">
-                    Your entry is above the maximum SSS counts. This estimate uses
-                    ₱{{ results.countedTotal | number:'1.0-0' }} (6 × ₱{{ mscCap | number:'1.0-0' }}).
-                </mat-card>
-            }
+        @if (results().capped) {
+          <app-callout kind="warn">
+            SSS counts each MSC only up to ₱{{ mscCap | number: '1.0-0' }}, so this estimate uses
+            ₱{{ results().countedTotal | number: '1.0-0' }} (6 × ₱{{ mscCap | number: '1.0-0' }}), not the amount you entered.
+          </app-callout>
+        }
 
-            <mat-card class="table-card" style="margin-top: 1rem; padding: 1rem;">
-                <div style="margin-bottom: 0.5rem;">
-                    <strong>Average Daily Salary Credit (ADSC):</strong> 
-                    <span class="highlight">₱{{ results.adsc | number:'1.2-2' }}</span>
-                </div>
-                <div style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">
-                    (Computed as: Total of 6 Highest MSCs, each up to ₱{{ mscCap | number:'1.0-0' }}, ÷ 180 days. ADSC is shown rounded to the centavo.)
-                </div>
-                
-                <div>
-                    <strong>Total Benefit Calculation:</strong> 
-                    <span style="display: block; font-size: 1.1rem;">
-                        ₱{{ results.adsc | number:'1.2-2' }} × {{ form.value.deliveryType }} days = <strong>₱{{ results.totalBenefit | number:'1.2-2' }}</strong>
-                    </span>
-                </div>
-                <div style="font-size: 0.85rem; color: #666; margin-top: 1rem;">
-                    Use the 6 highest MSCs in the 12 months before the semester of your delivery or miscarriage.
-                    SSS counts each MSC up to ₱{{ mscCap | number:'1.0-0' }}. To qualify you need at least 3 monthly
-                    contributions in that 12-month period. The semester and the MSCs that count depend on your
-                    delivery date, so confirm your exact figures in My.SSS. This is an estimate, not an SSS
-                    computation.
-                </div>
-            </mat-card>
-        </div>
+        <section class="card" aria-labelledby="how-title">
+          <h2 id="how-title" class="card__title">How it is computed</h2>
+          <app-breakdown [rows]="results().rows" />
+        </section>
+
+        <app-callout kind="note">
+          <strong>Estimate, not an SSS computation.</strong> You need at least 3 monthly contributions in the 12 months before
+          the semester of your delivery or miscarriage. The semester and the MSCs that count depend on your delivery date, so
+          confirm your exact figures in My.SSS.
+        </app-callout>
+
+        <app-result-actions [summary]="summary()" [shareData]="shareData()" saveKey="sss-maternity" />
+      </div>
     </div>
-</section>
+  </div>
+
+  <article class="prose section" aria-label="How the SSS maternity benefit works">
+    <h2>How the SSS maternity benefit is computed</h2>
+    <p>
+      The Expanded Maternity Leave Law (RA 11210) gives qualified female workers 105 days of paid maternity leave for a live
+      birth, 120 days for a solo parent, and 60 days for a miscarriage or emergency termination of pregnancy. SSS pays the
+      daily maternity allowance, and your employer is generally required to pay any difference between that and your full
+      salary.
+    </p>
+    <div class="formula-box example-box">
+      <h3>The formula</h3>
+      <strong>Average daily salary credit</strong> = total of your six highest monthly salary credits ÷ 180<br>
+      <strong>Maternity benefit</strong> = average daily salary credit × days of leave
+    </div>
+    <p>
+      For this benefit, SSS counts each monthly salary credit only up to ₱20,000, so the largest six-month total is ₱120,000.
+      That makes the largest regular benefit ₱70,000 for 105 days (₱80,000 for 120 days and ₱40,000 for 60 days).
+    </p>
+    <h3>Who qualifies</h3>
+    <ul>
+      <li>You have paid at least 3 monthly contributions in the 12 months before the semester of your delivery or miscarriage.</li>
+      <li>You notified your employer (or SSS, if you are self-employed or voluntary) of your pregnancy.</li>
+    </ul>
+    <p class="note">
+      Rules and procedures change. Always confirm with SSS how your own contribution record and delivery date apply.
+    </p>
+  </article>
+
+  <div class="section"><app-sponsored type="cashSpace" /></div>
+</div>

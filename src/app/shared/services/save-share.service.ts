@@ -1,5 +1,6 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { FormGroup } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'
@@ -93,5 +94,50 @@ export class SaveShareService {
       }
     }
     return null;
+  }
+
+  /**
+   * Fills a form from a shared link (?data=...). Only controls that exist on the form are set.
+   */
+  restoreInto(form: FormGroup, encoded: string | null): boolean {
+    const data = this.decodeSharedData(encoded ?? '');
+    if (!data || typeof data !== 'object') return false;
+    const patch: Record<string, unknown> = {};
+    for (const key of Object.keys(data)) {
+      if (form.contains(key)) patch[key] = data[key];
+    }
+    form.patchValue(patch);
+    return true;
+  }
+
+  /** Encodes inputs for a ?data= link without the origin (for router links). */
+  encode(data: unknown): string {
+    try {
+      return btoa(encodeURIComponent(JSON.stringify(data)));
+    } catch {
+      return '';
+    }
+  }
+
+  /** Every saved calculation, grouped by calculator key. */
+  getAll(): Record<string, any[]> {
+    if (!isPlatformBrowser(this.platformId)) return {};
+    try {
+      return JSON.parse(localStorage.getItem('phcalc_saved') ?? '{}') ?? {};
+    } catch {
+      return {};
+    }
+  }
+
+  deleteCalculation(key: string, index: number): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    try {
+      const all = this.getAll();
+      all[key]?.splice(index, 1);
+      if (all[key] && all[key].length === 0) delete all[key];
+      localStorage.setItem('phcalc_saved', JSON.stringify(all));
+    } catch (e) {
+      console.error('Error deleting from localStorage', e);
+    }
   }
 }

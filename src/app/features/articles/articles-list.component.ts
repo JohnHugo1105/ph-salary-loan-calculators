@@ -1,44 +1,15 @@
-import { Component } from '@angular/core';
-
-import { RouterLink } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { GUIDES, TOOLS } from '../../core/config/tools';
+import { PageHeaderComponent } from '../../shared/ui/page-header.component';
+import { ToolCardComponent } from '../../shared/ui/tool-card.component';
 
 @Component({
-    selector: 'app-articles-list',
-    imports: [
-    RouterLink,
-    MatCardModule,
-    MatIconModule,
-    MatButtonModule
-],
-    templateUrl: './articles-list.component.html',
-    styleUrl: './articles-list.component.scss'
+  selector: 'app-articles-list',
+  imports: [PageHeaderComponent, ToolCardComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './articles-list.component.html',
 })
 export class ArticlesListComponent {
-
-  articles = [
-    {
-      title: 'SSS Contribution 2026',
-      description: 'Step-by-step guide to compute your SSS contribution for the new year.',
-      icon: 'calculate',
-      route: '/articles/sss-contribution-2026',
-      color: 'primary'
-    },
-    {
-      title: 'Pag-IBIG vs MP2',
-      description: 'Detailed comparison between regular Pag-IBIG savings and MP2.',
-      icon: 'compare_arrows',
-      route: '/articles/pagibig-vs-mpf',
-      color: 'accent'
-    },
-    {
-      title: 'Loan Amortization 101',
-      description: 'How loan amortization works in the Philippines: basics and examples.',
-      icon: 'school',
-      route: '/articles/loan-amortization-ph',
-      color: 'warn'
-    }
-  ];
+  readonly guides = GUIDES;
+  readonly tools = TOOLS;
 }

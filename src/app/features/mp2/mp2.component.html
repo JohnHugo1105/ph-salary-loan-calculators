@@ -1,158 +1,86 @@
-<header class="hero">
-  <div class="hero-content">
-    <h1>MP2 Savings Calculator</h1>
-    <p class="subtitle">Project your earnings with Pag-IBIG's 5-year modified savings program.</p>
-  </div>
-</header>
+<div class="container">
+  <app-page-header title="Pag-IBIG MP2 savings calculator" section="Savings"
+    lede="Project how much your MP2 savings could grow over its 5-year term, with dividends reinvested or taken every year.">
+    <span class="badge badge--brand">Latest declared: {{ latestDeclared.ratePct }}% ({{ latestDeclared.year }})</span>
+    <a class="badge" routerLink="/rates">Rates &amp; sources</a>
+  </app-page-header>
 
-<section class="container">
-  <div class="calc-layout">
-    <!-- LEFT COLUMN: INPUTS -->
-    <div class="input-col">
-      <mat-card class="input-card">
-        <mat-card-header>
-          <mat-card-title>Savings Plan</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <form [formGroup]="form" class="grid-form">
-            <p class="desc-text">
-              MP2 (Modified Pag-IBIG 2) is a special voluntary savings facility with a 5-year maturity,
-              designed for higher dividends.
-            </p>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Monthly Contribution (₱)</mat-label>
-              <input matInput type="text" appThousandsSeparator formControlName="monthlyContribution"
-                inputmode="decimal" />
-              <mat-hint>Minimum ₱500</mat-hint>
-            </mat-form-field>
-
-            <div class="form-row">
-              <mat-form-field appearance="outline">
-                <mat-label>Dividend Rate (%)</mat-label>
-                <input matInput type="number" formControlName="rate" step="0.01" />
-                <mat-hint>{{ latestDeclared.year }} declared</mat-hint>
-              </mat-form-field>
-
-              <mat-form-field appearance="outline">
-                <mat-label>Payout Mode</mat-label>
-                <mat-select formControlName="mode">
-                  <mat-option value="compounded">Compounded (5 Years)</mat-option>
-                  <mat-option value="annual">Annual Payout</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-            <div class="form-row" style="margin-top: 10px;">
-              <mat-checkbox formControlName="rollover" color="primary">
-                Enable Auto-Rollover (10 Years Projection)
-              </mat-checkbox>
-            </div>
-          </form>
-        </mat-card-content>
-      </mat-card>
-
-      @if (computedData().totals.accumulated > 0) {
-        <mat-card class="result-summary mobile-only">
-          <div class="summary-item">
-            <span>Total Contribution</span>
-            <strong>₱{{ computedData().totals.contribution | number:'1.0-0' }}</strong>
+  <div class="tool">
+    <form class="tool__inputs" [formGroup]="form" novalidate (submit)="$event.preventDefault()">
+      <section class="card" aria-labelledby="inputs-title">
+        <h2 id="inputs-title" class="card__title">Your savings plan</h2>
+        <div class="stack">
+          <app-field label="Monthly savings" prefix="₱" [control]="form.controls.monthlyContribution"
+            [errors]="{ required: 'Enter an amount', min: 'The minimum is ₱500', max: 'That is above the maximum' }"
+            hint="Minimum ₱500 a month.">
+            <input type="text" inputmode="decimal" formControlName="monthlyContribution" appThousandsSeparator [appThousandsSeparatorDecimals]="0" autocomplete="off" />
+          </app-field>
+          <app-field label="Dividend rate" suffix="% a year" [control]="form.controls.rate"
+            [errors]="{ required: 'Enter a rate', min: 'At least 0%', max: 'Use a rate of 25% or less' }"
+            [hint]="'Declared rate for ' + latestDeclared.year + '. Future rates are not guaranteed.'">
+            <input type="number" inputmode="decimal" step="0.01" min="0" max="25" formControlName="rate" />
+          </app-field>
+          <div>
+            <span class="field__label">Dividends</span>
+            <app-segmented formControlName="mode" [options]="modes" label="What happens to dividends" />
           </div>
-          <div class="summary-item highlight">
-            <span>Total Dividends</span>
-            <strong>₱{{ computedData().totals.dividend | number:'1.2-2' }}</strong>
-          </div>
-          <div class="summary-item total">
-            <span>Total Value (Year {{ form.value.rollover ? '10' : '5' }})</span>
-            <strong>₱{{ computedData().totals.accumulated | number:'1.2-2' }}</strong>
-          </div>
-        </mat-card>
-      }
-
-      <mat-card class="action-card" style="margin-top: 1rem;">
-        <mat-card-content style="display: flex; flex-direction: column; gap: 0.5rem;">
-          <button mat-flat-button color="primary" (click)="saveCalculation()">
-            <mat-icon>save</mat-icon> Save Calculation
-          </button>
-          @if (saveSuccess) {
-            <div style="color: green; text-align: center; font-size: 0.85rem;">Saved to browser successfully!</div>
-          }
-
-          <button mat-stroked-button color="accent" (click)="generateShareLink()">
-            <mat-icon>share</mat-icon> Generate Share Link
-          </button>
-
-          @if (shareUrl) {
-            <div class="share-box" style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
-              <input matInput type="text" [value]="shareUrl" readonly style="flex: 1; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" />
-              <button mat-icon-button color="primary" (click)="copyLink()" title="Copy to clipboard">
-                <mat-icon>content_copy</mat-icon>
-              </button>
-            </div>
-          }
-        </mat-card-content>
-      </mat-card>
-    </div>
-
-    <!-- RIGHT COLUMN: RESULTS -->
-    <div class="result-col">
-
-      <!-- HERO RESULT CARD -->
-      <mat-card class="result-card">
-        <div class="result-label">Projected Total Value ({{ form.value.rollover ? '10' : '5' }} Years)</div>
-        <div class="result-value">₱{{ computedData().totals.accumulated | number:'1.2-2' }}</div>
-        <div class="result-sub">
-          Dividends earned: <span class="accent-text">₱{{ computedData().totals.dividend | number:'1.2-2' }}</span>
+          <label class="check">
+            <input type="checkbox" formControlName="rollover" />
+            <span>Project 10 years <small>Assumes you open a new 5-year account at maturity with your savings and dividends, at the same rate.</small></span>
+          </label>
         </div>
-      </mat-card>
+      </section>
+      <app-result-bar [label]="'Projected value after ' + model().years + ' years'" [value]="form.invalid ? '—' : '₱' + (model().accumulated | number: '1.2-2')" />
+    </form>
 
-      <!-- CHART VISUALIZATION -->
-      @defer (on viewport) {
-        <mat-card class="chart-card">
-          <h3>Growth Projection</h3>
-          <div class="chart-wrapper" style="padding: 1rem 0;">
-            <canvas #chartCanvas></canvas>
-          </div>
-        </mat-card>
-      } @placeholder {
-        <mat-card class="chart-card">
-          <div style="height: 300px; display: flex; align-items: center; justify-content: center;">
-            Loading chart...
-          </div>
-        </mat-card>
+    <div class="tool__results" id="results" tabindex="-1">
+      @if (form.invalid) {
+        <app-callout kind="neg">Some inputs need fixing. Savings must be at least ₱500 a month.</app-callout>
       }
+      <div class="stack" [class.is-stale]="form.invalid">
+        <section class="result" aria-live="polite">
+          <div class="result__label">Projected value after {{ model().years }} years</div>
+          <div class="result__value">₱{{ model().accumulated | number: '1.2-2' }}</div>
+          <p class="result__sub">₱{{ model().contributed | number: '1.2-2' }} saved plus ₱{{ model().dividends | number: '1.2-2' }} in dividends.</p>
+        </section>
 
-      <!-- TABLE DETAILS -->
-      <mat-card class="table-card">
-        <div class="table-responsive">
-          <table>
-            <thead>
-              <tr>
-                <th>Year</th>
-                <th class="num">Contrib</th>
-                <th class="num">Dividend</th>
-                <th class="num">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (row of computedData().results; track row) {
-                <tr>
-                  <td>{{ row.year }}</td>
-                  <td class="num">{{ row.cumulativeContrib | number:'1.0-0' }}</td>
-                  <td class="num highlight">+{{ row.annualDividend | number:'1.2-2' }}</td>
-                  <td class="num bold">{{ row.totalAccumulated | number:'1.2-2' }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
+        <div class="stats">
+          <div class="stat"><div class="stat__label">You save</div><div class="stat__value">₱{{ model().contributed | number: '1.2-2' }}</div></div>
+          <div class="stat"><div class="stat__label">Dividends</div><div class="stat__value">₱{{ model().dividends | number: '1.2-2' }}</div></div>
+          <div class="stat"><div class="stat__label">Growth on savings</div><div class="stat__value">{{ model().growth }}</div></div>
         </div>
-      </mat-card>
+
+        <section class="card" aria-label="Savings growth chart">
+          <app-stacked-columns title="What you have saved and earned, by year" rowHeader="Year" [data]="model().columns" [series]="series" />
+        </section>
+
+        <details class="disclosure">
+          <summary>Year-by-year table</summary>
+          <div class="disclosure__body">
+            <div class="table-wrap" tabindex="0" role="region" aria-label="Year-by-year MP2 projection">
+              <table class="table">
+                <thead><tr><th scope="col">Year</th><th scope="col" class="num">Dividend that year</th><th scope="col" class="num">Savings so far</th></tr></thead>
+                <tbody>
+                  @for (r of model().rows; track r.year) {
+                    <tr><th scope="row">{{ r.year }}</th><td class="num">₱{{ r.annualDividend | number: '1.2-2' }}</td><td class="num">₱{{ r.cumulativeContrib | number: '1.2-2' }}</td></tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </details>
+
+        <app-callout kind="warn">
+          <strong>A projection, not a promise.</strong> Pag-IBIG declares the MP2 dividend rate every year. This estimate
+          holds the rate constant and approximates your average monthly balance, so your actual dividends will differ.
+        </app-callout>
+
+        <app-result-actions [summary]="summary()" [shareData]="shareData()" saveKey="mp2" />
+      </div>
     </div>
   </div>
 
-  <hr class="divider">
-
-  <!-- SEO CONTENT -->
-  <article class="content-article">
+  <article class="prose section" aria-label="Guide to Pag-IBIG MP2 savings">
     <h2>The Complete Pag-IBIG MP2 Investment Guide (2026)</h2>
     <p>
       The <strong>Modified Pag-IBIG 2 (MP2)</strong> Savings is a special, voluntary savings facility with a
@@ -185,19 +113,19 @@
   <h3>Scenario: ₱500 Monthly (Compounded vs. Annual Payout)</h3>
   <p>Assuming a constant 7.00% dividend rate over 5 years.</p>
 
-  <h4 style="margin-top: 1rem;">Option A: Compounded Earnings (Re-invested)</h4>
-  <ul style="margin-bottom: 0;">
+  <h4>Option A: Compounded Earnings (Re-invested)</h4>
+  <ul>
     <li>Total Capital Contributed: ₱30,000</li>
-    <li><strong>Total Dividends Earned: ₱5,836.00</strong></li>
+    <li><strong>Total Dividends Earned: ₱{{ example.compounded.dividends | number: '1.2-2' }}</strong></li>
     <li><em>Why?</em> Because the dividends you earn in Year 1 are added to your principal, meaning you earn
     "interest on top of your interest" in Years 2, 3, 4, and 5. This is highly recommended for wealth
   building.</li>
 </ul>
 
-<h4 style="margin-top: 1.5rem">Option B: Annual Payout (Withdrawn Yearly)</h4>
-<ul style="margin-bottom: 0;">
+<h4>Option B: Annual Payout (Withdrawn Yearly)</h4>
+<ul>
   <li>Total Capital Contributed: ₱30,000</li>
-  <li><strong>Total Dividends Earned: ₱5,425.00</strong></li>
+  <li><strong>Total Dividends Earned: ₱{{ example.annual.dividends | number: '1.2-2' }}</strong></li>
   <li><em>Why?</em> Because you withdraw your earnings every year through your enrolled bank account
   (Loyalty Card Plus), your principal never grows beyond your monthly deposits. You lose the snowball
 effect of compounding interest, but gain immediate annual passive cash flow.</li>
@@ -210,8 +138,8 @@ effect of compounding interest, but gain immediate annual passive cash flow.</li
   at least 70% of its annual net income to its members in the form of dividends. While past performance is not
   a guarantee of future returns, MP2 has consistently outperformed inflation.
 </p>
-<div class="table-responsive" style="max-width: 300px;">
-  <table class="data-table" style="margin-bottom: 1.5rem;">
+<div class="table-responsive" tabindex="0" role="region" aria-label="Historical MP2 dividend rates">
+  <table class="data-table">
     <thead>
       <tr>
         <th>Year</th>
@@ -251,7 +179,7 @@ effect of compounding interest, but gain immediate annual passive cash flow.</li
   </table>
 </div>
 
-<hr style="margin: 3rem 0; border: 0; border-top: 1px solid #eee;">
+<hr>
 
 <h2>Frequently Asked Questions (FAQs)</h2>
 <div class="faq-section">
@@ -274,9 +202,11 @@ effect of compounding interest, but gain immediate annual passive cash flow.</li
   a child's college tuition).</p>
 </div>
 
-<div class="cta-wrapper" style="margin-top: 2rem;">
-  <a mat-stroked-button color="primary" routerLink="/articles/pagibig-vs-mpf">Read more: Pag-IBIG vs SSS
+<div class="cta-wrapper">
+  <a class="btn" routerLink="/articles/pagibig-vs-mpf">Read more: Pag-IBIG vs SSS
   MPF</a>
 </div>
-</article>
-</section>
+  </article>
+
+  <div class="section"><app-sponsored type="finmerkado" /></div>
+</div>

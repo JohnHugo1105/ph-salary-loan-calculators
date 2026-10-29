@@ -1,0 +1,120 @@
+// Design tokens. Light is the default; dark follows the OS unless the user picks a theme
+// (the chosen theme is stored as data-theme on <html>).
+
+@mixin dark-tokens {
+  --bg: #0b1017;
+  --surface: #121923;
+  --surface-2: #18212d;
+  --surface-3: #1f2a3a;
+  --border: #243044;
+  --border-strong: #35445d;
+  --control-border: #70829c;
+
+  --text: #eaf0f8;
+  --text-2: #aab6c8;
+  --text-3: #8d9bb1;
+
+  --brand: #8aaeff;
+  --brand-solid: #3b69ee;
+  --brand-solid-hover: #2d56d4;
+  --on-brand: #ffffff;
+  --brand-soft: #16264a;
+  --brand-border: #2c4687;
+
+  --pos: #4fc78d;
+  --pos-soft: #10281e;
+  --neg: #ff8d84;
+  --neg-soft: #2d1816;
+  --warn: #f2b84f;
+  --warn-soft: #2b2110;
+
+  --focus: #8aaeff;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-2: 0 12px 32px rgb(0 0 0 / 0.5);
+  --overlay: rgb(3 6 10 / 0.66);
+
+  // Chart series (validated for contrast on --surface)
+  --series-1: #4a7af0;
+  --series-2: #d6742a;
+  --series-3: #1fa37a;
+  --grid: #2a374c;
+}
+
+:root {
+  color-scheme: light dark;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --step--1: 0.8125rem;
+  --step-0: 1rem;
+  --step-1: 1.125rem;
+  --step-2: 1.3125rem;
+  --step-3: clamp(1.5rem, 1.3rem + 0.9vw, 1.875rem);
+  --step-4: clamp(1.875rem, 1.45rem + 1.8vw, 2.75rem);
+  --step-5: clamp(2.25rem, 1.8rem + 2.2vw, 3.5rem);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+
+  --radius-s: 6px;
+  --radius-m: 10px;
+  --radius-l: 16px;
+
+  --container: 72rem;
+  --reading: 44rem;
+  --header-h: 4rem;
+
+  // Light theme (default)
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --surface-2: #f0f2f5;
+  --surface-3: #e7ebf0;
+  --border: #e0e5ec;
+  --border-strong: #c7cfdb;
+  --control-border: #7a8799;
+
+  --text: #0e1520;
+  --text-2: #435063;
+  --text-3: #5b6a7e;
+
+  --brand: #1b4dd6;
+  --brand-solid: #1b4dd6;
+  --brand-solid-hover: #1440b3;
+  --on-brand: #ffffff;
+  --brand-soft: #e8eefd;
+  --brand-border: #bccdf6;
+
+  --pos: #0a7143;
+  --pos-soft: #e3f4eb;
+  --neg: #b3261e;
+  --neg-soft: #fcebe9;
+  --warn: #8a5300;
+  --warn-soft: #fff3d9;
+
+  --focus: #1b4dd6;
+  --shadow-1: 0 1px 2px rgb(15 23 34 / 0.06);
+  --shadow-2: 0 12px 32px rgb(15 23 34 / 0.16);
+  --overlay: rgb(10 16 24 / 0.45);
+
+  --series-1: #2f5fe0;
+  --series-2: #c9620d;
+  --series-3: #0b8a64;
+  --grid: #e3e8ef;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    @include dark-tokens;
+  }
+}
+
+:root[data-theme='dark'] {
+  @include dark-tokens;
+}

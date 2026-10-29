@@ -1,11 +1,10 @@
-import { Component } from '@angular/core';
-
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 
 @Component({
-    selector: 'app-disclaimer',
-    imports: [],
-    templateUrl: './disclaimer.component.html',
-    styleUrl: './disclaimer.component.scss'
+  selector: 'app-disclaimer',
+  imports: [PageHeaderComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './disclaimer.component.html',
 })
 export class DisclaimerComponent {}
-

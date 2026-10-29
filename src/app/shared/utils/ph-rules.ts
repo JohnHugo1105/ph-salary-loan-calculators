@@ -81,6 +81,15 @@ export const PH_RULES = {
     monetizedVacationLeaveDays: 12,
   },
 
+  // Pag-IBIG housing loan: interest rate by repricing period (years fixed). These are the rates the
+  // calculator uses; Pag-IBIG revises them, so confirm the current schedule before applying.
+  housingLoan: {
+    source: 'https://www.pagibigfund.gov.ph/',
+    maxLoan: 10_000_000,
+    maxIncomeShare: 0.35,
+    ratesByRepricingYears: { 1: 5.75, 3: 6.25, 5: 6.5, 10: 7.125, 15: 7.75, 20: 8.5, 25: 9.125, 30: 9.75 } as Record<number, number>,
+  },
+
   // Pag-IBIG MP2 savings: latest declared annual dividend. Future rates are not guaranteed.
   mp2: {
     source: 'https://www.pagibigfund.gov.ph/',

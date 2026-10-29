@@ -1,79 +1,67 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, PLATFORM_ID, inject, viewChild } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SeoService } from './core/services/seo.service';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatIconModule } from '@angular/material/icon';
-
-import { CookieConsentComponent } from './shared/components/cookie-consent/cookie-consent.component';
-import { AdComponent } from './shared/components/ad/ad.component';
+import { ConsentComponent } from './layout/consent.component';
+import { SearchPaletteComponent } from './layout/search-palette.component';
+import { SearchService } from './layout/search.service';
+import { SiteFooterComponent } from './layout/site-footer.component';
+import { SiteHeaderComponent } from './layout/site-header.component';
+import { ToastComponent } from './layout/toast.component';
+import { IconSpriteComponent } from './shared/ui/icon-sprite.component';
 
 @Component({
-    selector: 'app-root',
-    imports: [RouterOutlet, RouterLink, RouterLinkActive, MatToolbarModule, MatButtonModule, MatSlideToggleModule, MatMenuModule, MatExpansionModule, MatIconModule, CookieConsentComponent, AdComponent],
-    templateUrl: './app.component.html',
-    styleUrl: './app.component.scss',
-    animations: []
+  selector: 'app-root',
+  imports: [RouterOutlet, SiteHeaderComponent, SiteFooterComponent, ConsentComponent, ToastComponent, SearchPaletteComponent, IconSpriteComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '(document:keydown)': 'onKeydown($event)' },
+  template: `
+    <app-icon-sprite />
+    <a class="skip-link" href="#main" (click)="skip($event)">Skip to content</a>
+    <app-site-header />
+    <main #main id="main" class="page" tabindex="-1">
+      <router-outlet />
+    </main>
+    <app-site-footer />
+    <app-consent />
+    <app-toast />
+    <app-search-palette />
+  `,
 })
 export class AppComponent {
   title = 'PH Salary & Loan Calculators';
-  showMobileNav = false;
-  isLight = false;
-  prepareRoute(outlet: RouterOutlet | null) {
-    if (!outlet || !('isActivated' in outlet) || !outlet.isActivated) {
-      return undefined;
-    }
-    return outlet.activatedRoute.snapshot.routeConfig?.path ?? undefined;
-  }
 
-  showDisclaimer = true;
+  private readonly search = inject(SearchService);
+  private readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private firstNavigation = true;
 
-  constructor(private _seo: SeoService) {
-    try {
-      this.showDisclaimer = localStorage.getItem('hideDisclaimer') !== '1';
-    } catch { }
-
-    // Initialize theme (dark default)
-    this.initTheme();
-  }
-
-  dismissDisclaimer() {
-    this.showDisclaimer = false;
-    try { localStorage.setItem('hideDisclaimer', '1'); } catch { }
-  }
-
-  toggleMobileNav() {
-    this.showMobileNav = !this.showMobileNav;
-  }
-
-  closeMobileNav() {
-    this.showMobileNav = false;
-  }
-
-  private initTheme() {
-    try {
-      const saved = localStorage.getItem('theme');
-      if (saved === 'light' || saved === 'dark') {
-        this.applyTheme(saved === 'light');
+  constructor(_seo: SeoService, router: Router) {
+    // After a route change, move focus to the new page so keyboard and screen reader users start there.
+    router.events.pipe(filter((e) => e instanceof NavigationEnd), takeUntilDestroyed()).subscribe(() => {
+      if (!this.isBrowser) return;
+      if (this.firstNavigation) {
+        this.firstNavigation = false;
         return;
       }
-    } catch { }
-    this.applyTheme(false); // default dark
+      this.main().nativeElement.focus({ preventScroll: true });
+    });
   }
 
-  onToggleTheme(checked: boolean) {
-    this.applyTheme(checked);
-    try { localStorage.setItem('theme', checked ? 'light' : 'dark'); } catch { }
+  skip(event: Event) {
+    event.preventDefault();
+    this.main().nativeElement.focus();
   }
 
-  private applyTheme(light: boolean) {
-    this.isLight = light;
-    if (typeof document !== 'undefined') {
-      document.body.classList.toggle('light-theme', light);
+  onKeydown(event: KeyboardEvent) {
+    const target = event.target as HTMLElement | null;
+    const typing = !!target && (['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) || target.isContentEditable);
+    const cmdK = (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k';
+    if (cmdK || (event.key === '/' && !typing)) {
+      event.preventDefault();
+      this.search.open();
     }
   }
 }

@@ -1,287 +1,213 @@
-<header class="hero">
-  <div class="hero-content">
-    <h1>Contributions & Tables</h1>
-    <p class="subtitle">SSS, Pag-IBIG, PhilHealth, and MPF calculations for 2026.</p>
-  </div>
-</header>
+<div class="container">
+  <app-page-header title="SSS, PhilHealth &amp; Pag-IBIG contributions" section="Government benefits"
+    lede="See what you and your employer each pay every month, including the MPF/WISP part of SSS.">
+    <span class="badge badge--brand">SSS 15% schedule</span>
+    <span class="badge">PhilHealth 5%</span>
+    <a class="badge" routerLink="/rates">Rates &amp; sources</a>
+  </app-page-header>
 
-<section class="container">
-  <div class="calc-layout">
-    <!-- INPUT COLUMN -->
-    <div class="input-col">
-      <mat-card class="input-card">
-        <mat-card-header>
-          <mat-card-title>Salary Details</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <form [formGroup]="form" class="grid-form">
-            <mat-form-field appearance="outline">
-              <mat-label>Monthly Salary (₱)</mat-label>
-              <input matInput type="text" appThousandsSeparator formControlName="monthlySalary" inputmode="decimal" />
-            </mat-form-field>
-            <mat-checkbox formControlName="includeSSSEC" color="primary">Include SSS EC (Employer Share)</mat-checkbox>
-          </form>
-        </mat-card-content>
-      </mat-card>
+  <div class="tool">
+    <form class="tool__inputs" [formGroup]="form" novalidate (submit)="$event.preventDefault()">
+      <section class="card" aria-labelledby="inputs-title">
+        <h2 id="inputs-title" class="card__title">Your salary</h2>
+        <div class="stack">
+          <app-field label="Monthly salary" prefix="₱" [control]="form.controls.monthlySalary"
+            [errors]="{ required: 'Enter your salary', min: 'Enter a salary above ₱0' }"
+            hint="Basic monthly salary before deductions.">
+            <input type="text" inputmode="decimal" formControlName="monthlySalary" appThousandsSeparator [appThousandsSeparatorDecimals]="0" autocomplete="off" />
+          </app-field>
+          <label class="check">
+            <input type="checkbox" formControlName="includeSSSEC" />
+            <span>Include the employer's EC premium <small>A small employer-only SSS charge of ₱10 or ₱30. It does not affect your own deductions.</small></span>
+          </label>
+        </div>
+      </section>
+      <app-result-bar label="You pay each month" [value]="form.invalid ? '—' : '₱' + (result().totals.employee | number: '1.2-2')" />
+    </form>
 
-      <!-- RESULTS SUMMARY -->
-      <mat-card class="summary-card">
-        <mat-card-header>
-          <mat-card-title>Total Deductions</mat-card-title>
-        </mat-card-header>
-        <mat-card-content class="summary-grid">
-          <div class="summary-item">
-            <div class="label">Employee</div>
-            <div class="value">₱{{ result.totals.employee | number:'1.2-2' }}</div>
+    <div class="tool__results" id="results" tabindex="-1">
+      @if (form.invalid) {
+        <app-callout kind="neg">Enter a salary above ₱0 to see contributions.</app-callout>
+      }
+      <div class="stack" [class.is-stale]="form.invalid">
+        <section class="result" aria-live="polite">
+          <div class="result__label">You pay · per month</div>
+          <div class="result__value">₱{{ result().totals.employee | number: '1.2-2' }}</div>
+          <p class="result__sub">Your employer pays another ₱{{ result().totals.employer | number: '1.2-2' }}, so ₱{{ result().totals.total | number: '1.2-2' }} goes in altogether.</p>
+        </section>
+
+        <section class="card" aria-labelledby="split-title">
+          <h2 id="split-title" class="card__title">Who pays what</h2>
+          <div class="table-wrap" tabindex="0" role="region" aria-label="Contributions by payer">
+            <table class="table">
+              <thead>
+                <tr><th scope="col">Contribution</th><th scope="col" class="num">You</th><th scope="col" class="num">Employer</th><th scope="col" class="num">Total</th></tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row">SSS <small style="display:block;font-weight:400;color:var(--text-3)">MSC ₱{{ msc() | number: '1.0-0' }}</small></th><td class="num">₱{{ result().sss.employee | number: '1.2-2' }}</td><td class="num">₱{{ result().sss.employer | number: '1.2-2' }}</td><td class="num">₱{{ result().sss.total | number: '1.2-2' }}</td></tr>
+                <tr><th scope="row">MPF / WISP <small style="display:block;font-weight:400;color:var(--text-3)">Part of SSS</small></th><td class="num">₱{{ result().mpf.employee | number: '1.2-2' }}</td><td class="num">₱{{ result().mpf.employer | number: '1.2-2' }}</td><td class="num">₱{{ result().mpf.total | number: '1.2-2' }}</td></tr>
+                <tr><th scope="row">PhilHealth</th><td class="num">₱{{ result().philhealth.employee | number: '1.2-2' }}</td><td class="num">₱{{ result().philhealth.employer | number: '1.2-2' }}</td><td class="num">₱{{ result().philhealth.total | number: '1.2-2' }}</td></tr>
+                <tr><th scope="row">Pag-IBIG</th><td class="num">₱{{ result().pagibig.employee | number: '1.2-2' }}</td><td class="num">₱{{ result().pagibig.employer | number: '1.2-2' }}</td><td class="num">₱{{ result().pagibig.total | number: '1.2-2' }}</td></tr>
+              </tbody>
+              <tfoot>
+                <tr style="font-weight:700"><th scope="row">Total</th><td class="num">₱{{ result().totals.employee | number: '1.2-2' }}</td><td class="num">₱{{ result().totals.employer | number: '1.2-2' }}</td><td class="num">₱{{ result().totals.total | number: '1.2-2' }}</td></tr>
+              </tfoot>
+            </table>
           </div>
-          <div class="summary-item">
-            <div class="label">Employer</div>
-            <div class="value">₱{{ result.totals.employer | number:'1.2-2' }}</div>
+        </section>
+
+        <details class="disclosure">
+          <summary>How each of your shares is computed</summary>
+          <div class="disclosure__body">
+            <ul class="breakdown" style="list-style:none;padding:0">
+              <li class="breakdown__row"><span class="breakdown__label">SSS</span><code class="breakdown__formula">{{ why().sss }}</code></li>
+              <li class="breakdown__row"><span class="breakdown__label">MPF / WISP</span><code class="breakdown__formula">{{ why().mpf }}</code></li>
+              <li class="breakdown__row"><span class="breakdown__label">PhilHealth</span><code class="breakdown__formula">{{ why().philhealth }}</code></li>
+              <li class="breakdown__row"><span class="breakdown__label">Pag-IBIG</span><code class="breakdown__formula">{{ why().pagibig }}</code></li>
+            </ul>
           </div>
-          <div class="summary-item total">
-            <div class="label">Total</div>
-            <div class="value">₱{{ result.totals.total | number:'1.2-2' }}</div>
-          </div>
-        </mat-card-content>
-      </mat-card>
-    </div>
+        </details>
 
-    <!-- DETAILED BREAKDOWN (Cards Grid) -->
-    <div class="results-col">
-      <div class="cards-grid" [@cardsIn]>
+        <app-callout kind="info">
+          <strong>MPF/WISP is not an extra charge.</strong> It is the part of your SSS contribution that is based on salary
+          credit above ₱{{ regularCap | number: '1.0-0' }}. It is shown separately because it goes to your provident savings.
+        </app-callout>
 
-        <!-- SSS CARD -->
-        <mat-card class="detail-card primary">
-          <mat-card-header>
-            <div class="card-icon"><mat-icon>security</mat-icon></div>
-            <mat-card-title>SSS Contribution</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="row">
-              <span>Monthly Salary Credit</span>
-              <span class="num">₱{{ msc | number:'1.0-0' }}</span>
-            </div>
-            <div class="row">
-              <span>Employee</span>
-              <span class="num">₱{{ result.sss.employee | number:'1.2-2' }}</span>
-            </div>
-            <div class="row">
-              <span>Employer</span>
-              <span class="num">₱{{ result.sss.employer | number:'1.2-2' }}</span>
-            </div>
-            <div class="row total">
-              <span>Total</span>
-              <span class="num">₱{{ result.sss.total | number:'1.2-2' }}</span>
-            </div>
-          </mat-card-content>
-        </mat-card>
-
-        <!-- PHILHEALTH CARD -->
-        <mat-card class="detail-card accent">
-          <mat-card-header>
-            <div class="card-icon"><mat-icon>medical_services</mat-icon></div>
-            <mat-card-title>PhilHealth</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="row">
-              <span>Employee</span>
-              <span class="num">₱{{ result.philhealth.employee | number:'1.2-2' }}</span>
-            </div>
-            <div class="row">
-              <span>Employer</span>
-              <span class="num">₱{{ result.philhealth.employer | number:'1.2-2' }}</span>
-            </div>
-            <div class="row total">
-              <span>Total</span>
-              <span class="num">₱{{ result.philhealth.total | number:'1.2-2' }}</span>
-            </div>
-          </mat-card-content>
-        </mat-card>
-
-        <!-- PAG-IBIG CARD -->
-        <mat-card class="detail-card warn">
-          <mat-card-header>
-            <div class="card-icon"><mat-icon>home_work</mat-icon></div>
-            <mat-card-title>Pag-IBIG</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="row">
-              <span>Employee</span>
-              <span class="num">₱{{ result.pagibig.employee | number:'1.2-2' }}</span>
-            </div>
-            <div class="row">
-              <span>Employer</span>
-              <span class="num">₱{{ result.pagibig.employer | number:'1.2-2' }}</span>
-            </div>
-            <div class="row total">
-              <span>Total</span>
-              <span class="num">₱{{ result.pagibig.total | number:'1.2-2' }}</span>
-            </div>
-          </mat-card-content>
-        </mat-card>
-
-        <!-- MPF CARD -->
-        <mat-card class="detail-card info">
-          <mat-card-header>
-            <div class="card-icon"><mat-icon>savings</mat-icon></div>
-            <mat-card-title>MPF / WISP</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="row">
-              <span>MSC above ₱20,000</span>
-              <span class="num">₱{{ (msc > 20000 ? msc - 20000 : 0) | number:'1.0-0' }}</span>
-            </div>
-            <div class="row">
-              <span>Employee</span>
-              <span class="num">₱{{ result.mpf.employee | number:'1.2-2' }}</span>
-            </div>
-            <div class="row">
-              <span>Employer</span>
-              <span class="num">₱{{ result.mpf.employer | number:'1.2-2' }}</span>
-            </div>
-            <div class="row total">
-              <span>Total</span>
-              <span class="num">₱{{ result.mpf.total | number:'1.2-2' }}</span>
-            </div>
-          </mat-card-content>
-        </mat-card>
-
+        <app-result-actions [summary]="summary()" [shareData]="shareData()" saveKey="contributions" />
       </div>
     </div>
   </div>
 
-  <hr class="divider">
+  <article class="prose section" aria-label="Guide to government contributions in the Philippines">
+<h2>The Ultimate Guide to Philippine Government Contributions (2026 Updates)</h2>
+<p>
+  In the Philippines, understanding your mandatory government contributions is essential for both employees and
+  employers. Every month, specific portions of your gross salary are deducted to fund your social insurance (SSS),
+  health coverage (PhilHealth), and housing fund (Pag-IBIG). These contributions are not just deductions; they are
+  investments into your long-term security, providing safety nets for sickness, maternity, retirement, and emergency
+  loans.
+</p>
 
-  <!-- SEO CONTENT -->
-  <!-- SEO CONTENT -->
-  <article class="content-article">
-    <h2>The Ultimate Guide to Philippine Government Contributions (2026 Updates)</h2>
-    <p>
-      In the Philippines, understanding your mandatory government contributions is essential for both employees and
-      employers. Every month, specific portions of your gross salary are deducted to fund your social insurance (SSS),
-      health coverage (PhilHealth), and housing fund (Pag-IBIG). These contributions are not just deductions; they are
-      investments into your long-term security, providing safety nets for sickness, maternity, retirement, and emergency
-      loans.
-    </p>
+<h2>Detailed Breakdown of Mandatory Deductions</h2>
 
-    <h2>Detailed Breakdown of Mandatory Deductions</h2>
+<h3>1. SSS (Social Security System) Contribution Table</h3>
+<p>
+  The SSS acts as the primary social safety net for private-sector workers. It offers cash assistance during times
+  of sickness, maternity leave, disability, and eventually, a monthly pension upon retirement.
+</p>
+<p>
+  <strong>Current Rate:</strong> Since January 2025 the total SSS contribution rate is
+  <strong>15%</strong> of your Monthly Salary Credit (MSC), which ranges from ₱5,000 to ₱35,000. This burden is
+  shared between you and your employer:
+</p>
+<ul class="styled-list">
+  <li><strong>Employee Share:</strong> 5%</li>
+  <li><strong>Employer Share:</strong> 10%</li>
+</ul>
+<p>
+  <strong>WISP Explained:</strong> The part of your MSC above ₱20,000 (up to ₱35,000) goes to the
+  <strong>Worker's Investment and Savings Program (WISP)</strong>, also called the Mandatory Provident Fund (MPF).
+  It is not an extra charge on top of SSS: it is the share of the same 15% contribution that is credited to your
+  provident savings instead of the regular pension fund. This calculator shows the regular SS and MPF/WISP parts
+  separately and adds them together in the totals. Employers also pay a small Employees' Compensation (EC) premium
+  of ₱10 (MSC below ₱15,000) or ₱30.
+</p>
 
-    <h3>1. SSS (Social Security System) Contribution Table</h3>
-    <p>
-      The SSS acts as the primary social safety net for private-sector workers. It offers cash assistance during times
-      of sickness, maternity leave, disability, and eventually, a monthly pension upon retirement.
-    </p>
-    <p>
-      <strong>Current Rate:</strong> Since January 2025 the total SSS contribution rate is
-      <strong>15%</strong> of your Monthly Salary Credit (MSC), which ranges from ₱5,000 to ₱35,000. This burden is
-      shared between you and your employer:
-    </p>
-    <ul class="styled-list">
-      <li><strong>Employee Share:</strong> 5%</li>
-      <li><strong>Employer Share:</strong> 10%</li>
-    </ul>
-    <p>
-      <strong>WISP Explained:</strong> The part of your MSC above ₱20,000 (up to ₱35,000) goes to the
-      <strong>Worker's Investment and Savings Program (WISP)</strong>, also called the Mandatory Provident Fund (MPF).
-      It is not an extra charge on top of SSS: it is the share of the same 15% contribution that is credited to your
-      provident savings instead of the regular pension fund. This calculator shows the regular SS and MPF/WISP parts
-      separately and adds them together in the totals. Employers also pay a small Employees' Compensation (EC) premium
-      of ₱10 (MSC below ₱15,000) or ₱30.
-    </p>
+<h3>2. PhilHealth Premium Rate</h3>
+<p>
+  PhilHealth is the government corporation tasked to implement the National Health Insurance Program. It
+  significantly reduces hospitalization costs and provides financial risk protection from medical expenses.
+</p>
+<p>
+  <strong>Current Rate:</strong> Guided by the Universal Health Care (UHC) Law, the premium rate is currently set at
+  <strong>5.0%</strong>. Just like SSS, this premium is split 50/50 between the employer and the employee (each
+  paying 2.5%). The law sets a minimum income floor (₱10,000) and a maximum income ceiling (₱100,000). If you
+  earn above the ceiling, your contribution is capped at the maximum of ₱5,000 per month (₱2,500 each).
+</p>
 
-    <h3>2. PhilHealth Premium Rate</h3>
-    <p>
-      PhilHealth is the government corporation tasked to implement the National Health Insurance Program. It
-      significantly reduces hospitalization costs and provides financial risk protection from medical expenses.
-    </p>
-    <p>
-      <strong>Current Rate:</strong> Guided by the Universal Health Care (UHC) Law, the premium rate is currently set at
-      <strong>5.0%</strong>. Just like SSS, this premium is split 50/50 between the employer and the employee (each
-      paying 2.5%). The law sets a minimum income floor (₱10,000) and a maximum income ceiling (₱100,000). If you
-      earn above the ceiling, your contribution is capped at the maximum of ₱5,000 per month (₱2,500 each).
-    </p>
+<h3>3. Pag-IBIG Fund (Home Development Mutual Fund)</h3>
+<p>
+  The primary purpose of Pag-IBIG is to provide affordable shelter financing to Filipinos. It also serves as a
+  high-yielding national savings program.
+</p>
+<p>
+  <strong>Current Rate:</strong> The calculation for Pag-IBIG Regular Savings is straightforward. For most employees
+  earning above ₱1,500 monthly, the contribution rate is 2% and the employer counterpart is also 2%. The maximum
+  monthly fund salary used as the basis is ₱10,000 (Pag-IBIG Circular No. 460, effective February 2024).
+  <br><br>
+  Consequently, the maximum mandatory contribution for employees earning ₱10,000 or more is
+  <strong>₱200 per month</strong> (2% of ₱10,000), matched by another ₱200 from the employer.
+</p>
 
-    <h3>3. Pag-IBIG Fund (Home Development Mutual Fund)</h3>
-    <p>
-      The primary purpose of Pag-IBIG is to provide affordable shelter financing to Filipinos. It also serves as a
-      high-yielding national savings program.
-    </p>
-    <p>
-      <strong>Current Rate:</strong> The calculation for Pag-IBIG Regular Savings is straightforward. For most employees
-      earning above ₱1,500 monthly, the contribution rate is 2% and the employer counterpart is also 2%. The maximum
-      monthly fund salary used as the basis is ₱10,000 (Pag-IBIG Circular No. 460, effective February 2024).
-      <br><br>
-      Consequently, the maximum mandatory contribution for employees earning ₱10,000 or more is
-      <strong>₱200 per month</strong> (2% of ₱10,000), matched by another ₱200 from the employer.
-    </p>
+<h2>Practical Example: SSS, PhilHealth, and Pag-IBIG Deductions</h2>
+<div class="example-box">
+  <h3>Scenario: Maria earns ₱{{ example.salary | number:'1.0-0' }} a month</h3>
+  <p>Maria is a newly hired graphic designer. Let's compute her deductions based on her
+    ₱{{ example.salary | number:'1.0-0' }} basic salary.</p>
 
-    <h2>Practical Example: SSS, PhilHealth, and Pag-IBIG Deductions</h2>
-    <div class="example-box">
-      <h3>Scenario: Maria earns ₱{{ example.salary | number:'1.0-0' }} a month</h3>
-      <p>Maria is a newly hired graphic designer. Let's compute her deductions based on her
-        ₱{{ example.salary | number:'1.0-0' }} basic salary.</p>
+  <h4>SSS / WISP</h4>
+  <ul>
+    <li>Her MSC falls under the ₱{{ example.msc | number:'1.0-0' }} bracket.</li>
+    <li><strong>Regular SSS (Employee):</strong> 5% of ₱{{ example.regularMsc | number:'1.0-0' }} limit =
+      ₱{{ example.regularSss | number:'1.2-2' }}</li>
+    <li><strong>WISP (Employee):</strong> 5% of excess (₱{{ example.wispBase | number:'1.0-0' }}) =
+      ₱{{ example.wisp | number:'1.2-2' }}</li>
+    <li><strong>Total SSS Deduction:</strong> ₱{{ example.regularSss + example.wisp | number:'1.2-2' }}</li>
+  </ul>
 
-      <h4>SSS / WISP</h4>
-      <ul style="margin-bottom: 0;">
-        <li>Her MSC falls under the ₱{{ example.msc | number:'1.0-0' }} bracket.</li>
-        <li><strong>Regular SSS (Employee):</strong> 5% of ₱{{ example.regularMsc | number:'1.0-0' }} limit =
-          ₱{{ example.regularSss | number:'1.2-2' }}</li>
-        <li><strong>WISP (Employee):</strong> 5% of excess (₱{{ example.wispBase | number:'1.0-0' }}) =
-          ₱{{ example.wisp | number:'1.2-2' }}</li>
-        <li><strong>Total SSS Deduction:</strong> ₱{{ example.regularSss + example.wisp | number:'1.2-2' }}</li>
-      </ul>
+  <h4>PhilHealth</h4>
+  <ul>
+    <li><strong>Total Premium:</strong> 5.0% of ₱{{ example.salary | number:'1.0-0' }} =
+      ₱{{ example.philhealthTotal | number:'1.2-2' }}</li>
+    <li><strong>Employee Share (50%):</strong> ₱{{ example.philhealth | number:'1.2-2' }}</li>
+  </ul>
 
-      <h4 style="margin-top: 1rem;">PhilHealth</h4>
-      <ul style="margin-bottom: 0;">
-        <li><strong>Total Premium:</strong> 5.0% of ₱{{ example.salary | number:'1.0-0' }} =
-          ₱{{ example.philhealthTotal | number:'1.2-2' }}</li>
-        <li><strong>Employee Share (50%):</strong> ₱{{ example.philhealth | number:'1.2-2' }}</li>
-      </ul>
+  <h4>Pag-IBIG</h4>
+  <ul>
+    <li><strong>Employee Share:</strong> 2% of the maximum fund salary (₱10,000) =
+      ₱{{ example.pagibig | number:'1.2-2' }}</li>
+  </ul>
 
-      <h4 style="margin-top: 1rem;">Pag-IBIG</h4>
-      <ul style="margin-bottom: 0;">
-        <li><strong>Employee Share:</strong> 2% of the maximum fund salary (₱10,000) =
-          ₱{{ example.pagibig | number:'1.2-2' }}</li>
-      </ul>
+  <p><strong>Maria's Total Monthly Deduction:</strong>
+    ₱{{ example.regularSss + example.wisp | number:'1.2-2' }} + ₱{{ example.philhealth | number:'1.2-2' }} +
+    ₱{{ example.pagibig | number:'1.2-2' }} = <strong>₱{{ example.total | number:'1.2-2' }}</strong>
+  </p>
+</div>
 
-      <p style="margin-top: 1rem;"><strong>Maria's Total Monthly Deduction:</strong>
-        ₱{{ example.regularSss + example.wisp | number:'1.2-2' }} + ₱{{ example.philhealth | number:'1.2-2' }} +
-        ₱{{ example.pagibig | number:'1.2-2' }} = <strong>₱{{ example.total | number:'1.2-2' }}</strong>
-      </p>
-    </div>
+<div class="cta-wrapper">
+  <a class="btn" routerLink="/articles/pagibig-vs-mpf">Read more: Pag-IBIG vs MPF
+    Explained</a>
+</div>
 
-    <div class="cta-wrapper">
-      <a mat-stroked-button color="primary" routerLink="/articles/pagibig-vs-mpf">Read more: Pag-IBIG vs MPF
-        Explained</a>
-    </div>
+<hr>
 
-    <hr style="margin: 3rem 0; border: 0; border-top: 1px solid #eee;">
+<h2>Frequently Asked Questions (FAQs)</h2>
+<div class="faq-section">
+  <h3>What is WISP in SSS?</h3>
+  <p>The Worker's Investment and Savings Program (WISP) is a mandatory provident fund managed by SSS. It serves as
+    an additional retirement savings program on top of the regular SSS pension for members whose Monthly Salary
+    Credit (MSC) exceeds ₱20,000. When you retire, you receive your WISP contributions plus the investment income
+    they generated.</p>
 
-    <h2>Frequently Asked Questions (FAQs)</h2>
-    <div class="faq-section">
-      <h3>What is WISP in SSS?</h3>
-      <p>The Worker's Investment and Savings Program (WISP) is a mandatory provident fund managed by SSS. It serves as
-        an additional retirement savings program on top of the regular SSS pension for members whose Monthly Salary
-        Credit (MSC) exceeds ₱20,000. When you retire, you receive your WISP contributions plus the investment income
-        they generated.</p>
+  <h3>What is the PhilHealth premium rate and income ceiling?</h3>
+  <p>Under the Universal Health Care (UHC) Law the PhilHealth premium is 5.0% of monthly basic salary, shared
+    equally by employer and employee. The income floor is ₱10,000 and the ceiling is ₱100,000, so the total monthly
+    premium ranges from ₱500 to ₱5,000.</p>
 
-      <h3>What is the PhilHealth premium rate and income ceiling?</h3>
-      <p>Under the Universal Health Care (UHC) Law the PhilHealth premium is 5.0% of monthly basic salary, shared
-        equally by employer and employee. The income floor is ₱10,000 and the ceiling is ₱100,000, so the total monthly
-        premium ranges from ₱500 to ₱5,000.</p>
+  <h3>Can I voluntarily pay more than the mandatory ₱200 Pag-IBIG contribution?</h3>
+  <p>Yes, you certainly can opt to increase your monthly Pag-IBIG Regular Savings contribution through your
+    employer's HR or via direct payment to save more. However, many Filipinos instead choose to enroll in the
+    separate voluntary Modified Pag-IBIG II (MP2) program, as it traditionally yields higher, tax-free dividends
+    while offering a fixed 5-year maturity period.</p>
+</div>
 
-      <h3>Can I voluntarily pay more than the mandatory ₱200 Pag-IBIG contribution?</h3>
-      <p>Yes, you certainly can opt to increase your monthly Pag-IBIG Regular Savings contribution through your
-        employer's HR or via direct payment to save more. However, many Filipinos instead choose to enroll in the
-        separate voluntary Modified Pag-IBIG II (MP2) program, as it traditionally yields higher, tax-free dividends
-        while offering a fixed 5-year maturity period.</p>
-    </div>
-
-    <p class="note" style="margin-top: 2rem;">
-      <strong>Disclaimer:</strong> SSS values use the 15% schedule (5% employee / 10% employer, MSC ₱5,000–₱35,000, plus
-      EC where applicable). PhilHealth uses the 5% rate with a floor of ₱10,000 and a ceiling of ₱100,000. Pag-IBIG
-      caps at a ₱10,000 fund salary with 1–2% employee and 2% employer rates. Always refer to official government
-      circulars for exact centavo figures.
-    </p>
+<p class="note">
+  <strong>Disclaimer:</strong> SSS values use the 15% schedule (5% employee / 10% employer, MSC ₱5,000–₱35,000, plus
+  EC where applicable). PhilHealth uses the 5% rate with a floor of ₱10,000 and a ceiling of ₱100,000. Pag-IBIG
+  caps at a ₱10,000 fund salary with 1–2% employee and 2% employer rates. Always refer to official government
+  circulars for exact centavo figures.
+</p>
   </article>
-</section>
+
+  <div class="section"><app-sponsored type="loanOnline" /></div>
+</div>

@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
 import { TaxTablesComponent } from './tax-tables.component';
 
@@ -9,11 +8,7 @@ describe('TaxTablesComponent', () => {
   let component: TaxTablesComponent;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [TaxTablesComponent],
-      providers: [provideRouter([]), provideNoopAnimations()]
-    }).compileComponents();
-
+    await TestBed.configureTestingModule({ imports: [TaxTablesComponent], providers: [provideRouter([])] }).compileComponents();
     fixture = TestBed.createComponent(TaxTablesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -29,12 +24,16 @@ describe('TaxTablesComponent', () => {
   });
 
   it('generates the monthly withholding table from the engine rules', () => {
-    expect(component.monthlyTaxRows.map(r => r.rate)).toEqual([0, 15, 20, 25, 30, 35]);
+    expect(component.monthlyTaxRows.map((r) => r.rate)).toEqual([0, 15, 20, 25, 30, 35]);
     const text: string = fixture.nativeElement.textContent;
     expect(text).toContain('1,875.00');
     expect(text).toContain('8,541.67');
     expect(text).toContain('183,541.67');
     expect(text).toMatch(/rate\s+is now\s+15%/);
     expect(text).not.toContain('14%');
+  });
+
+  it('uses the peso sign consistently', () => {
+    expect(fixture.nativeElement.textContent).not.toMatch(/(^|\s)P\d/);
   });
 });

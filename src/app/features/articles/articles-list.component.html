@@ -1,29 +1,18 @@
-<header class="hero">
-  <div class="hero-content">
-    <h1>Guides & Articles</h1>
-    <p class="subtitle">Short, practical explainers to complement the calculators.</p>
-  </div>
-</header>
-
-<section class="container">
-  <div class="tool-grid">
-    @for (article of articles; track article) {
-      <a [routerLink]="article.route" class="tool-card">
-        <mat-card class="card-inner">
-          <div class="icon-wrapper" [class]="article.color">
-            <mat-icon>{{ article.icon }}</mat-icon>
-          </div>
-          <mat-card-header>
-            <mat-card-title>{{ article.title }}</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <p>{{ article.description }}</p>
-          </mat-card-content>
-          <div class="card-action">
-            <span class="read-more">Read Article &rarr;</span>
-          </div>
-        </mat-card>
-      </a>
+<div class="container">
+  <app-page-header title="Guides &amp; articles" lede="Short, practical explainers to go with the calculators." />
+  <div class="grid grid--3">
+    @for (g of guides; track g.route) {
+      <app-tool-card [item]="g" cta="Read" />
     }
   </div>
-</section>
+
+  <section class="section" aria-labelledby="tools-title">
+    <h2 id="tools-title">Calculators</h2>
+    <p class="section__lede">Put the numbers to work.</p>
+    <div class="grid grid--3">
+      @for (t of tools; track t.id) {
+        <app-tool-card [item]="t" />
+      }
+    </div>
+  </section>
+</div>

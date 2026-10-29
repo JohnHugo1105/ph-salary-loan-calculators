@@ -1,0 +1,35 @@
+<div class="container">
+  <app-page-header title="Saved calculations"
+    lede="Calculations you saved are kept in this browser only. We never receive them, and clearing your browser data removes them." />
+
+  @if (loaded()) {
+    @if (items().length) {
+      <div class="grid grid--2">
+        @for (item of items(); track item.key + item.index) {
+          <article class="card">
+            <div class="card__head">
+              <h2 class="card__title">{{ item.title }}</h2>
+              @if (item.savedAt) {
+                <span class="badge">{{ item.savedAt | date: 'd MMM y' }}</span>
+              }
+            </div>
+            @if (item.summary) {
+              <p style="white-space: pre-line; color: var(--text-2); font-size: var(--step--1)">{{ item.summary }}</p>
+            } @else {
+              <p style="color: var(--text-2); font-size: var(--step--1)">Saved with an earlier version of the calculator. Open it to see the figures.</p>
+            }
+            <div class="cluster" style="margin-top: var(--space-4); --gap: var(--space-2)">
+              <a class="btn btn--sm btn--primary" [routerLink]="item.route" [queryParams]="{ data: item.link }">Open</a>
+              <button type="button" class="btn btn--sm" (click)="remove(item)"><app-icon name="trash" [size]="16" /> Delete</button>
+            </div>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="card card--flat">
+        <p>Nothing saved yet. Use the <strong>Save</strong> button under a result to keep it here.</p>
+        <p style="margin-top: var(--space-3)"><a class="btn" routerLink="/">Browse calculators</a></p>
+      </div>
+    }
+  }
+</div>

@@ -1,140 +1,118 @@
-<header class="hero">
-  <div class="hero-content">
-    <h1>Loan Amortization</h1>
-    <p class="subtitle">Estimate monthly payments for housing, car, or personal loans.</p>
-  </div>
-</header>
+<div class="container">
+  <app-page-header title="Loan amortization calculator" section="Loans"
+    lede="See your monthly payment, how much interest you will pay in total, and how your balance shrinks over time. Works for car, housing and personal loans.">
+    <span class="badge badge--brand">Diminishing balance</span>
+    <span class="badge">Equal monthly payments</span>
+  </app-page-header>
 
-<section class="container">
-  <div class="calc-layout">
-    <!-- INPUT & RESULT COLUMN -->
-    <div class="input-col">
-      <mat-card class="input-card">
-        <mat-card-header>
-          <mat-card-title>Loan Details</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <form [formGroup]="form" class="grid-form">
-            <mat-form-field appearance="outline">
-              <mat-label>Amount (₱)</mat-label>
-              <input matInput type="text" appThousandsSeparator formControlName="amount" inputmode="decimal" />
-            </mat-form-field>
-            <mat-form-field appearance="outline">
-              <mat-label>Annual Rate (%)</mat-label>
-              <input matInput type="number" formControlName="annualRate" min="0" step="0.01" />
-            </mat-form-field>
-            <mat-form-field appearance="outline">
-              <mat-label>Term (months)</mat-label>
-              <input matInput type="number" formControlName="months" min="1" step="1" />
-            </mat-form-field>
-          </form>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="result-card">
-        <div class="result-label">Estimated Monthly Payment</div>
-        <div class="result-value">₱{{ schedule().payment | number:'1.2-2' }}</div>
-      </mat-card>
-
-      @defer (on viewport) {
-        <mat-card class="chart-card" style="margin-top: 1rem; padding: 1rem;">
-          <canvas #chartCanvas></canvas>
-        </mat-card>
-      } @placeholder {
-        <mat-card class="chart-card" style="margin-top: 1rem; padding: 1rem; height: 300px; display: flex; align-items: center; justify-content: center;">
-          Loading chart...
-        </mat-card>
-      }
-
-      <mat-card class="action-card" style="margin-top: 1rem;">
-        <mat-card-content style="display: flex; flex-direction: column; gap: 0.5rem;">
-          <button mat-flat-button color="primary" (click)="saveCalculation()">
-            <mat-icon>save</mat-icon> Save Calculation
-          </button>
-          @if (saveSuccess) {
-            <div style="color: green; text-align: center; font-size: 0.85rem;">Saved to browser successfully!</div>
-          }
-
-          <button mat-stroked-button color="accent" (click)="generateShareLink()">
-            <mat-icon>share</mat-icon> Generate Share Link
-          </button>
-
-          @if (shareUrl) {
-            <div class="share-box" style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
-              <input matInput type="text" [value]="shareUrl" readonly style="flex: 1; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" />
-              <button mat-icon-button color="primary" (click)="copyLink()" title="Copy to clipboard">
-                <mat-icon>content_copy</mat-icon>
-              </button>
-            </div>
-          }
-        </mat-card-content>
-      </mat-card>
-    </div>
-
-    <!-- TABLE RESULT -->
-    <div class="table-col">
-      <mat-card class="table-card">
-        <div class="table-wrap" [@tableIn]>
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Payment</th>
-                <th>Interest</th>
-                <th>Principal</th>
-                <th>Balance</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (r of pagedRows(); track r) {
-                <tr>
-                  <td>{{ r.period }}</td>
-                  <td>₱{{ r.payment | number:'1.2-2' }}</td>
-                  <td>₱{{ r.interest | number:'1.2-2' }}</td>
-                  <td>₱{{ r.principal | number:'1.2-2' }}</td>
-                  <td>₱{{ r.balance | number:'1.2-2' }}</td>
-                </tr>
+  <div class="tool">
+    <form class="tool__inputs" [formGroup]="form" novalidate (submit)="$event.preventDefault()">
+      <section class="card" aria-labelledby="inputs-title">
+        <h2 id="inputs-title" class="card__title">Loan details</h2>
+        <div class="stack">
+          <app-field label="Loan amount" prefix="₱" [control]="form.controls.amount"
+            [errors]="{ required: 'Enter a loan amount', min: 'Enter an amount above ₱0', max: 'That amount is too large' }">
+            <input type="text" inputmode="decimal" formControlName="amount" appThousandsSeparator [appThousandsSeparatorDecimals]="0" autocomplete="off" />
+          </app-field>
+          <app-field label="Interest rate" suffix="% a year" [control]="form.controls.annualRate"
+            [errors]="{ required: 'Enter a rate', min: 'At least 0%', max: 'At most 100%' }"
+            hint="The annual rate on the remaining balance.">
+            <input type="number" inputmode="decimal" step="0.05" min="0" max="100" formControlName="annualRate" />
+          </app-field>
+          <div>
+            <app-field label="Loan term" suffix="months" [control]="form.controls.months"
+              [errors]="{ required: 'Enter a term', min: 'At least 1 month', max: 'At most 480 months (40 years)' }">
+              <input type="number" inputmode="numeric" min="1" max="480" formControlName="months" />
+            </app-field>
+            <div class="cluster" style="margin-top: var(--space-2); --gap: var(--space-2)" role="group" aria-label="Common loan terms">
+              @for (y of termPresets; track y) {
+                <button type="button" class="chip" [attr.aria-pressed]="isTerm(y)" (click)="setTerm(y)">{{ y }} yrs</button>
               }
-            </tbody>
-          </table>
+            </div>
+          </div>
+        </div>
+      </section>
+      <app-result-bar label="Monthly payment" [value]="form.invalid ? '—' : '₱' + (model().payment | number: '1.2-2')" />
+    </form>
+
+    <div class="tool__results" id="results" tabindex="-1">
+      @if (form.invalid) {
+        <app-callout kind="neg">Some inputs need fixing. The figures below are for your last valid entry.</app-callout>
+      }
+      <div class="stack" [class.is-stale]="form.invalid">
+        <section class="result" aria-live="polite">
+          <div class="result__label">Monthly payment</div>
+          <div class="result__value">₱{{ model().payment | number: '1.2-2' }}</div>
+          <p class="result__sub">For {{ model().months }} months at {{ model().rate }}% a year.</p>
+        </section>
+
+        <div class="stats">
+          <div class="stat"><div class="stat__label">Total interest</div><div class="stat__value">₱{{ model().totalInterest | number: '1.2-2' }}</div></div>
+          <div class="stat"><div class="stat__label">Total you pay</div><div class="stat__value">₱{{ model().totalPaid | number: '1.2-2' }}</div></div>
+          <div class="stat"><div class="stat__label">Interest vs loan</div><div class="stat__value">{{ model().interestShare }}</div></div>
         </div>
 
-        <div class="pager">
-          <div class="pager__left">
-            <button mat-icon-button (click)="first()" [disabled]="!canPrev()" title="First Page">
-              <mat-icon>first_page</mat-icon>
-            </button>
-            <button mat-icon-button (click)="prev()" [disabled]="!canPrev()" title="Previous Page">
-              <mat-icon>chevron_left</mat-icon>
-            </button>
-            <span class="pager-info">{{ startIndex() + 1 }}–{{ endIndex() }} of {{ totalRows() }}</span>
-            <button mat-icon-button (click)="next()" [disabled]="!canNext()" title="Next Page">
-              <mat-icon>chevron_right</mat-icon>
-            </button>
-            <button mat-icon-button (click)="last()" [disabled]="!canNext()" title="Last Page">
-              <mat-icon>last_page</mat-icon>
-            </button>
-          </div>
-          <div class="pager__right">
-            <mat-form-field appearance="outline" class="pager__size density-sm">
-              <mat-label>Rows</mat-label>
-              <mat-select [value]="pageSize()" (selectionChange)="setPageSize($event.value)">
-                <mat-option [value]="12">12</mat-option>
-                <mat-option [value]="24">24</mat-option>
-                <mat-option [value]="60">60</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-        </div>
-      </mat-card>
-      <app-ad type="cashExpress"></app-ad>
+        <section class="card" aria-label="Where your payments go">
+          <app-split-bar title="Where your payments go"
+            [parts]="[{ label: 'Principal', value: model().amount, slot: 1 }, { label: 'Interest', value: model().totalInterest, slot: 2 }]" />
+        </section>
+
+        <section class="card" aria-label="Balance over time">
+          <app-line-area-chart title="Remaining balance, by year" seriesName="Balance" rowHeader="Year" [data]="model().balanceSeries" />
+        </section>
+
+        <app-result-actions [summary]="summary()" [shareData]="shareData()" saveKey="amortization" />
+      </div>
     </div>
   </div>
 
-  <hr class="divider">
+  <section class="section" aria-labelledby="schedule-title">
+    <div class="cluster" style="justify-content: space-between">
+      <h2 id="schedule-title">Payment schedule</h2>
+      <div style="min-width: 14rem"><app-segmented [options]="views" label="Schedule view" [formControl]="viewControl" /></div>
+    </div>
 
-  <!-- SEO CONTENT -->
-  <article class="content-article">
+    <div class="table-wrap" tabindex="0" role="region" aria-label="Payment schedule table" style="margin-top: var(--space-4)">
+      @if (view() === 'yearly') {
+        <table class="table">
+          <caption class="sr-only">Payment schedule by year</caption>
+          <thead><tr><th scope="col">Year</th><th scope="col" class="num">Payments</th><th scope="col" class="num">Principal</th><th scope="col" class="num">Interest</th><th scope="col" class="num">Balance</th></tr></thead>
+          <tbody>
+            @for (y of model().years; track y.year) {
+              <tr><th scope="row">{{ y.year }}</th><td class="num">₱{{ y.payments | number: '1.2-2' }}</td><td class="num">₱{{ y.principal | number: '1.2-2' }}</td><td class="num">₱{{ y.interest | number: '1.2-2' }}</td><td class="num">₱{{ y.balance | number: '1.2-2' }}</td></tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <table class="table">
+          <caption class="sr-only">Payment schedule by month</caption>
+          <thead><tr><th scope="col">Payment</th><th scope="col" class="num">Amount</th><th scope="col" class="num">Principal</th><th scope="col" class="num">Interest</th><th scope="col" class="num">Balance</th></tr></thead>
+          <tbody>
+            @for (r of pagedRows(); track r.period) {
+              <tr><th scope="row">{{ r.period }}</th><td class="num">₱{{ r.payment | number: '1.2-2' }}</td><td class="num">₱{{ r.principal | number: '1.2-2' }}</td><td class="num">₱{{ r.interest | number: '1.2-2' }}</td><td class="num">₱{{ r.balance | number: '1.2-2' }}</td></tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+
+    @if (view() === 'monthly') {
+      <div class="cluster no-print" style="justify-content: space-between; margin-top: var(--space-3)">
+        <label class="field__hint" style="margin: 0">Rows per page
+          <select style="width: auto; min-height: 2.25rem; margin-left: var(--space-2)" [value]="pageSize()" (change)="setPageSize(+$any($event.target).value)">
+            @for (s of pageSizes; track s) { <option [value]="s">{{ s }}</option> }
+          </select>
+        </label>
+        <div class="cluster" style="--gap: var(--space-2)">
+          <button type="button" class="btn btn--sm" (click)="prev()" [disabled]="page() === 0">Previous</button>
+          <span class="field__hint" style="margin: 0">Page {{ page() + 1 }} of {{ totalPages() }}</span>
+          <button type="button" class="btn btn--sm" (click)="next()" [disabled]="page() >= totalPages() - 1">Next</button>
+        </div>
+      </div>
+    }
+  </section>
+
+  <article class="prose section" aria-label="Guide to loan amortization in the Philippines">
     <h2>The Ultimate Guide to Loan Amortization in the Philippines (2026)</h2>
     <p>
       Whether you are applying for a housing loan through Pag-IBIG or a commercial bank, financing a new car, or
@@ -176,18 +154,18 @@
     <h2>Practical Example: 5-Year Car Loan vs. 20-Year Housing Loan</h2>
     <div class="example-box">
       <h3>Scenario A: 5-Year Car Loan (₱1,000,000 at 8% per annum)</h3>
-      <ul style="margin-bottom: 0;">
-        <li><strong>Monthly Payment:</strong> ₱20,276.40</li>
-        <li><strong>Total Interest Paid over 5 Years:</strong> ₱216,583.74</li>
-        <li style="margin-top: 0.5rem"><em>Notice how the monthly payment is high, but the total interest is kept
+      <ul>
+        <li><strong>Monthly Payment:</strong> ₱{{ scenarioA.payment | number: '1.2-2' }}</li>
+        <li><strong>Total Interest Paid over 5 Years:</strong> ₱{{ scenarioA.totalInterest | number: '1.2-2' }}</li>
+        <li><em>Notice how the monthly payment is high, but the total interest is kept
         relatively low because the principal is paid off quickly over 60 months.</em></li>
       </ul>
 
-      <h3 style="margin-top: 1.5rem">Scenario B: 20-Year Housing Loan (₱1,000,000 at 8% per annum)</h3>
-      <ul style="margin-bottom: 0;">
-        <li><strong>Monthly Payment:</strong> ₱8,364.40</li>
-        <li><strong>Total Interest Paid over 20 Years:</strong> ₱1,007,456.36</li>
-        <li style="margin-top: 0.5rem"><em>Notice how the monthly payment is much more affordable. However, because
+      <h3>Scenario B: 20-Year Housing Loan (₱1,000,000 at 8% per annum)</h3>
+      <ul>
+        <li><strong>Monthly Payment:</strong> ₱{{ scenarioB.payment | number: '1.2-2' }}</li>
+        <li><strong>Total Interest Paid over 20 Years:</strong> ₱{{ scenarioB.totalInterest | number: '1.2-2' }}</li>
+        <li><em>Notice how the monthly payment is much more affordable. However, because
           you are stretching the debt over 240 months, you end up paying more in interest than the actual principal
         borrowed.</em></li>
       </ul>
@@ -227,7 +205,7 @@ your loan term and cut interest costs.</li>
   increasing your monthly amortization. Always budget with a margin of safety for potential future rate hikes.
 </p>
 
-<hr style="margin: 3rem 0; border: 0; border-top: 1px solid #eee;">
+<hr>
 
 <h2>Frequently Asked Questions (FAQs)</h2>
 <div class="faq-section">
@@ -249,8 +227,10 @@ your loan term and cut interest costs.</li>
   total interest costs overall (often doubling the price of the property).</p>
 </div>
 
-<div class="cta-wrapper" style="margin-top: 2rem;">
-  <a mat-stroked-button color="primary" routerLink="/articles">View All Financial Guides</a>
+<div class="cta-wrapper">
+  <a class="btn" routerLink="/articles">View All Financial Guides</a>
 </div>
-</article>
-</section>
+  </article>
+
+  <div class="section"><app-sponsored type="cashExpress" /></div>
+</div>

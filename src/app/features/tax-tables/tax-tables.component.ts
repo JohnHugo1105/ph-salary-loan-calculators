@@ -1,19 +1,17 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 import { SeoService } from '../../core/services/seo.service';
-import { AdComponent } from '../../shared/components/ad/ad.component';
+import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { computeMPF, computeSSS, computeSssMsc, round2 } from '../../shared/utils/ph-calculators.util';
 import { PH_RULES } from '../../shared/utils/ph-rules';
 
 @Component({
     selector: 'app-tax-tables',
-    imports: [DecimalPipe, MatCardModule, MatButtonModule, RouterModule, AdComponent],
-    templateUrl: './tax-tables.component.html',
-    styleUrls: ['./tax-tables.component.scss']
+    imports: [DecimalPipe, RouterModule, PageHeaderComponent],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    templateUrl: './tax-tables.component.html'
 })
 export class TaxTablesComponent {
     // Tables below are generated from the same rules and formulas the calculators use.

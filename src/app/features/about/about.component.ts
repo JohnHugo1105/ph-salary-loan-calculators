@@ -1,15 +1,11 @@
-import { Component } from '@angular/core';
-
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
+import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 
 @Component({
-    selector: 'app-about',
-    imports: [RouterLink, MatCardModule, MatIconModule, MatButtonModule],
-    templateUrl: './about.component.html',
-    styleUrl: './about.component.scss'
+  selector: 'app-about',
+  imports: [RouterLink, PageHeaderComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './about.component.html',
 })
-export class AboutComponent { }
+export class AboutComponent {}

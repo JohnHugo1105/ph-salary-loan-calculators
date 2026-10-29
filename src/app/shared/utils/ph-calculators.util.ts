@@ -1,5 +1,5 @@
 // Utility functions for PH-specific calculators. Rates live in ph-rules.ts.
-import { PH_RULES } from './ph-rules';
+import { PH_RULES, TaxBracket } from './ph-rules';
 
 export type Contributions = {
   sss: { employee: number; employer: number; total: number };
@@ -108,17 +108,24 @@ export function computeContributions(monthlySalary: number, options?: { includeS
 
 // BIR withholding tax on compensation (RR 11-2018 Annex E, 2023 onwards).
 // `taxable` is the taxable compensation for the pay period (gross less mandatory contributions).
+// The bracket a taxable amount falls in (brackets are ordered highest first and apply from
+// their lower bound upward).
+export function getWithholdingBracket(
+  taxable: number,
+  period: 'monthly' | 'semi-monthly' = 'monthly'
+): TaxBracket {
+  const brackets = period === 'semi-monthly'
+    ? PH_RULES.withholdingTax.semiMonthly
+    : PH_RULES.withholdingTax.monthly;
+  return brackets.find(br => taxable >= br.over) || brackets[brackets.length - 1];
+}
+
 export function computeWithholdingTax(
   taxable: number,
   period: 'monthly' | 'semi-monthly' = 'monthly'
 ): number {
   if (!isPositive(taxable)) return 0;
-  const brackets = period === 'semi-monthly'
-    ? PH_RULES.withholdingTax.semiMonthly
-    : PH_RULES.withholdingTax.monthly;
-
-  // Brackets are ordered highest first; a bracket applies from its lower bound upward.
-  const b = brackets.find(br => taxable >= br.over) || brackets[brackets.length - 1];
+  const b = getWithholdingBracket(taxable, period);
   const tax = b.rate === 0 ? 0 : b.base + (taxable - b.over) * b.rate;
   return round2(Math.max(tax, 0));
 }

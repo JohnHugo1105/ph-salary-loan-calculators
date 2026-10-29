@@ -1,11 +1,12 @@
 import { ApplicationConfig } from '@angular/core';
-import { provideRouter } from '@angular/router';
-import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideRouter, withInMemoryScrolling } from '@angular/router';
+import { provideClientHydration } from '@angular/platform-browser';
 
 import { routes } from './app.routes';
-import { provideClientHydration } from '@angular/platform-browser';
-// Removed provideAnimationsAsync to avoid potential runtime issues; using sync animations only.
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideRouter(routes), provideAnimations(), provideClientHydration()]
+  providers: [
+    provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled' })),
+    provideClientHydration(),
+  ],
 };

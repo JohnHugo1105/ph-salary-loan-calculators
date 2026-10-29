@@ -1,33 +1,95 @@
-<header class="hero">
-  <div class="hero-content">
-    <h1>Philippine Salary & Loan Tools</h1>
-    <p class="subtitle">Free and updated for 2026 financial rules.</p>
-  </div>
-</header>
+<div class="container">
+  <div class="hero-grid">
+  <section class="hero" aria-labelledby="home-title">
+    <h1 id="home-title" class="hero__title">Philippine salary, tax &amp; loan calculators</h1>
+    <p class="hero__lede">
+      Free tools that show their working. Every rate is traced to its official source, and every result explains how it was
+      computed.
+    </p>
 
-<section class="container">
-  <div class="tool-grid">
-    @for (tool of tools; track tool) {
-      <a [routerLink]="tool.route" class="tool-card">
-        <mat-card class="card-inner">
-          <div class="icon-wrapper" [class]="tool.color">
-            <mat-icon>{{ tool.icon }}</mat-icon>
-          </div>
-          <mat-card-header>
-            <mat-card-title>{{ tool.title }}</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <p>{{ tool.description }}</p>
-          </mat-card-content>
-        </mat-card>
-      </a>
+    <label class="searchbar">
+      <app-icon name="search" />
+      <span class="sr-only">Search calculators and guides</span>
+      <input type="search" placeholder="Search calculators and guides" autocomplete="off"
+        [value]="query()" (input)="onSearch($any($event.target).value)" />
+    </label>
+
+    <div class="cluster" style="margin-top: var(--space-4)">
+      <span class="field__hint" style="margin: 0">Popular:</span>
+      @for (t of popular; track t.id) {
+        <a class="chip" [routerLink]="t.route">{{ t.title }}</a>
+      }
+    </div>
+  </section>
+
+  <aside class="card hero-example" aria-labelledby="example-title">
+    <h2 id="example-title" class="card__title" style="margin-bottom: var(--space-1)">Example: ₱30,000 a month</h2>
+    <p class="field__hint" style="margin: 0 0 var(--space-3)">Worked out live by the same engine as the calculators.</p>
+    <app-breakdown [rows]="example.rows" />
+    <p style="margin-top: var(--space-3)"><a routerLink="/net-pay">Try it with your own salary <app-icon name="arrow-right" [size]="14" /></a></p>
+  </aside>
+  </div>
+
+  @if (query().trim()) {
+    <section class="section" style="margin-top: var(--space-5)" aria-live="polite">
+      <h2>{{ results().length }} {{ results().length === 1 ? 'result' : 'results' }} for “{{ query().trim() }}”</h2>
+      @if (results().length) {
+        <div class="grid grid--3" style="margin-top: var(--space-4)">
+          @for (r of results(); track r.route) {
+            <app-tool-card [item]="r" [cta]="r.kind === 'Guide' ? 'Read' : 'Open'" />
+          }
+        </div>
+      } @else {
+        <p class="section__lede" style="margin-top: var(--space-2)">Nothing matched. Try “tax”, “loan”, “SSS” or “bonus”.</p>
+      }
+      <p style="margin-top: var(--space-4)"><button type="button" class="link-btn" (click)="onSearch('')">Clear search</button></p>
+    </section>
+  } @else {
+    @for (g of groups; track g.id) {
+      <section class="section" [attr.aria-labelledby]="'group-' + g.id" style="margin-top: var(--space-7)">
+        <h2 [id]="'group-' + g.id">{{ g.title }}</h2>
+        <p class="section__lede">{{ g.blurb }}</p>
+        <div class="grid grid--3">
+          @for (t of toolsIn(g.id); track t.id) {
+            <app-tool-card [item]="t" />
+          }
+        </div>
+      </section>
     }
-  </div>
-</section>
 
-<footer class="home-footer">
-  <p>
-    <a routerLink="/about">About</a> &bull;
-    <a routerLink="/contact">Contact</a>
-  </p>
-</footer>
+    <section class="section" aria-labelledby="trust-title">
+      <h2 id="trust-title">Why you can trust the numbers</h2>
+      <p class="section__lede">Financial calculators earn trust by being checkable.</p>
+      <div class="grid grid--3">
+        <div class="card card--flat">
+          <app-icon name="clipboard-check" [size]="24" />
+          <h3 style="font-size: var(--step-1); margin: var(--space-3) 0 var(--space-2)">Rates with dates and sources</h3>
+          <p style="color: var(--text-2)">Each rate and limit lists its effective date and where it comes from.
+            <a routerLink="/rates">See rates &amp; sources</a>.</p>
+        </div>
+        <div class="card card--flat">
+          <app-icon name="percent" [size]="24" />
+          <h3 style="font-size: var(--step-1); margin: var(--space-3) 0 var(--space-2)">The working is shown</h3>
+          <p style="color: var(--text-2)">Results include the formula for each line, so you can compare them with your payslip.</p>
+        </div>
+        <div class="card card--flat">
+          <app-icon name="info" [size]="24" />
+          <h3 style="font-size: var(--step-1); margin: var(--space-3) 0 var(--space-2)">Estimates, clearly labelled</h3>
+          <p style="color: var(--text-2)">Employers and agencies can compute differently. Use results as a guide and confirm with HR.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="guides-title">
+      <h2 id="guides-title">Guides</h2>
+      <p class="section__lede">Short explainers to go with the calculators.</p>
+      <div class="grid grid--3">
+        @for (g of guides; track g.route) {
+          <app-tool-card [item]="g" cta="Read" />
+        }
+      </div>
+    </section>
+  }
+
+  <div class="section"><app-sponsored type="cashSpace" /></div>
+</div>

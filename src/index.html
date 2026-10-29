@@ -9,7 +9,13 @@
   <meta name="description"
     content="Free Philippines calculators for SSS, Pag-IBIG, PhilHealth, MPF contributions, salary net pay, tax, 13th month, and loan amortization.">
   <meta name="robots" content="index, follow">
-  <meta name="theme-color" content="#2979ff">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b1017" media="(prefers-color-scheme: dark)">
+  <script>
+    // Apply a saved theme before first paint to avoid a flash.
+    try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+  </script>
   <link rel="manifest" href="manifest.webmanifest">
   <!-- Open Graph / Twitter -->
   <meta property="og:type" content="website">
@@ -38,7 +44,6 @@
   }
   </script>
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <!-- Google Fonts removed to avoid network fetch during build. -->
   <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
   <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
   <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png">
@@ -46,19 +51,10 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="shortcut icon" href="/favicon.ico">
   <link rel="alternate icon" href="/favicon.ico">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
 <body>
-  <app-root>
-    <div class="app-loading">
-      <h1>PH Salary & Loan Calculators</h1>
-      <p>Loading calculators...</p>
-    </div>
-  </app-root>
+  <app-root></app-root>
   <script type="text/javascript"
     src="https://pl29189766.profitablecpmratenetwork.com/83/d4/42/83d4421ab784998acf1d282ed1f60080.js"></script>
 </body>

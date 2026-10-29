@@ -1,6 +1,9 @@
-<section class="not-found">
-  <h1>Page not found</h1>
-  <p>The page you’re looking for doesn’t exist.</p>
-  <a routerLink="/" class="home-link">Go back home</a>
-</section>
-
+<div class="container">
+  <app-page-header title="Page not found" lede="That page does not exist or has moved. Try one of these instead." />
+  <div class="grid grid--3">
+    @for (t of popular; track t.id) {
+      <app-tool-card [item]="t" />
+    }
+  </div>
+  <p style="margin-top: var(--space-5)"><a class="btn" routerLink="/">Go to the homepage</a></p>
+</div>

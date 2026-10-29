@@ -10,6 +10,8 @@ import { NgControl } from '@angular/forms';
 export class ThousandsSeparatorDirective implements OnInit {
   // Use a fixed locale for grouping (commas). Adjust if needed.
   @Input() appThousandsSeparatorLocale: string = 'en-US';
+  // Minimum fraction digits shown when not editing. Cents still show if the value has them.
+  @Input() appThousandsSeparatorDecimals: number = 2;
 
   constructor(private el: ElementRef<HTMLInputElement>, private control: NgControl) {}
 
@@ -52,10 +54,9 @@ export class ThousandsSeparatorDirective implements OnInit {
   }
 
   private formatNumber(n: number): string {
-    // Always show 2 decimal places for clarity
     return n.toLocaleString(this.appThousandsSeparatorLocale, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+      minimumFractionDigits: this.appThousandsSeparatorDecimals,
+      maximumFractionDigits: Math.max(this.appThousandsSeparatorDecimals, 2),
       useGrouping: true,
     });
   }

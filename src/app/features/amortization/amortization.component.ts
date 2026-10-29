@@ -1,234 +1,173 @@
-import { Component, ElementRef, OnInit, Inject, PLATFORM_ID, ChangeDetectionStrategy, computed, effect, viewChild, signal, untracked } from '@angular/core';
-import { RouterModule, ActivatedRoute } from '@angular/router';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { computeAmortization } from '../../shared/utils/ph-calculators.util';
-import { isPlatformBrowser } from '@angular/common';
-import { trigger, transition, style, query, stagger, animate } from '@angular/animations';
-import { SaveShareService } from '../../shared/services/save-share.service';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
-import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
+import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SeoService } from '../../core/services/seo.service';
-import { AdComponent } from '../../shared/components/ad/ad.component';
+import { formatPeso, formatPercent } from '../../shared/format';
+import { SaveShareService } from '../../shared/services/save-share.service';
+import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
+import { CalloutComponent } from '../../shared/ui/callout.component';
+import { LineAreaChartComponent } from '../../shared/ui/charts/line-area-chart.component';
+import { SplitBarComponent } from '../../shared/ui/charts/split-bar.component';
+import { StackedColumnsComponent } from '../../shared/ui/charts/stacked-columns.component';
+import { FieldComponent } from '../../shared/ui/field.component';
+import { PageHeaderComponent } from '../../shared/ui/page-header.component';
+import { ResultActionsComponent } from '../../shared/ui/result-actions.component';
+import { ResultBarComponent } from '../../shared/ui/result-bar.component';
+import { SegmentedComponent } from '../../shared/ui/segmented.component';
+import { SponsoredComponent } from '../../shared/ui/sponsored.component';
+import { computeAmortization, round2 } from '../../shared/utils/ph-calculators.util';
 
-import { MatIconModule } from '@angular/material/icon';
+interface YearRow { year: number; payments: number; interest: number; principal: number; balance: number }
+
+// Lifetime totals use the exact (unrounded) payment so they do not drift by cents; the displayed
+// monthly payment is that figure rounded to the centavo.
+function summarize(amount: number, annualRatePct: number, months: number) {
+  const { payment, schedule } = computeAmortization(amount, annualRatePct, months);
+  const r = annualRatePct / 100 / 12;
+  const exact = r === 0 ? amount / months : (amount * (r * Math.pow(1 + r, months))) / (Math.pow(1 + r, months) - 1);
+  const totalPaid = round2(exact * months);
+  return { payment, schedule, totalPaid, totalInterest: round2(totalPaid - amount) };
+}
 
 @Component({
-    selector: 'app-amortization',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatCardModule, MatButtonModule, MatSelectModule, MatIconModule, ThousandsSeparatorDirective, RouterModule, AdComponent],
-    templateUrl: './amortization.component.html',
-    styleUrl: './amortization.component.scss',
-    animations: [
-        trigger('tableIn', [
-            transition(':enter', [
-                query('tbody tr', [
-                    style({ opacity: 0, transform: 'translateY(6px)' }),
-                    stagger(20, animate('160ms ease-out', style({ opacity: 1, transform: 'none' })))
-                ], { optional: true })
-            ])
-        ])
-    ]
+  selector: 'app-amortization',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    ReactiveFormsModule, DecimalPipe, RouterLink, ThousandsSeparatorDirective, FieldComponent, SegmentedComponent, CalloutComponent,
+    PageHeaderComponent, ResultActionsComponent, ResultBarComponent, SponsoredComponent, LineAreaChartComponent, SplitBarComponent,
+  ],
+  templateUrl: './amortization.component.html',
 })
-export class AmortizationComponent implements OnInit {
-  chartCanvas = viewChild<ElementRef<HTMLCanvasElement>>('chartCanvas');
-  chart: any;
-  shareUrl: string = '';
-  saveSuccess: boolean = false;
+export class AmortizationComponent {
+  private readonly fb = inject(FormBuilder);
+  private readonly seo = inject(SeoService);
+  private readonly share = inject(SaveShareService);
+
+  readonly termPresets = [5, 10, 15, 20, 25, 30];
+  readonly views = [
+    { value: 'yearly', label: 'By year' },
+    { value: 'monthly', label: 'By month' },
+  ];
+  readonly pageSizes = [12, 24, 60];
+
   form = this.fb.group({
-    amount: [1000000, [Validators.required, Validators.min(0)]],
-    annualRate: [8, [Validators.required, Validators.min(0)]],
-    months: [240, [Validators.required, Validators.min(1)]]
+    amount: [1000000, [Validators.required, Validators.min(1), Validators.max(10_000_000_000)]],
+    annualRate: [8, [Validators.required, Validators.min(0), Validators.max(100)]],
+    months: [240, [Validators.required, Validators.min(1), Validators.max(480)]],
   });
 
-  formValue = toSignal(this.form.valueChanges, { initialValue: this.form.getRawValue() });
+  readonly formValue = toSignal(this.form.valueChanges, { initialValue: this.form.getRawValue() });
 
-  schedule = computed(() => {
+  readonly viewControl = new FormControl<'yearly' | 'monthly'>('yearly', { nonNullable: true });
+  readonly view = toSignal(this.viewControl.valueChanges, { initialValue: 'yearly' as 'yearly' | 'monthly' });
+  readonly pageSize = signal(12);
+  readonly page = signal(0);
+
+  readonly model = computed(() => {
     const v = this.formValue();
-    const amount = Number(v.amount) || 0;
-    const rate = Number(v.annualRate) || 0;
-    const months = Number(v.months) || 1;
-    return computeAmortization(amount, rate, months);
+    const amount = Math.max(0, Number(v.amount) || 0);
+    const rate = Math.max(0, Number(v.annualRate) || 0);
+    const months = Math.min(480, Math.max(1, Math.round(Number(v.months) || 1)));
+    const s = summarize(amount, rate, months);
+
+    const years: YearRow[] = [];
+    for (const r of s.schedule) {
+      const y = Math.ceil(r.period / 12);
+      const row = years[y - 1] ?? (years[y - 1] = { year: y, payments: 0, interest: 0, principal: 0, balance: 0 });
+      row.payments = round2(row.payments + r.payment);
+      row.interest = round2(row.interest + r.interest);
+      row.principal = round2(row.principal + r.principal);
+      row.balance = r.balance;
+    }
+    const balanceSeries = [{ label: '0', value: amount }, ...years.map((y) => ({ label: String(y.year), value: y.balance }))];
+    return { amount, rate, months, ...s, years, balanceSeries, interestShare: amount > 0 ? formatPercent((s.totalInterest / amount) * 100, 1) : '0%' };
   });
 
-  pageSize = signal(24);
-  page = signal(0);
+  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.model().schedule.length / this.pageSize())));
+  readonly pagedRows = computed(() => {
+    const start = this.page() * this.pageSize();
+    return this.model().schedule.slice(start, start + this.pageSize());
+  });
 
-  totalRows = computed(() => this.schedule().schedule.length);
-  totalPages = computed(() => Math.max(1, Math.ceil(this.totalRows() / this.pageSize())));
-  startIndex = computed(() => this.page() * this.pageSize());
-  endIndex = computed(() => Math.min(this.startIndex() + this.pageSize(), this.totalRows()));
-  pagedRows = computed(() => this.schedule().schedule.slice(this.startIndex(), this.endIndex()));
+  readonly shareData = computed(() => ({ ...this.formValue() }) as Record<string, unknown>);
+  readonly summary = computed(() => {
+    const m = this.model();
+    return [
+      `Loan: ${formatPeso(m.amount)} at ${m.rate}% a year for ${m.months} months`,
+      `Monthly payment: ${formatPeso(m.payment)}`,
+      `Total interest: ${formatPeso(m.totalInterest)}`,
+      `Total paid: ${formatPeso(m.totalPaid)}`,
+      'Computed at phcalculators.com/amortization',
+    ].join('\n');
+  });
 
-  canPrev = computed(() => this.page() > 0);
-  canNext = computed(() => this.page() < this.totalPages() - 1);
+  // Worked examples for the guide below, generated from the same engine as the calculator.
+  readonly scenarioA = summarize(1_000_000, 8, 60);
+  readonly scenarioB = summarize(1_000_000, 8, 240);
 
-  constructor(
-    private fb: FormBuilder, 
-    private seo: SeoService,
-    private saveShare: SaveShareService,
-    private route: ActivatedRoute,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {
-    this.form.valueChanges.subscribe(() => {
-      this.shareUrl = ''; // reset share link when input changes
-      this.saveSuccess = false;
-    });
-
-    effect(() => {
-      this.schedule();
-      untracked(() => this.page.set(0));
-    });
-
-    effect(() => {
-      const canvas = this.chartCanvas();
-      if (canvas && !this.chart) {
-        this.initChart(canvas.nativeElement);
-      }
-    });
-
-    effect(() => {
-      const s = this.schedule();
-      if (this.chart) {
-        this.updateChart(s);
-      }
-    });
-
+  constructor() {
+    this.share.restoreInto(this.form, inject(ActivatedRoute).snapshot.queryParamMap.get('data'));
     this.seo.setSchema([
-      {
-        '@context': 'https://schema.org',
-        '@type': 'SoftwareApplication',
-        'name': 'Loan Amortization Calculator Philippines',
-        'operatingSystem': 'Web',
-        'applicationCategory': 'FinanceApplication',
-        'url': 'https://www.phcalculators.com/amortization',
-        'offers': {
-          '@type': 'Offer',
-          'price': '0',
-          'priceCurrency': 'PHP'
-        },
-        'featureList': 'Compute monthly payments and generates amortization schedule'
-      },
-      {
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        'mainEntity': [
           {
-            '@type': 'Question',
-            'name': 'What is a diminishing balance interest rate?',
-            'acceptedAnswer': {
-              '@type': 'Answer',
-              'text': 'A diminishing balance interest rate means that the interest is calculated based on the remaining principal balance of the loan each month, not the original borrowed amount. As you pay off the principal, the interest portion of your monthly payment decreases.'
-            }
+            '@context': 'https://schema.org',
+            '@type': 'SoftwareApplication',
+            'name': 'Loan Amortization Calculator Philippines',
+            'operatingSystem': 'Web',
+            'applicationCategory': 'FinanceApplication',
+            'url': 'https://www.phcalculators.com/amortization',
+            'offers': {
+              '@type': 'Offer',
+              'price': '0',
+              'priceCurrency': 'PHP'
+            },
+            'featureList': 'Compute monthly payments and generates amortization schedule'
           },
           {
-            '@type': 'Question',
-            'name': 'What is a repricing period for a housing loan?',
-            'acceptedAnswer': {
-              '@type': 'Answer',
-              'text': 'A repricing period (or fixing period) is the duration for which your interest rate is guaranteed to stay the same. After this period (e.g., 1 year, 3 years, 5 years), the bank will adjust or \'reprice\' your interest rate based on current market conditions, which can increase or decrease your monthly amortization.'
-            }
-          },
-          {
-            '@type': 'Question',
-            'name': 'Is it better to have a 5-year or 20-year loan term?',
-            'acceptedAnswer': {
-              '@type': 'Answer',
-              'text': 'It depends on your cash flow. A 5-year term will have significantly higher monthly payments, but you will pay drastically less total interest over the life of the loan. A 20-year term spreads the payments out to be much lower and more affordable month-to-month, but yields much higher total interest costs overall.'
-            }
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            'mainEntity': [
+              {
+                '@type': 'Question',
+                'name': 'What is a diminishing balance interest rate?',
+                'acceptedAnswer': {
+                  '@type': 'Answer',
+                  'text': 'A diminishing balance interest rate means that the interest is calculated based on the remaining principal balance of the loan each month, not the original borrowed amount. As you pay off the principal, the interest portion of your monthly payment decreases.'
+                }
+              },
+              {
+                '@type': 'Question',
+                'name': 'What is a repricing period for a housing loan?',
+                'acceptedAnswer': {
+                  '@type': 'Answer',
+                  'text': 'A repricing period (or fixing period) is the duration for which your interest rate is guaranteed to stay the same. After this period (e.g., 1 year, 3 years, 5 years), the bank will adjust or \'reprice\' your interest rate based on current market conditions, which can increase or decrease your monthly amortization.'
+                }
+              },
+              {
+                '@type': 'Question',
+                'name': 'Is it better to have a 5-year or 20-year loan term?',
+                'acceptedAnswer': {
+                  '@type': 'Answer',
+                  'text': 'It depends on your cash flow. A 5-year term will have significantly higher monthly payments, but you will pay drastically less total interest over the life of the loan. A 20-year term spreads the payments out to be much lower and more affordable month-to-month, but yields much higher total interest costs overall.'
+                }
+              }
+            ]
           }
-        ]
-      }
-    ]);
+        ]);
   }
 
-  first() { this.page.set(0); }
-  prev() { if (this.canPrev()) this.page.update(p => p - 1); }
-  next() { if (this.canNext()) this.page.update(p => p + 1); }
-  last() { this.page.set(this.totalPages() - 1); }
-  setPageSize(size: number) { this.pageSize.set(size); this.page.set(0); }
-
-  ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      if (params['data']) {
-        const decoded = this.saveShare.decodeSharedData(params['data']);
-        if (decoded) {
-          this.form.patchValue({
-            amount: decoded.amount,
-            annualRate: decoded.annualRate,
-            months: decoded.months
-          });
-        }
-      }
-    });
+  setTerm(years: number) {
+    this.form.controls.months.setValue(years * 12);
+    this.form.controls.months.markAsDirty();
   }
-
-  async initChart(canvasEl: HTMLCanvasElement) {
-    if (!isPlatformBrowser(this.platformId)) return;
-    
-    const { Chart } = await import('chart.js/auto');
-    const s = this.schedule();
-    const totalPrincipal = s.schedule.reduce((sum, row) => sum + row.principal, 0);
-    const totalInterest = s.schedule.reduce((sum, row) => sum + row.interest, 0);
-
-    this.chart = new Chart(canvasEl, {
-      type: 'pie',
-      data: {
-        labels: ['Total Principal', 'Total Interest'],
-        datasets: [{
-          data: [totalPrincipal, totalInterest],
-          backgroundColor: ['#4ade80', '#f87171'],
-          borderWidth: 0
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { position: 'bottom' }
-        }
-      }
-    });
+  isTerm(years: number): boolean {
+    return Number(this.formValue().months) === years * 12;
   }
-
-  updateChart(s: any) {
-    if (!this.chart || !isPlatformBrowser(this.platformId)) return;
-    const totalPrincipal = s.schedule.reduce((sum: number, row: any) => sum + row.principal, 0);
-    const totalInterest = s.schedule.reduce((sum: number, row: any) => sum + row.interest, 0);
-    
-    this.chart.data.datasets[0].data = [totalPrincipal, totalInterest];
-    this.chart.update();
+  setPageSize(size: number) {
+    this.pageSize.set(size);
+    this.page.set(0);
   }
-
-  saveCalculation() {
-    const data = {
-      type: 'amortization',
-      amount: this.form.value.amount,
-      annualRate: this.form.value.annualRate,
-      months: this.form.value.months,
-      payment: this.schedule().payment
-    };
-    this.saveSuccess = this.saveShare.saveCalculation('amortization', data);
-    setTimeout(() => this.saveSuccess = false, 3000);
-  }
-
-  generateShareLink() {
-    const data = {
-      amount: this.form.value.amount,
-      annualRate: this.form.value.annualRate,
-      months: this.form.value.months
-    };
-    this.shareUrl = this.saveShare.generateShareLink(data);
-  }
-
-  copyLink() {
-    if (this.shareUrl) {
-      navigator.clipboard.writeText(this.shareUrl);
-      alert('Link copied to clipboard!');
-    }
-  }
+  prev() { this.page.update((p) => Math.max(0, p - 1)); }
+  next() { this.page.update((p) => Math.min(this.totalPages() - 1, p + 1)); }
 }

@@ -1,0 +1,127 @@
+// Long-form guide content. Also styles the class names used by the existing guide markup
+// (styled-list, example-box, formula-box, faq-section, note, data-table, cta-wrapper).
+.prose {
+  max-width: var(--reading);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: var(--text);
+
+  > * + * {
+    margin-top: var(--space-4);
+  }
+  h2 {
+    margin-top: var(--space-7);
+    font-size: var(--step-3);
+  }
+  h3 {
+    margin-top: var(--space-6);
+    font-size: var(--step-2);
+  }
+  h4 {
+    margin-top: var(--space-5);
+    font-size: var(--step-1);
+  }
+  h2 + *,
+  h3 + *,
+  h4 + * {
+    margin-top: var(--space-3);
+  }
+  p,
+  li {
+    color: var(--text);
+  }
+  ul,
+  ol {
+    display: grid;
+    gap: var(--space-2);
+    padding-left: 1.4rem;
+    li {
+      margin: 0;
+      padding-left: 0.25rem;
+    }
+  }
+  strong {
+    font-weight: 700;
+  }
+  em {
+    color: var(--text-2);
+  }
+  a {
+    font-weight: 600;
+  }
+  .highlight {
+    font-weight: 700;
+    color: var(--brand);
+  }
+
+  .example-box,
+  .formula-box {
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid var(--brand-border);
+    border-left-width: 4px;
+    border-radius: var(--radius-m);
+    background: var(--brand-soft);
+    h3,
+    h4 {
+      margin-top: 0;
+      font-size: var(--step-1);
+    }
+    > * + * {
+      margin-top: var(--space-3);
+    }
+    ul {
+      margin-bottom: 0;
+    }
+  }
+  .formula-box {
+    font-family: var(--font-mono);
+    font-size: 0.9375rem;
+  }
+
+  .note {
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-m);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text-2);
+    font-size: var(--step--1);
+    line-height: 1.6;
+  }
+
+  .faq-section {
+    display: grid;
+    gap: var(--space-4);
+    h3 {
+      margin-top: 0;
+      font-size: var(--step-1);
+    }
+    h3 + p {
+      margin-top: var(--space-2);
+    }
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-m);
+    background: var(--surface);
+  }
+  .data-table {
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .cta-wrapper {
+    margin-top: var(--space-5);
+  }
+  hr,
+  hr.divider {
+    margin: var(--space-7) 0;
+  }
+}
+
+.article-hero-lede {
+  font-size: var(--step-1);
+  color: var(--text-2);
+}
