@@ -699,31 +699,34 @@ details.disclosure {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: 8px;
+  min-width: 0;
   margin-right: auto;
   color: var(--text);
-  font-weight: 800;
-  letter-spacing: -0.02em;
   text-decoration: none;
-  white-space: nowrap;
   &:hover {
+    color: var(--text);
     text-decoration: none;
   }
-  &__mark {
-    display: grid;
-    place-items: center;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 0.5rem;
-    background: var(--brand-solid);
-    color: var(--on-brand);
-    font-size: 1.125rem;
-    font-weight: 800;
-    line-height: 1;
+  // The original logo: the favicon image followed by the full site name.
+  &__icon {
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
   }
-  @media (max-width: 380px) {
-    &__text {
-      display: none;
+  &__text {
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  @media (max-width: 599px) {
+    max-width: 52vw;
+    .brand__text {
+      font-size: 14px;
     }
   }
 }

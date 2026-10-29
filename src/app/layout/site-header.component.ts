@@ -16,9 +16,9 @@ import { SearchService } from './search.service';
   template: `
     <header class="site-header">
       <div class="container site-header__inner">
-        <a class="brand" routerLink="/" aria-label="PH Calculators, home" (click)="close()">
-          <span class="brand__mark" aria-hidden="true">₱</span>
-          <span class="brand__text">PH Calculators</span>
+        <a class="brand" routerLink="/" (click)="close()">
+          <img class="brand__icon" src="/favicon-48x48.png" alt="" width="28" height="28" />
+          <span class="brand__text">PH Salary &amp; Loan Calculators</span>
         </a>
 
         <nav class="nav" aria-label="Main">
