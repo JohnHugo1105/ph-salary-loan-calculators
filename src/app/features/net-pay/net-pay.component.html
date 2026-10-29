@@ -135,15 +135,19 @@
           <mat-card-content>
             <div class="row">
               <span>SSS</span>
-              <span class="num">₱{{ view().contributions.sss.employee | number:'1.2-2' }}</span>
+              <span class="num">₱{{ view().periodContributions.sss | number:'1.2-2' }}</span>
+            </div>
+            <div class="row">
+              <span>MPF / WISP (SSS)</span>
+              <span class="num">₱{{ view().periodContributions.mpf | number:'1.2-2' }}</span>
             </div>
             <div class="row">
               <span>PhilHealth</span>
-              <span class="num">₱{{ view().contributions.philhealth.employee | number:'1.2-2' }}</span>
+              <span class="num">₱{{ view().periodContributions.philhealth | number:'1.2-2' }}</span>
             </div>
             <div class="row">
               <span>Pag-IBIG</span>
-              <span class="num">₱{{ view().contributions.pagibig.employee | number:'1.2-2' }}</span>
+              <span class="num">₱{{ view().periodContributions.pagibig | number:'1.2-2' }}</span>
             </div>
             <div class="row">
               <span>Withholding Tax</span>
@@ -176,7 +180,7 @@
     <div class="formula-box example-box" style="margin: 1.5rem 0; font-family: monospace;">
       <h3 style="margin-top: 0;">The Basic Net Pay Formula</h3>
       <strong>Gross Pay</strong> (Basic Salary + Overtime + Holiday Pay + Taxable Allowances)<br>
-      <strong>- Total Deductions</strong> (SSS + PhilHealth + Pag-IBIG)<br>
+      <strong>- Total Deductions</strong> (SSS + MPF/WISP + PhilHealth + Pag-IBIG)<br>
       <strong>- Withholding Tax</strong> (Based on BIR Tax Tables)<br>
       <hr style="border: 0; border-top: 1px solid currentColor; margin: 0.5rem 0; opacity: 0.2;">
       <strong>= Net Pay (Take-Home Pay)</strong>
@@ -192,8 +196,9 @@
     <p>
       The SSS provides social insurance for private-sector employees. It acts as a safety net, covering benefits for
       sickness, maternity, disability, retirement, and death. Your contribution amount is tiered based on your Monthly
-      Salary Credit (MSC). Starting 2026, the maximum MSC was increased, meaning higher earners will see slightly larger
-      SSS deductions but will also receive higher benefits upon retirement.
+      Salary Credit (MSC). Since January 2025 the SSS rate is 15% (5% employee, 10% employer) on an MSC of up to
+      ₱35,000. The part of the MSC above ₱20,000 goes to your MPF/WISP provident savings, which is shown as a separate
+      line in the calculator but is part of the same SSS contribution.
     </p>
 
     <h3>2. PhilHealth (Philippine Health Insurance Corporation)</h3>
@@ -206,8 +211,8 @@
     <h3>3. Pag-IBIG (Home Development Mutual Fund or HDMF)</h3>
     <p>
       Pag-IBIG offers housing loans, calamity loans, and a highly competitive savings program (including the MP2). The
-      standard mandatory contribution is 2% of your monthly compensation, capped at a specific salary base, keeping the
-      standard monthly deduction at ₱100 to ₱200 for most employees.
+      standard mandatory contribution is 2% of your monthly compensation, capped at a maximum fund salary of ₱10,000,
+      so the employee deduction is at most ₱200 per month.
     </p>
 
     <h3>4. Withholding Tax (Income Tax)</h3>
@@ -221,18 +226,23 @@
 
   <h2>Practical Example: Computing Net Pay</h2>
   <div class="example-box">
-    <h3>Scenario: Juan earns ₱30,000 a month</h3>
-    <p>Juan works in Metro Manila and has a basic salary of ₱30,000 with no other allowances.</p>
+    <h3>Scenario: Juan earns ₱{{ example.salary | number:'1.0-0' }} a month</h3>
+    <p>Juan works in Metro Manila and has a basic salary of ₱{{ example.salary | number:'1.0-0' }} with no other
+      allowances.</p>
     <ul style="margin-bottom: 0;">
-      <li><strong>Gross Pay:</strong> ₱30,000</li>
-      <li><strong>SSS Deduction (Employee Share):</strong> ~₱1,350</li>
-      <li><strong>PhilHealth Deduction (Employee Share):</strong> ~₱750</li>
-      <li><strong>Pag-IBIG Deduction:</strong> ₱200</li>
-      <li><em>Total Government Deductions:</em> ₱2,300</li>
+      <li><strong>Gross Pay:</strong> ₱{{ example.salary | number:'1.0-0' }}</li>
+      <li><strong>SSS Deduction incl. MPF/WISP (Employee Share):</strong> ₱{{ example.sss | number:'1.2-2' }}</li>
+      <li><strong>PhilHealth Deduction (Employee Share):</strong> ₱{{ example.philhealth | number:'1.2-2' }}</li>
+      <li><strong>Pag-IBIG Deduction:</strong> ₱{{ example.pagibig | number:'1.2-2' }}</li>
+      <li><em>Total Government Deductions:</em> ₱{{ example.govt | number:'1.2-2' }}</li>
     </ul>
-    <p style="margin-top: 1rem;"><strong>Taxable Income:</strong> ₱30,000 - ₱2,300 = ₱27,700</p>
-    <p>Using the BIR Train Law regular tables, the tax on ₱27,700 is approximately ₱1,035.</p>
-    <p><strong>Juan's Take-Home Net Pay:</strong> ₱30,000 - ₱2,300 (Govt) - ₱1,035 (Tax) = <strong>₱26,665</strong>
+    <p style="margin-top: 1rem;"><strong>Taxable Income:</strong> ₱{{ example.salary | number:'1.0-0' }} -
+      ₱{{ example.govt | number:'1.2-2' }} = ₱{{ example.taxable | number:'1.2-2' }}</p>
+    <p>Using the BIR monthly withholding tax table (15% of the excess over ₱20,833), the tax on
+      ₱{{ example.taxable | number:'1.2-2' }} is ₱{{ example.tax | number:'1.2-2' }}.</p>
+    <p><strong>Juan's Take-Home Net Pay:</strong> ₱{{ example.salary | number:'1.0-0' }} -
+      ₱{{ example.govt | number:'1.2-2' }} (Govt) - ₱{{ example.tax | number:'1.2-2' }} (Tax) =
+      <strong>₱{{ example.net | number:'1.2-2' }}</strong>
   </p>
 </div>
 
@@ -245,12 +255,13 @@
 <p>Because they are <strong>exempt from income tax</strong>, they are a great way for employers to increase your
 take-home pay without increasing your tax burden. Common examples include:</p>
 <ul class="styled-list">
-  <li><strong>Rice Subsidy:</strong> Up to ₱2,000 per month.</li>
-  <li><strong>Uniform/Clothing Allowance:</strong> Up to ₱6,000 per year.</li>
-  <li><strong>Medical Cash Allowance:</strong> Up to ₱1,500 per semester (for dependents).</li>
-  <li><strong>Laundry Allowance:</strong> Up to ₱300 per month.</li>
-  <li><strong>Monetized Vacation Leave:</strong> Up to 10 days of unused leave credits.</li>
+  <li><strong>Rice Subsidy:</strong> Up to ₱{{ deMinimis.riceSubsidyMonthly | number:'1.0-0' }} per month.</li>
+  <li><strong>Uniform/Clothing Allowance:</strong> Up to ₱{{ deMinimis.clothingAllowanceAnnual | number:'1.0-0' }} per year.</li>
+  <li><strong>Medical Cash Allowance:</strong> Up to ₱{{ deMinimis.medicalCashDependentsPerSemester | number:'1.0-0' }} per semester (for dependents).</li>
+  <li><strong>Laundry Allowance:</strong> Up to ₱{{ deMinimis.laundryAllowanceMonthly | number:'1.0-0' }} per month.</li>
+  <li><strong>Monetized Vacation Leave:</strong> Up to {{ deMinimis.monetizedVacationLeaveDays }} days of unused leave credits for private-sector employees.</li>
 </ul>
+<p class="note">Ceilings per BIR Revenue Regulations No. 29-2025. Benefits above these amounts are taxable.</p>
 
 <h2>Is My 13th Month Pay Taxable?</h2>
 <p>

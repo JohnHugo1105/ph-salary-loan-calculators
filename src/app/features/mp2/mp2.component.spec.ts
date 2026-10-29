@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import { Mp2Component } from './mp2.component';
 
@@ -8,7 +9,8 @@ describe('Mp2Component', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Mp2Component]
+      imports: [Mp2Component],
+      providers: [provideRouter([])]
     })
     .compileComponents();
     

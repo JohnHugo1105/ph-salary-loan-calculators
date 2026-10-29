@@ -51,6 +51,13 @@
                   }
                 </div>
               }
+
+              <mat-form-field appearance="outline">
+                <mat-label>Other bonuses/benefits received this year (₱)</mat-label>
+                <input matInput type="text" appThousandsSeparator formControlName="otherBenefits"
+                  inputmode="decimal" />
+                <mat-hint>Counts toward the ₱{{ exemptionCap | number:'1.0-0' }} exemption</mat-hint>
+              </mat-form-field>
             </div>
           </mat-card-content>
         </mat-card>
@@ -77,12 +84,12 @@
           @if (result().taxable > 0) {
             <div class="taxable-section">
               <div class="row warn">
-                <span>Taxable Excess (Over ₱90k)</span>
+                <span>Taxable Excess (Over ₱{{ result().exemptionLeft | number:'1.0-0' }} remaining exemption)</span>
                 <span class="num">₱{{ result().taxable | number:'1.2-2' }}</span>
               </div>
               <div class="tax-estimator">
                 <div class="row small">
-                  <span>Est. Tax Rate (%)</span>
+                  <span title="Use the rate of your own tax bracket on the excess">Est. Tax Rate (%)</span>
                   <input type="number" [formControl]="$any(form).controls.taxRate" class="inline-input" />
                 </div>
                 <div class="row small">

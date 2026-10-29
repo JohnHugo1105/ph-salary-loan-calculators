@@ -15,10 +15,13 @@
                 </mat-card-header>
                 <mat-card-content>
                     <form [formGroup]="form" class="grid-form">
-                        <mat-form-field appearance="outline">
+                        <mat-form-field appearance="outline" subscriptSizing="dynamic">
                             <mat-label>Total of 6 Highest MSCs (₱)</mat-label>
                             <input matInput type="text" appThousandsSeparator formControlName="totalMsc" />
-                            <mat-hint>Sum of your 6 highest monthly salary credits in the past 12 months (Max ₱180,000)</mat-hint>
+                            <mat-hint>Sum of your 6 highest MSCs (max ₱{{ maxTotalMsc | number:'1.0-0' }})</mat-hint>
+                            @if (form.controls.totalMsc.errors?.['max']) {
+                                <mat-error>Maximum is ₱{{ maxTotalMsc | number:'1.0-0' }}</mat-error>
+                            }
                         </mat-form-field>
                         
                         <mat-form-field appearance="outline">
@@ -42,13 +45,20 @@
                 <div class="result-sub">Paid out as cash allowance.</div>
             </mat-card>
 
+            @if (results.capped) {
+                <mat-card class="table-card" style="margin-top: 1rem; padding: 1rem;">
+                    Your entry is above the maximum SSS counts. This estimate uses
+                    ₱{{ results.countedTotal | number:'1.0-0' }} (6 × ₱{{ mscCap | number:'1.0-0' }}).
+                </mat-card>
+            }
+
             <mat-card class="table-card" style="margin-top: 1rem; padding: 1rem;">
                 <div style="margin-bottom: 0.5rem;">
                     <strong>Average Daily Salary Credit (ADSC):</strong> 
                     <span class="highlight">₱{{ results.adsc | number:'1.2-2' }}</span>
                 </div>
                 <div style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">
-                    (Computed as: Total 6 Highest MSCs ÷ 180 days)
+                    (Computed as: Total of 6 Highest MSCs, each up to ₱{{ mscCap | number:'1.0-0' }}, ÷ 180 days. ADSC is shown rounded to the centavo.)
                 </div>
                 
                 <div>
@@ -56,6 +66,13 @@
                     <span style="display: block; font-size: 1.1rem;">
                         ₱{{ results.adsc | number:'1.2-2' }} × {{ form.value.deliveryType }} days = <strong>₱{{ results.totalBenefit | number:'1.2-2' }}</strong>
                     </span>
+                </div>
+                <div style="font-size: 0.85rem; color: #666; margin-top: 1rem;">
+                    Use the 6 highest MSCs in the 12 months before the semester of your delivery or miscarriage.
+                    SSS counts each MSC up to ₱{{ mscCap | number:'1.0-0' }}. To qualify you need at least 3 monthly
+                    contributions in that 12-month period. The semester and the MSCs that count depend on your
+                    delivery date, so confirm your exact figures in My.SSS. This is an estimate, not an SSS
+                    computation.
                 </div>
             </mat-card>
         </div>

@@ -15,10 +15,13 @@
                 </mat-card-header>
                 <mat-card-content>
                     <form [formGroup]="form" class="grid-form">
-                        <mat-form-field appearance="outline">
+                        <mat-form-field appearance="outline" subscriptSizing="dynamic">
                             <mat-label>Average Monthly Salary Credit (MSC)</mat-label>
                             <input matInput type="text" appThousandsSeparator formControlName="averageMsc" />
-                            <mat-hint>Based on your last 12 posted contributions</mat-hint>
+                            <mat-hint>Average of your last 12 MSCs (max ₱{{ rules.salaryLoan.regularMscCap | number:'1.0-0' }})</mat-hint>
+                            @if (form.controls.averageMsc.errors?.['max']) {
+                                <mat-error>Maximum is ₱{{ rules.salaryLoan.regularMscCap | number:'1.0-0' }}</mat-error>
+                            }
                         </mat-form-field>
                         
                         <mat-form-field appearance="outline">
@@ -29,6 +32,24 @@
                                 <mat-option [value]="3">Emergency Loan (18+ Contribs)</mat-option>
                             </mat-select>
                         </mat-form-field>
+
+                        @if (!isEmergency) {
+                            <mat-form-field appearance="outline">
+                                <mat-label>Interest Rate (per year)</mat-label>
+                                <mat-select formControlName="salaryLoanRate">
+                                    <mat-option [value]="8">8% — first loan, or renewal with no penalty condonation in the past 5 years</mat-option>
+                                    <mat-option [value]="10">10% — renewal within 5 years of a penalty condonation</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        } @else {
+                            <mat-form-field appearance="outline">
+                                <mat-label>Loan Amount Basis</mat-label>
+                                <mat-select formControlName="emergencyShare">
+                                    <mat-option [value]="1">100% of average MSC</mat-option>
+                                    <mat-option [value]="0.5">50% of average MSC</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        }
                     </form>
                 </mat-card-content>
             </mat-card>
@@ -71,25 +92,57 @@
                                 <td>Gross Loanable Amount</td>
                                 <td class="num">₱{{ results.loanableAmount | number:'1.2-2' }}</td>
                             </tr>
-                            <tr>
-                                <td>Less: 1% Service Fee</td>
-                                <td class="num text-red">-₱{{ results.serviceFee | number:'1.2-2' }}</td>
-                            </tr>
-                            <tr>
-                                <td>Less: Advance Interest</td>
-                                <td class="num text-red">-₱{{ results.advanceInterest | number:'1.2-2' }}</td>
-                            </tr>
+                            @if (!results.isEmergency) {
+                                <tr>
+                                    <td>Less: 1% Service Fee</td>
+                                    <td class="num text-red">-₱{{ results.serviceFee | number:'1.2-2' }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Less: Advance Interest (est. 1 month)</td>
+                                    <td class="num text-red">-₱{{ results.advanceInterest | number:'1.2-2' }}</td>
+                                </tr>
+                            } @else {
+                                <tr>
+                                    <td>Service Fee / Advance Interest</td>
+                                    <td class="num">None</td>
+                                </tr>
+                            }
                             <tr class="bold highlight-row">
                                 <td>Net Proceeds</td>
                                 <td class="num">₱{{ results.netProceeds | number:'1.2-2' }}</td>
                             </tr>
+                            @if (results.isEmergency) {
+                                <tr>
+                                    <td>Payment Moratorium</td>
+                                    <td class="num">{{ results.moratoriumMonths }} months</td>
+                                </tr>
+                                <tr>
+                                    <td>Interest accrued during moratorium (assumed)</td>
+                                    <td class="num">₱{{ results.interestDuringMoratorium | number:'1.2-2' }}</td>
+                                </tr>
+                            }
                             <tr>
-                                <td><strong>Monthly Amortization (24 Mos)</strong></td>
+                                <td><strong>Monthly Amortization ({{ results.termMonths }} Mos{{ results.isEmergency ? ' after moratorium' : '' }})</strong></td>
                                 <td class="num"><strong>₱{{ results.monthlyAmortization | number:'1.2-2' }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Interest Rate</td>
+                                <td class="num">{{ results.annualRatePct }}% per year</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+                <p class="note" style="padding: 0 1rem 1rem; font-size: 0.85rem;">
+                    Estimate only. @if (results.isEmergency) {
+                        Emergency loan terms (7%, no service fee, 6-month moratorium, 24 monthly payments) follow SSS
+                        guidelines as reported; this calculator assumes interest accrues during the moratorium and is
+                        added to the balance, and the loanable amount and eligibility are set by SSS.
+                    } @else {
+                        SSS computes the exact loanable amount, pro-rated interest and deductions for any
+                        outstanding loan when you apply.
+                    }
+                    Verify the rates and limits in the current SSS circulars or through My.SSS before borrowing.
+                </p>
             </mat-card>
         </div>
     </div>

@@ -4,7 +4,5 @@ export const APP_CONSTANTS = {
     MP2_MAX_PRINCIPAL_CEILING: 20_000_000,
     MP2_MAX_MONTHLY_CONTRIBUTION: 333_333, // 20M / 60 months
 
-    // SSS
-    SSS_REGULAR_SALARY_LOAN_INTEREST_RATE: 10,
-    SSS_EMERGENCY_LOAN_INTEREST_RATE: 7,
+    // SSS loan rates and limits live in shared/utils/ph-rules.ts (PH_RULES.sssLoans)
 };

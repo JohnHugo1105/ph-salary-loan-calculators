@@ -1,18 +1,36 @@
 import { Component } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 import { SeoService } from '../../core/services/seo.service';
 import { AdComponent } from '../../shared/components/ad/ad.component';
+import { computeMPF, computeSSS, computeSssMsc, round2 } from '../../shared/utils/ph-calculators.util';
+import { PH_RULES } from '../../shared/utils/ph-rules';
 
 @Component({
     selector: 'app-tax-tables',
-    imports: [MatCardModule, MatButtonModule, RouterModule, AdComponent],
+    imports: [DecimalPipe, MatCardModule, MatButtonModule, RouterModule, AdComponent],
     templateUrl: './tax-tables.component.html',
     styleUrls: ['./tax-tables.component.scss']
 })
 export class TaxTablesComponent {
+    // Tables below are generated from the same rules and formulas the calculators use.
+    readonly sssRows = [5_000, 10_000, 20_000, 22_500, 25_000, 30_000, 35_000].map(msc => {
+        const regular = computeSSS(msc, false).employee;
+        const wisp = computeMPF(msc).employee;
+        return { msc: computeSssMsc(msc), regular, wisp, total: round2(regular + wisp) };
+    });
+
+    // Lowest bracket first, with the upper bound of each bracket (the next bracket's lower bound).
+    readonly monthlyTaxRows = [...PH_RULES.withholdingTax.monthly].reverse().map((b, i, all) => ({
+        from: b.over,
+        to: all[i + 1]?.over ?? null,
+        base: b.base,
+        rate: b.rate * 100,
+    }));
+
     constructor(private seo: SeoService) {
         this.seo.setSchema([
             {

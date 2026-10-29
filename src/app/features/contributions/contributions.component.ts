@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { computeContributions } from '../../shared/utils/ph-calculators.util';
+import { computeContributions, computeSssMsc } from '../../shared/utils/ph-calculators.util';
+import { PH_RULES } from '../../shared/utils/ph-rules';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -37,12 +38,34 @@ export class ContributionsComponent {
   });
 
   result = computeContributions(30000, { includeSSSEC: true });
+  msc = computeSssMsc(30000);
+
+  // Worked example for the guide below, generated from the same engine as the calculator.
+  readonly example = (() => {
+    const salary = 25_000;
+    const c = computeContributions(salary, { includeSSSEC: false });
+    const regularMsc = Math.min(computeSssMsc(salary), PH_RULES.sss.regularMscMax);
+    const wispBase = computeSssMsc(salary) - regularMsc;
+    return {
+      salary,
+      msc: computeSssMsc(salary),
+      regularMsc,
+      wispBase,
+      regularSss: c.sss.employee,
+      wisp: c.mpf.employee,
+      philhealthTotal: c.philhealth.total,
+      philhealth: c.philhealth.employee,
+      pagibig: c.pagibig.employee,
+      total: c.totals.employee,
+    };
+  })();
 
   constructor(private fb: FormBuilder, private seo: SeoService) {
     this.form.valueChanges.subscribe(v => {
       const salary = Number(v.monthlySalary) || 0;
       const includeEC = !!v.includeSSSEC;
       this.result = computeContributions(salary, { includeSSSEC: includeEC });
+      this.msc = computeSssMsc(salary);
     });
 
     this.seo.setSchema([
@@ -74,18 +97,18 @@ export class ContributionsComponent {
           },
           {
             '@type': 'Question',
-            'name': 'Did PhilHealth rates increase in 2026?',
+            'name': 'What is the PhilHealth premium rate and income ceiling?',
             'acceptedAnswer': {
               '@type': 'Answer',
-              'text': 'Yes, as mandated by the Universal Health Care (UHC) Law, the PhilHealth premium rate was scheduled to increase to 5.0% of the basic monthly income, with the income ceiling adjusting to ₱90,000-₱100,000 depending on the final BIR/PhilHealth circular releases for the year.'
+              'text': 'Under the Universal Health Care (UHC) Law the PhilHealth premium is 5.0% of monthly basic salary, shared equally by employer and employee. The income floor is ₱10,000 and the ceiling is ₱100,000, so the total monthly premium ranges from ₱500 to ₱5,000.'
             }
           },
           {
             '@type': 'Question',
-            'name': 'Can I voluntarily pay more than the mandatory ₱100 Pag-IBIG contribution?',
+            'name': 'Can I voluntarily pay more than the mandatory ₱200 Pag-IBIG contribution?',
             'acceptedAnswer': {
               '@type': 'Answer',
-              'text': 'Yes, you can opt to increase your monthly Pag-IBIG Regular Savings contribution beyond the mandatory ₱100 to save more. However, many Filipinos choose to enroll in the separate voluntary Modified Pag-IBIG II (MP2) program instead, as it traditionally yields higher dividends.'
+              'text': 'Yes, you can opt to increase your monthly Pag-IBIG Regular Savings contribution beyond the mandatory ₱200 (2% of the ₱10,000 maximum fund salary) to save more. However, many Filipinos choose to enroll in the separate voluntary Modified Pag-IBIG II (MP2) program instead, as it traditionally yields higher dividends.'
             }
           }
         ]

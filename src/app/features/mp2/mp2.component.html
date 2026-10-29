@@ -31,6 +31,7 @@
               <mat-form-field appearance="outline">
                 <mat-label>Dividend Rate (%)</mat-label>
                 <input matInput type="number" formControlName="rate" step="0.01" />
+                <mat-hint>{{ latestDeclared.year }} declared</mat-hint>
               </mat-form-field>
 
               <mat-form-field appearance="outline">
@@ -218,6 +219,14 @@ effect of compounding interest, but gain immediate annual passive cash flow.</li
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <td><strong>2025</strong></td>
+        <td>7.12%</td>
+      </tr>
+      <tr>
+        <td><strong>2024</strong></td>
+        <td>7.10%</td>
+      </tr>
       <tr>
         <td><strong>2023</strong></td>
         <td>7.05%</td>

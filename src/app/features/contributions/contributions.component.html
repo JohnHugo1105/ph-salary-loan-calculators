@@ -58,6 +58,10 @@
           </mat-card-header>
           <mat-card-content>
             <div class="row">
+              <span>Monthly Salary Credit</span>
+              <span class="num">₱{{ msc | number:'1.0-0' }}</span>
+            </div>
+            <div class="row">
               <span>Employee</span>
               <span class="num">₱{{ result.sss.employee | number:'1.2-2' }}</span>
             </div>
@@ -124,6 +128,10 @@
           </mat-card-header>
           <mat-card-content>
             <div class="row">
+              <span>MSC above ₱20,000</span>
+              <span class="num">₱{{ (msc > 20000 ? msc - 20000 : 0) | number:'1.0-0' }}</span>
+            </div>
+            <div class="row">
               <span>Employee</span>
               <span class="num">₱{{ result.mpf.employee | number:'1.2-2' }}</span>
             </div>
@@ -164,19 +172,21 @@
       of sickness, maternity leave, disability, and eventually, a monthly pension upon retirement.
     </p>
     <p>
-      <strong>Current Rate:</strong> As of the latest implemented schedule (2026 onwards), the total SSS contribution
-      rate stands at <strong>14%</strong> of your Monthly Salary Credit (MSC). However, this burden is not entirely
-      yours. It is shared between you and your employer:
+      <strong>Current Rate:</strong> Since January 2025 the total SSS contribution rate is
+      <strong>15%</strong> of your Monthly Salary Credit (MSC), which ranges from ₱5,000 to ₱35,000. This burden is
+      shared between you and your employer:
     </p>
     <ul class="styled-list">
-      <li><strong>Employee Share:</strong> 4.5%</li>
-      <li><strong>Employer Share:</strong> 9.5%</li>
+      <li><strong>Employee Share:</strong> 5%</li>
+      <li><strong>Employer Share:</strong> 10%</li>
     </ul>
     <p>
-      <strong>WISP Explained:</strong> High-income earners (those with an MSC above ₱20,000) are automatically enrolled
-      in the <strong>Worker's Investment and Savings Program (WISP)</strong>. This acts as a mandatory provident fund,
-      securing an additional layer of retirement savings on top of your regular pension. The contribution for WISP is
-      also split between you and your employer, proportional to the excess of your MSC over ₱20,000.
+      <strong>WISP Explained:</strong> The part of your MSC above ₱20,000 (up to ₱35,000) goes to the
+      <strong>Worker's Investment and Savings Program (WISP)</strong>, also called the Mandatory Provident Fund (MPF).
+      It is not an extra charge on top of SSS: it is the share of the same 15% contribution that is credited to your
+      provident savings instead of the regular pension fund. This calculator shows the regular SS and MPF/WISP parts
+      separately and adds them together in the totals. Employers also pay a small Employees' Compensation (EC) premium
+      of ₱10 (MSC below ₱15,000) or ₱30.
     </p>
 
     <h3>2. PhilHealth Premium Rate</h3>
@@ -187,9 +197,8 @@
     <p>
       <strong>Current Rate:</strong> Guided by the Universal Health Care (UHC) Law, the premium rate is currently set at
       <strong>5.0%</strong>. Just like SSS, this premium is split 50/50 between the employer and the employee (each
-      paying 2.5%). The law sets a minimum income floor (₱10,000) and a maximum income ceiling (up to ₱90,000 or
-      ₱100,000 depending on final circular releases). If you earn above the ceiling, your contribution is capped at the
-      maximum set amount.
+      paying 2.5%). The law sets a minimum income floor (₱10,000) and a maximum income ceiling (₱100,000). If you
+      earn above the ceiling, your contribution is capped at the maximum of ₱5,000 per month (₱2,500 each).
     </p>
 
     <h3>3. Pag-IBIG Fund (Home Development Mutual Fund)</h3>
@@ -199,39 +208,45 @@
     </p>
     <p>
       <strong>Current Rate:</strong> The calculation for Pag-IBIG Regular Savings is straightforward. For most employees
-      earning above ₱1,500 monthly, the contribution rate is 2% and the employer counterpart is also 2%. However, the
-      maximum compensation used as the basis for this calculation is capped at ₱5,000.
+      earning above ₱1,500 monthly, the contribution rate is 2% and the employer counterpart is also 2%. The maximum
+      monthly fund salary used as the basis is ₱10,000 (Pag-IBIG Circular No. 460, effective February 2024).
       <br><br>
-      Consequently, the maximum mandatory contribution for most employees is a flat <strong>₱100 per month</strong> (2%
-      of ₱5,000), matched by another ₱100 from the employer.
+      Consequently, the maximum mandatory contribution for employees earning ₱10,000 or more is
+      <strong>₱200 per month</strong> (2% of ₱10,000), matched by another ₱200 from the employer.
     </p>
 
     <h2>Practical Example: SSS, PhilHealth, and Pag-IBIG Deductions</h2>
     <div class="example-box">
-      <h3>Scenario: Maria earns ₱25,000 a month</h3>
-      <p>Maria is a newly hired graphic designer. Let's compute her deductions based on her ₱25,000 basic salary.</p>
+      <h3>Scenario: Maria earns ₱{{ example.salary | number:'1.0-0' }} a month</h3>
+      <p>Maria is a newly hired graphic designer. Let's compute her deductions based on her
+        ₱{{ example.salary | number:'1.0-0' }} basic salary.</p>
 
       <h4>SSS / WISP</h4>
       <ul style="margin-bottom: 0;">
-        <li>Her MSC falls under the ₱25,000 bracket.</li>
-        <li><strong>Regular SSS (Employee):</strong> 4.5% of ₱20,000 limit = ₱900</li>
-        <li><strong>WISP (Employee):</strong> 4.5% of excess (₱5,000) = ₱225</li>
-        <li><strong>Total SSS Deduction:</strong> ₱1,125</li>
+        <li>Her MSC falls under the ₱{{ example.msc | number:'1.0-0' }} bracket.</li>
+        <li><strong>Regular SSS (Employee):</strong> 5% of ₱{{ example.regularMsc | number:'1.0-0' }} limit =
+          ₱{{ example.regularSss | number:'1.2-2' }}</li>
+        <li><strong>WISP (Employee):</strong> 5% of excess (₱{{ example.wispBase | number:'1.0-0' }}) =
+          ₱{{ example.wisp | number:'1.2-2' }}</li>
+        <li><strong>Total SSS Deduction:</strong> ₱{{ example.regularSss + example.wisp | number:'1.2-2' }}</li>
       </ul>
 
       <h4 style="margin-top: 1rem;">PhilHealth</h4>
       <ul style="margin-bottom: 0;">
-        <li><strong>Total Premium:</strong> 5.0% of ₱25,000 = ₱1,250</li>
-        <li><strong>Employee Share (50%):</strong> ₱625</li>
+        <li><strong>Total Premium:</strong> 5.0% of ₱{{ example.salary | number:'1.0-0' }} =
+          ₱{{ example.philhealthTotal | number:'1.2-2' }}</li>
+        <li><strong>Employee Share (50%):</strong> ₱{{ example.philhealth | number:'1.2-2' }}</li>
       </ul>
 
       <h4 style="margin-top: 1rem;">Pag-IBIG</h4>
       <ul style="margin-bottom: 0;">
-        <li><strong>Employee Share:</strong> 2% of maximum cap (₱5,000) = ₱100</li>
+        <li><strong>Employee Share:</strong> 2% of the maximum fund salary (₱10,000) =
+          ₱{{ example.pagibig | number:'1.2-2' }}</li>
       </ul>
 
-      <p style="margin-top: 1rem;"><strong>Maria's Total Monthly Deduction:</strong> ₱1,125 + ₱625 + ₱100 =
-        <strong>₱1,850</strong>
+      <p style="margin-top: 1rem;"><strong>Maria's Total Monthly Deduction:</strong>
+        ₱{{ example.regularSss + example.wisp | number:'1.2-2' }} + ₱{{ example.philhealth | number:'1.2-2' }} +
+        ₱{{ example.pagibig | number:'1.2-2' }} = <strong>₱{{ example.total | number:'1.2-2' }}</strong>
       </p>
     </div>
 
@@ -250,12 +265,12 @@
         Credit (MSC) exceeds ₱20,000. When you retire, you receive your WISP contributions plus the investment income
         they generated.</p>
 
-      <h3>Did PhilHealth rates increase in 2025?</h3>
-      <p>Yes, as mandated by the Universal Health Care (UHC) Law, the PhilHealth premium rate was scheduled to increase
-        to 5.0% of the basic monthly income, with the income ceiling adjusting to ₱90,000-₱100,000 depending on the
-        final BIR and PhilHealth circular releases for the year.</p>
+      <h3>What is the PhilHealth premium rate and income ceiling?</h3>
+      <p>Under the Universal Health Care (UHC) Law the PhilHealth premium is 5.0% of monthly basic salary, shared
+        equally by employer and employee. The income floor is ₱10,000 and the ceiling is ₱100,000, so the total monthly
+        premium ranges from ₱500 to ₱5,000.</p>
 
-      <h3>Can I voluntarily pay more than the mandatory ₱100 Pag-IBIG contribution?</h3>
+      <h3>Can I voluntarily pay more than the mandatory ₱200 Pag-IBIG contribution?</h3>
       <p>Yes, you certainly can opt to increase your monthly Pag-IBIG Regular Savings contribution through your
         employer's HR or via direct payment to save more. However, many Filipinos instead choose to enroll in the
         separate voluntary Modified Pag-IBIG II (MP2) program, as it traditionally yields higher, tax-free dividends
@@ -263,10 +278,10 @@
     </div>
 
     <p class="note" style="margin-top: 2rem;">
-      <strong>Disclaimer:</strong> SSS values use an algorithmic approximation (14% rate split 4.5%/9.5% plus EC where
-      applicable). PhilHealth uses the 5% tier with a floor of ₱10,000 and the current ceiling. Pag-IBIG caps at a
-      ₱5,000 base with 1–2% employee and 2% employer rates. Always refer to official government circulars closely for
-      exact centavo figures.
+      <strong>Disclaimer:</strong> SSS values use the 15% schedule (5% employee / 10% employer, MSC ₱5,000–₱35,000, plus
+      EC where applicable). PhilHealth uses the 5% rate with a floor of ₱10,000 and a ceiling of ₱100,000. Pag-IBIG
+      caps at a ₱10,000 fund salary with 1–2% employee and 2% employer rates. Always refer to official government
+      circulars for exact centavo figures.
     </p>
   </article>
 </section>

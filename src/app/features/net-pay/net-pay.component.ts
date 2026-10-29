@@ -2,7 +2,8 @@ import { Component, ChangeDetectionStrategy, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { computeContributions, computeOvertimePay, deriveHourlyRate, computeWithholdingTax, monthlyToSemiMonthly, computeHolidayPays } from '../../shared/utils/ph-calculators.util';
+import { computeContributions, computeOvertimePay, deriveHourlyRate, computeWithholdingTax, monthlyToSemiMonthly, computeHolidayPays, round2 } from '../../shared/utils/ph-calculators.util';
+import { PH_RULES } from '../../shared/utils/ph-rules';
 import { trigger, transition, style, query, stagger, animate } from '@angular/animations';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -62,6 +63,22 @@ export class NetPayComponent {
 
   formValue = toSignal(this.form.valueChanges, { initialValue: this.form.getRawValue() });
   view = computed(() => this.compute(this.formValue()));
+
+  readonly deMinimis = PH_RULES.deMinimis;
+
+  // Worked example for the guide below, generated from the same engine as the calculator.
+  readonly example = (() => {
+    const salary = 30_000;
+    const c = computeContributions(salary);
+    const sss = c.sss.employee;
+    const mpf = c.mpf.employee;
+    const philhealth = c.philhealth.employee;
+    const pagibig = c.pagibig.employee;
+    const govt = round2(sss + mpf + philhealth + pagibig);
+    const taxable = salary - govt;
+    const tax = computeWithholdingTax(taxable);
+    return { salary, sss: round2(sss + mpf), philhealth, pagibig, govt, taxable, tax, net: round2(salary - govt - tax) };
+  })();
 
   constructor(private fb: FormBuilder, private seo: SeoService) {
     this.seo.setSchema([
@@ -147,11 +164,20 @@ export class NetPayComponent {
 
     const contr = computeContributions(monthlyBasic);
     const isSemi = v.payFrequency === 'semi-monthly';
-    const employeeDeductionsMonthly = contr.totals.employee;
+    // Employee share per pay period; each line is rounded so the lines add up to the total.
+    const perPeriod = (monthly: number) => round2(isSemi ? monthlyToSemiMonthly(monthly) : monthly);
+    const periodContributions = {
+      sss: perPeriod(contr.sss.employee),
+      mpf: perPeriod(contr.mpf.employee),
+      philhealth: perPeriod(contr.philhealth.employee),
+      pagibig: perPeriod(contr.pagibig.employee),
+    };
     // For semi-monthly, split only base compensation; add-ons (OT, holidays) are not halved
     const basePeriod = isSemi ? monthlyToSemiMonthly(baseMonthly) : baseMonthly;
     const grossPeriod = basePeriod + variableAdds;
-    const contribPeriod = isSemi ? monthlyToSemiMonthly(employeeDeductionsMonthly) : employeeDeductionsMonthly;
+    const contribPeriod = round2(
+      periodContributions.sss + periodContributions.mpf + periodContributions.philhealth + periodContributions.pagibig
+    );
     const taxablePeriod = Math.max(grossPeriod - contribPeriod, 0);
     const tax = computeWithholdingTax(taxablePeriod, isSemi ? 'semi-monthly' : 'monthly');
     const netPay = grossPeriod - contribPeriod - tax;
@@ -163,6 +189,7 @@ export class NetPayComponent {
       dailyWage,
       holidayPays,
       contributions: contr,
+      periodContributions,
       grossPeriod,
       contribPeriod,
       taxablePeriod,

@@ -81,75 +81,90 @@
 
         <hr class="divider">
 
-        <h2>2. SSS Contribution Schedule Matrix (The 14% Era)</h2>
+        <h3>Monthly Withholding Tax Table</h3>
+        <p>
+            Employers withhold tax on the <strong>monthly</strong> taxable compensation (gross pay less mandatory
+            SSS, PhilHealth, and Pag-IBIG contributions) using this table (BIR RR 11-2018, Annex E, effective
+            2023 onwards):
+        </p>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Monthly Taxable Compensation</th>
+                        <th>Withholding Tax</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (row of monthlyTaxRows; track row.from) {
+                    <tr>
+                        <td>
+                            @if (row.rate === 0) {
+                            P{{ row.to | number:'1.0-0' }} and below
+                            } @else if (row.to !== null) {
+                            P{{ row.from | number:'1.0-0' }} to below P{{ row.to | number:'1.0-0' }}
+                            } @else {
+                            P{{ row.from | number:'1.0-0' }} and above
+                            }
+                        </td>
+                        <td>
+                            @if (row.rate === 0) {
+                            <strong>0% (Tax Exempt)</strong>
+                            } @else {
+                            P{{ row.base | number:'1.2-2' }} + {{ row.rate }}% of the excess over P{{ row.from | number:'1.0-0' }}
+                            }
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <hr class="divider">
+
+        <h2>2. SSS Contribution Schedule (15% Rate)</h2>
         <p>
             Pursuant to the Social Security Act of 2018 (Republic Act No. 11199), the Social Security System (SSS)
-            contribution rate was legally mandated to incrementally rise to secure the fund's viability. The total
-            contribution rate currently stands at <strong>14%</strong> (4.5% Employee share, 9.5% Employer share).
-            <br><em>Note: This table automatically includes the Mandatory Provident Fund (WISP) component for those
-                earning incomes above P20,000.</em>
+            contribution rate rose in steps until it reached its final level in January 2025. The total contribution
+            rate is now <strong>15%</strong> of the Monthly Salary Credit (MSC): <strong>5% Employee share</strong> and
+            <strong>10% Employer share</strong>, on an MSC from P5,000 to P35,000.
+            <br><em>Note: The employee share below is the regular SS portion (MSC up to P20,000) plus the Mandatory
+                Provident Fund (WISP) portion on the MSC above P20,000. Together they equal 5% of the MSC. WISP is not
+                an additional charge.</em>
         </p>
 
         <div class="table-responsive">
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Range of Compensation</th>
-                        <th>Regular SSS (Lite)</th>
-                        <th>WISP</th>
+                        <th>Monthly Salary Credit (MSC)</th>
+                        <th>Regular SS (Employee)</th>
+                        <th>WISP (Employee)</th>
                         <th>Total Employee Share</th>
                     </tr>
                 </thead>
                 <tbody>
+                    @for (row of sssRows; track row.msc) {
                     <tr>
-                        <td>P4,250 - P4,749.99</td>
-                        <td>P202.50</td>
-                        <td>-</td>
-                        <td><strong>P202.50</strong></td>
+                        <td>P{{ row.msc | number:'1.0-0' }}</td>
+                        <td>P{{ row.regular | number:'1.2-2' }}</td>
+                        <td>@if (row.wisp > 0) { P{{ row.wisp | number:'1.2-2' }} } @else { - }</td>
+                        <td><strong>P{{ row.total | number:'1.2-2' }}</strong></td>
                     </tr>
-                    <tr>
-                        <td>P9,750 - P10,249.99</td>
-                        <td>P450.00</td>
-                        <td>-</td>
-                        <td><strong>P450.00</strong></td>
-                    </tr>
-                    <tr>
-                        <td>P19,750 - P20,249.99</td>
-                        <td>P900.00</td>
-                        <td>-</td>
-                        <td><strong>P900.00</strong></td>
-                    </tr>
-                    <tr>
-                        <td>P20,250 - P20,749.99</td>
-                        <td>P900.00</td>
-                        <td>P22.50</td>
-                        <td><strong>P922.50</strong></td>
-                    </tr>
-                    <tr>
-                        <td>P24,750 - P25,249.99</td>
-                        <td>P900.00</td>
-                        <td>P225.00</td>
-                        <td><strong>P1,125.00</strong></td>
-                    </tr>
-                    <tr>
-                        <td>P29,750 and above</td>
-                        <td>P900.00</td>
-                        <td>P450.00</td>
-                        <td><strong>P1,350.00</strong></td>
-                    </tr>
+                    }
                 </tbody>
             </table>
         </div>
         <p class="note">
-            <em>*This is a highly simplified view showing only key brackets. For exact salary credits mapping between
-                these ranges (e.g., P21,000 vs P22,000), use our <a routerLink="/contributions">SSS Contributions
-                    Calculator</a> for precise figures.</em>
+            <em>*This shows selected salary credits only. Salaries are rounded to the nearest P500 MSC (for example, a
+                P24,750 to P25,249.99 salary has a P25,000 MSC). Use our <a routerLink="/contributions">SSS
+                    Contributions Calculator</a> for any salary. Employers also pay a P10 or P30 EC premium.</em>
         </p>
 
         <h3>Understanding The WISP Era</h3>
         <p>
-            If you earn more than P20,000 per month, you are automatically enrolled in the <strong>Workers' Investment
-                and Savings Program (WISP)</strong>. This serves as an additional savings and investment layer managed
+            If your MSC is more than P20,000 per month, the excess (up to P35,000) is credited to the
+            <strong>Workers' Investment and Savings Program (WISP)</strong>. This serves as an additional savings and investment layer managed
             by the government. It yields interest tax-free, and the accumulated amount is added on top of your regular
             retirement pension later in life.
         </p>

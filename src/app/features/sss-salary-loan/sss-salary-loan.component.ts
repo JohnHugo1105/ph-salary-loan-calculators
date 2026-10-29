@@ -10,7 +10,8 @@ import { RouterModule } from '@angular/router';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
 import { SeoService } from '../../core/services/seo.service';
 import { MatIconModule } from '@angular/material/icon';
-import { APP_CONSTANTS } from '../../core/config/app.constants';
+import { computeSssEmergencyLoan, computeSssSalaryLoan } from '../../shared/utils/ph-calculators.util';
+import { PH_RULES } from '../../shared/utils/ph-rules';
 
 @Component({
     selector: 'app-sss-salary-loan',
@@ -23,17 +24,26 @@ import { APP_CONSTANTS } from '../../core/config/app.constants';
     styleUrl: './sss-salary-loan.component.scss'
 })
 export class SssSalaryLoanComponent {
+  readonly rules = PH_RULES.sssLoans;
+
   form = this.fb.group({
-    averageMsc: [20000, [Validators.required, Validators.min(1000), Validators.max(30000)]],
-    loanType: [1, [Validators.required]] // 1 or 2 months
+    averageMsc: [20000, [Validators.required, Validators.min(1000), Validators.max(PH_RULES.sssLoans.salaryLoan.regularMscCap)]],
+    loanType: [1, [Validators.required]], // 1 or 2 months salary loan, 3 = emergency loan
+    salaryLoanRate: [PH_RULES.sssLoans.salaryLoan.annualRate, [Validators.required]], // 8 or 10 (%)
+    emergencyShare: [1, [Validators.required]] // 1 or 0.5 of the average MSC
   });
 
   results = {
+    isEmergency: false,
     loanableAmount: 0,
     serviceFee: 0,
     advanceInterest: 0,
     netProceeds: 0,
-    monthlyAmortization: 0
+    monthlyAmortization: 0,
+    interestDuringMoratorium: 0,
+    termMonths: 0,
+    moratoriumMonths: 0,
+    annualRatePct: 0
   };
 
   constructor(private fb: FormBuilder, private seo: SeoService) {
@@ -49,36 +59,25 @@ export class SssSalaryLoanComponent {
     this.form.valueChanges.subscribe(() => this.compute());
   }
 
+  get isEmergency(): boolean {
+    return Number(this.form.value.loanType) === 3;
+  }
+
   compute() {
     const avgMsc = Number(this.form.value.averageMsc) || 0;
     const typeValue = Number(this.form.value.loanType) || 1;
-    
-    // Type 3 is Emergency Loan (1 month equivalent amount, but different rules)
-    const multiplier = typeValue === 2 ? 2 : 1; 
 
-    const loanableAmount = avgMsc * multiplier;
-    const serviceFee = loanableAmount * 0.01;
-    
-    // Emergency Loan uses 7%, Regular uses 10%
-    const annualRate = typeValue === 3 ? APP_CONSTANTS.SSS_EMERGENCY_LOAN_INTEREST_RATE : APP_CONSTANTS.SSS_REGULAR_SALARY_LOAN_INTEREST_RATE;
-    const rateDecimal = annualRate / 100;
+    if (typeValue === 3) {
+      const share = Number(this.form.value.emergencyShare) === 0.5 ? 0.5 : 1;
+      const r = computeSssEmergencyLoan(avgMsc, share);
+      this.results = { isEmergency: true, ...r };
+      return;
+    }
 
-    // SSS deducts 1st month interest in advance
-    const advanceInterest = loanableAmount * (rateDecimal / 12);
-    
-    const netProceeds = loanableAmount - serviceFee - advanceInterest;
-
-    // Amortization (24 months, diminishing)
-    const r = rateDecimal / 12;
-    const n = 24;
-    const pmt = loanableAmount * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
-
-    this.results = {
-      loanableAmount,
-      serviceFee,
-      advanceInterest,
-      netProceeds,
-      monthlyAmortization: pmt
-    };
+    const rate = Number(this.form.value.salaryLoanRate) === PH_RULES.sssLoans.salaryLoan.annualRateAfterCondonation
+      ? PH_RULES.sssLoans.salaryLoan.annualRateAfterCondonation
+      : PH_RULES.sssLoans.salaryLoan.annualRate;
+    const r = computeSssSalaryLoan(avgMsc, typeValue === 2 ? 2 : 1, rate);
+    this.results = { isEmergency: false, interestDuringMoratorium: 0, ...r };
   }
 }

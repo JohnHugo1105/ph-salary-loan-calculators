@@ -9,6 +9,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
 import { SeoService } from '../../core/services/seo.service';
+import { computeMaternityBenefit } from '../../shared/utils/ph-calculators.util';
+import { PH_RULES } from '../../shared/utils/ph-rules';
 
 @Component({
     selector: 'app-sss-maternity',
@@ -21,14 +23,20 @@ import { SeoService } from '../../core/services/seo.service';
     styleUrl: './sss-maternity.component.scss'
 })
 export class SssMaternityComponent {
+  // SSS counts only the regular SS part of each MSC (max 20,000) for maternity benefits.
+  readonly maxTotalMsc = PH_RULES.maternity.mscCap * PH_RULES.maternity.mscCount;
+  readonly mscCap = PH_RULES.maternity.mscCap;
+
   form = this.fb.group({
-    totalMsc: [180000, [Validators.required, Validators.min(6000), Validators.max(180000)]],
-    deliveryType: [105, [Validators.required]] // 105, 120, or 60 days
+    totalMsc: [this.maxTotalMsc, [Validators.required, Validators.min(1), Validators.max(this.maxTotalMsc)]],
+    deliveryType: [PH_RULES.maternity.days.live, [Validators.required]] // 105, 120, or 60 days
   });
 
   results = {
     adsc: 0,
-    totalBenefit: 0
+    totalBenefit: 0,
+    countedTotal: 0,
+    capped: false
   };
 
   constructor(private fb: FormBuilder, private seo: SeoService) {
@@ -46,17 +54,16 @@ export class SssMaternityComponent {
 
   compute() {
     const totalMsc = Number(this.form.value.totalMsc) || 0;
-    const days = Number(this.form.value.deliveryType) || 105;
+    const days = Number(this.form.value.deliveryType) || PH_RULES.maternity.days.live;
 
-    // Average Daily Salary Credit (ADSC)
-    const adsc = totalMsc / 180;
-    
-    // Total Benefit
-    const totalBenefit = adsc * days;
+    // ADSC = total of the six highest MSCs (each counted up to 20,000) / 180; benefit = ADSC x days
+    const r = computeMaternityBenefit(totalMsc, days);
 
     this.results = {
-      adsc: adsc,
-      totalBenefit: totalBenefit
+      adsc: r.adsc,
+      totalBenefit: r.benefit,
+      countedTotal: r.countedTotal,
+      capped: r.capped
     };
   }
 }

@@ -12,6 +12,7 @@ import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.di
 import { SeoService } from '../../core/services/seo.service';
 import { calculateMP2, MP2Row, round2 } from '../../shared/utils/ph-calculators.util';
 import { APP_CONSTANTS } from '../../core/config/app.constants';
+import { PH_RULES } from '../../shared/utils/ph-rules';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SaveShareService } from '../../shared/services/save-share.service';
@@ -43,9 +44,11 @@ export class Mp2Component implements OnInit {
   shareUrl: string = '';
   saveSuccess: boolean = false;
 
+  readonly latestDeclared = PH_RULES.mp2.latestDeclared;
+
   form = this.fb.group({
     monthlyContribution: [500, [Validators.required, Validators.min(500), Validators.max(APP_CONSTANTS.MP2_MAX_MONTHLY_CONTRIBUTION)]],
-    rate: [7.05, [Validators.required, Validators.min(0)]],
+    rate: [PH_RULES.mp2.latestDeclared.ratePct, [Validators.required, Validators.min(0)]],
     mode: ['compounded'], // 'compounded' | 'annual'
     rollover: [false]
   });

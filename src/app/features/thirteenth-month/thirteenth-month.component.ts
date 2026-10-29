@@ -11,7 +11,8 @@ import { RouterModule } from '@angular/router';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
 import { SeoService } from '../../core/services/seo.service';
 import { AdComponent } from '../../shared/components/ad/ad.component';
-import { compute13thMonthProRated, estimate13thMonthPay, split13thMonthTaxability, round2 } from '../../shared/utils/ph-calculators.util';
+import { compute13thMonthProRated, split13thMonthTaxability, round2 } from '../../shared/utils/ph-calculators.util';
+import { PH_RULES } from '../../shared/utils/ph-rules';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -43,8 +44,11 @@ export class ThirteenthMonthComponent {
     mode: ['simple'], // 'simple' or 'detailed'
     monthlyBasic: [30000, [Validators.min(0)]], // For simple mode
     history: this.fb.array(this.months.map(() => this.fb.control(0))), // For detailed mode
+    otherBenefits: [0, [Validators.min(0)]], // Other bonuses/benefits already received this year
     taxRate: [20, [Validators.min(0), Validators.max(35)]] // Default 20%
   });
+
+  readonly exemptionCap = PH_RULES.thirteenthMonthExemption;
 
   formValue = toSignal(this.form.valueChanges, { initialValue: this.form.getRawValue() });
 
@@ -64,13 +68,21 @@ export class ThirteenthMonthComponent {
       gross13th = compute13thMonthProRated(hist);
     }
 
-    const taxSplit = split13thMonthTaxability(gross13th);
+    // The tax-exempt limit covers 13th month pay and other benefits combined, so benefits
+    // already received this year use up part of it.
+    const rawOther = val.otherBenefits as unknown;
+    const otherNum = typeof rawOther === 'string' ? Number(rawOther.replace(/,/g, '')) : Number(rawOther);
+    const otherBenefits = isNaN(otherNum) ? 0 : Math.max(0, otherNum);
+    const exemptionLeft = Math.max(0, this.exemptionCap - otherBenefits);
+
+    const taxSplit = split13thMonthTaxability(gross13th, exemptionLeft);
     const taxRate = Number(val.taxRate) || 0;
     const taxDue = taxSplit.taxable > 0 ? round2(taxSplit.taxable * (taxRate / 100)) : 0;
     const net13th = round2(gross13th - taxDue);
 
     return {
       gross13th: round2(gross13th),
+      exemptionLeft: round2(exemptionLeft),
       nonTaxable: taxSplit.nonTaxable,
       taxable: taxSplit.taxable,
       taxDue,

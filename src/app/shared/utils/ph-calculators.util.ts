@@ -1,4 +1,5 @@
-// Utility functions for PH-specific calculators (approximate, common defaults)
+// Utility functions for PH-specific calculators. Rates live in ph-rules.ts.
+import { PH_RULES } from './ph-rules';
 
 export type Contributions = {
   sss: { employee: number; employer: number; total: number };
@@ -13,13 +14,20 @@ export function round2(v: number): number {
   return Math.round((v + Number.EPSILON) * 100) / 100;
 }
 
-// PhilHealth: default 2024 rate 5%, shared 50/50; floor 10,000, ceiling 90,000
+const ZERO_SHARE = { employee: 0, employer: 0, total: 0 };
+
+function isPositive(v: number): boolean {
+  return Number.isFinite(v) && v > 0;
+}
+
+// PhilHealth: 5% of monthly basic salary, shared 50/50; floor 10,000, ceiling 100,000.
 export function computePhilHealth(
   monthlySalary: number,
-  rate = 0.05,
-  floor = 10_000,
-  ceiling = 90_000
+  rate: number = PH_RULES.philhealth.rate,
+  floor: number = PH_RULES.philhealth.floor,
+  ceiling: number = PH_RULES.philhealth.ceiling
 ) {
+  if (!isPositive(monthlySalary)) return { ...ZERO_SHARE };
   const base = Math.min(Math.max(monthlySalary, floor), ceiling);
   const total = base * rate;
   const employee = total / 2;
@@ -27,60 +35,61 @@ export function computePhilHealth(
   return { employee: round2(employee), employer: round2(employer), total: round2(total) };
 }
 
-// Pag-IBIG (HDMF): employee 1% if <= 1,500; else 2%. Employer 2%.
-// Compensation base is capped at 5,000.
+// Pag-IBIG (HDMF) Circular 460: employee 1% if salary <= 1,500, else 2%; employer 2%.
+// The monthly fund salary is capped at 10,000, so the maximum is 200 each.
 export function computePagIbig(monthlySalary: number) {
-  const base = Math.min(monthlySalary, 5_000);
-  const employeeRate = monthlySalary <= 1_500 ? 0.01 : 0.02;
-  const employerRate = 0.02;
+  if (!isPositive(monthlySalary)) return { ...ZERO_SHARE };
+  const r = PH_RULES.pagibig;
+  const base = Math.min(monthlySalary, r.maxFundSalary);
+  const employeeRate = monthlySalary <= r.lowSalaryThreshold ? r.employeeRateLow : r.employeeRate;
   const employee = base * employeeRate;
-  const employer = base * employerRate;
+  const employer = base * r.employerRate;
   const total = employee + employer;
   return { employee: round2(employee), employer: round2(employer), total: round2(total) };
 }
 
-// Mandatory Provident Fund (MPF):
-// Employee = (min(MSC, 35,000) - 20,000) * 15% * 1/3
-// Employer = (min(MSC, 35,000) - 20,000) * 15% * 2/3
-// Total = Employee + Employer
-// If MSC <= 20,000 then all MPF values are 0. MSC here is the actual monthly salary capped at 35,000.
-export function computeMPF(monthlySalary: number) {
-  const msc = Math.min(monthlySalary, 35_000);
-  const excess = Math.max(0, msc - 20_000);
-  const total = excess * 0.15;
-  const employee = total / 3; // one-third
-  const employer = (total * 2) / 3; // two-thirds
-  return { employee: round2(employee), employer: round2(employer), total: round2(total) };
+// SSS Monthly Salary Credit: salary rounded to the nearest 500 (each bracket spans
+// MSC - 250 up to but excluding MSC + 250), clamped to the 5,000 - 35,000 schedule.
+export function computeSssMsc(monthlySalary: number): number {
+  const r = PH_RULES.sss;
+  if (!isPositive(monthlySalary)) return 0;
+  const rounded = Math.round(monthlySalary / r.mscStep) * r.mscStep;
+  return Math.min(Math.max(rounded, r.mscMin), r.mscMax);
 }
 
-// SSS: Simplified approximation using 14% of salary up to 30,000 MSC cap (2023+),
-// split 4.5% employee, 9.5% employer. Optional EC (employer) 10 or 30.
+// SSS regular program: 15% of the MSC (5% employee, 10% employer), with the MSC counted
+// only up to 20,000. The part of the MSC above 20,000 is the MPF/WISP — see computeMPF.
+// EC is an employer-only premium (10 below 15,000 MSC, otherwise 30).
 export function computeSSS(
   monthlySalary: number,
   includeEC = true
 ) {
-  // Use MSC (Monthly Salary Credit) rounding to nearest 500 within 4,000–30,000
-  const mscMin = 4_000;
-  const mscMax = 30_000;
-  // Round to nearest 500 by dividing by 500, rounding, then * 500
-  let msc = Math.round(Math.min(Math.max(monthlySalary, mscMin), mscMax) / 500) * 500;
-  // Clamp again in case rounding stepped over bounds
-  msc = Math.min(Math.max(msc, mscMin), mscMax);
+  const r = PH_RULES.sss;
+  const msc = computeSssMsc(monthlySalary);
+  if (msc === 0) return { ...ZERO_SHARE };
 
-  const total = msc * 0.14; // total contribution rate 14%
-  const employee = msc * 0.045; // 4.5%
-  const employer = msc * 0.095; // 9.5%
-  let employerWithEC = employer;
+  const regularMsc = Math.min(msc, r.regularMscMax);
+  const employee = regularMsc * r.employeeRate;
+  let employer = regularMsc * r.employerRate;
   if (includeEC) {
-    // Common EC premium levels based on risk class proxy: salary>=15k often 30, else 10
-    const ec = monthlySalary >= 15_000 ? 30 : 10;
-    employerWithEC += ec;
+    employer += msc >= r.ecMscThreshold ? r.ecHigh : r.ecLow;
   }
   return {
     employee: round2(employee),
-    employer: round2(employerWithEC),
-    total: round2(employee + employerWithEC)
+    employer: round2(employer),
+    total: round2(employee + employer)
   };
+}
+
+// Mandatory Provident Fund (MPF/WISP): the same 5% / 10% rates applied to the part of the
+// MSC above 20,000 (maximum MSC 35,000). It is part of the SSS contribution, shown separately.
+export function computeMPF(monthlySalary: number) {
+  const r = PH_RULES.sss;
+  const msc = computeSssMsc(monthlySalary);
+  const excess = Math.max(0, msc - r.regularMscMax);
+  const employee = excess * r.employeeRate;
+  const employer = excess * r.employerRate;
+  return { employee: round2(employee), employer: round2(employer), total: round2(employee + employer) };
 }
 
 export function computeContributions(monthlySalary: number, options?: { includeSSSEC?: boolean }): Contributions {
@@ -97,68 +106,40 @@ export function computeContributions(monthlySalary: number, options?: { includeS
   return { sss, philhealth, pagibig, mpf, totals };
 }
 
-// TRAIN/CREATE simplified withholding monthly table (commonly used guide)
-// Brackets for MONTHLY taxable income
-// 0 - 20,833: 0
-// >20,833 - 33,333: 15% of excess over 20,833
-// >33,333 - 66,666: 2,500 + 20% of excess over 33,333
-// >66,666 - 166,666: 8,500 + 25% of excess over 66,666
-// >166,666 - 666,666: 33,000 + 30% of excess over 166,666
-// >666,666: 183,333.33 + 35% of excess over 666,666
+// BIR withholding tax on compensation (RR 11-2018 Annex E, 2023 onwards).
+// `taxable` is the taxable compensation for the pay period (gross less mandatory contributions).
 export function computeWithholdingTax(
   taxable: number,
   period: 'monthly' | 'semi-monthly' = 'monthly'
 ): number {
-  const t = taxable;
-  type Bracket = { over: number; base: number; rate: number };
-  let brackets: Bracket[];
-  if (period === 'semi-monthly') {
-    // Semi-monthly brackets derived from monthly TRAIN schedule
-    brackets = [
-      { over: 333_333, base: 91_666.67, rate: 0.35 },
-      { over: 83_333, base: 16_500, rate: 0.30 },
-      { over: 33_333, base: 4_250, rate: 0.25 },
-      { over: 16_667, base: 1_250, rate: 0.20 },
-      { over: 10_417, base: 0, rate: 0.15 },
-      { over: 0, base: 0, rate: 0 }
-    ];
-  } else {
-    // Monthly brackets
-    brackets = [
-      { over: 666_666, base: 183_333.33, rate: 0.35 },
-      { over: 166_666, base: 33_000, rate: 0.30 },
-      { over: 66_666, base: 8_500, rate: 0.25 },
-      { over: 33_333, base: 2_500, rate: 0.20 },
-      { over: 20_833, base: 0, rate: 0.15 },
-      { over: 0, base: 0, rate: 0 }
-    ];
-  }
+  if (!isPositive(taxable)) return 0;
+  const brackets = period === 'semi-monthly'
+    ? PH_RULES.withholdingTax.semiMonthly
+    : PH_RULES.withholdingTax.monthly;
 
-  // Find applicable bracket (largest 'over' less than t)
-  const b = brackets.find(br => t > br.over) || brackets[brackets.length - 1];
-  let tax = 0;
-  if (b.rate === 0) tax = 0;
-  else tax = b.base + (t - b.over) * b.rate;
+  // Brackets are ordered highest first; a bracket applies from its lower bound upward.
+  const b = brackets.find(br => taxable >= br.over) || brackets[brackets.length - 1];
+  const tax = b.rate === 0 ? 0 : b.base + (taxable - b.over) * b.rate;
   return round2(Math.max(tax, 0));
 }
 
 export function monthlyToSemiMonthly(v: number): number { return v / 2; }
 
 // 13th month pay estimate: base monthly * monthsWorked / 12
-// Note: Non-taxable portion applies up to a threshold (commonly 90,000) for total 13th + benefits.
+// Note: Non-taxable portion applies up to a threshold (90,000) for total 13th + benefits.
 export function estimate13thMonthPay(monthlyBasic: number, monthsWorked: number) {
   return round2((monthlyBasic * monthsWorked) / 12);
 }
 
-export function split13thMonthTaxability(totalBenefits: number, nonTaxableCap = 90_000) {
-  const nonTaxable = Math.min(totalBenefits, nonTaxableCap);
+export function split13thMonthTaxability(totalBenefits: number, nonTaxableCap = PH_RULES.thirteenthMonthExemption) {
+  const nonTaxable = Math.min(totalBenefits, Math.max(0, nonTaxableCap));
   const taxable = Math.max(0, totalBenefits - nonTaxable);
   return { nonTaxable: round2(nonTaxable), taxable: round2(taxable) };
 }
 
 // Estimate net 13th month pay given a withholding rate applied to the taxable portion over the cap
 // Net = Gross - (max(0, Gross - cap) * rate)
-export function estimateNet13thMonthPay(gross: number, ratePct = 20, cap = 90_000) {
+export function estimateNet13thMonthPay(gross: number, ratePct = 20, cap = PH_RULES.thirteenthMonthExemption) {
   const rate = Math.max(0, ratePct) / 100;
   const taxable = Math.max(0, gross - cap);
   const taxDue = taxable * rate;
@@ -453,4 +434,77 @@ export function calculateMP2(monthlyContribution: number, ratePct: number, mode:
   }
 
   return rows;
+}
+
+// SSS maternity benefit (RA 11210): ADSC = sum of the six highest MSCs / 180, paid for the
+// number of leave days. Only the regular SS portion of each MSC counts, i.e. at most 20,000,
+// so the six-MSC total is at most 120,000 (maximum 70,000 for 105 days).
+export function computeMaternityBenefit(totalSixMsc: number, leaveDays: number) {
+  const m = PH_RULES.maternity;
+  const maxTotal = m.mscCap * m.mscCount;
+  const entered = isPositive(totalSixMsc) ? totalSixMsc : 0;
+  const countedTotal = Math.min(entered, maxTotal);
+  const adsc = countedTotal / m.divisorDays;
+  return {
+    countedTotal: round2(countedTotal),
+    maxTotal,
+    capped: entered > maxTotal,
+    adsc: round2(adsc),
+    benefit: round2(adsc * Math.max(0, leaveDays)),
+  };
+}
+
+// SSS Salary Loan: one- or two-month loan based on the average regular SS MSC, rounded up
+// to the next MSC step. Service fee is deducted at release along with the first month's
+// interest (an estimate of SSS's pro-rated interest); repaid over 24 months, diminishing.
+export function computeSssSalaryLoan(
+  averageMsc: number,
+  months: 1 | 2,
+  annualRatePct: number = PH_RULES.sssLoans.salaryLoan.annualRate
+) {
+  const rules = PH_RULES.sssLoans.salaryLoan;
+  const avg = isPositive(averageMsc) ? Math.min(averageMsc, rules.regularMscCap) : 0;
+  const msc = Math.ceil(avg / rules.mscStep) * rules.mscStep;
+  const loanableAmount = Math.min(msc, rules.regularMscCap) * months;
+  const serviceFee = loanableAmount * rules.serviceFeeRate;
+  const advanceInterest = loanableAmount * (annualRatePct / 100 / 12);
+  const monthlyAmortization = loanableAmount > 0
+    ? computeAmortization(loanableAmount, annualRatePct, rules.termMonths).payment
+    : 0;
+  return {
+    loanableAmount: round2(loanableAmount),
+    serviceFee: round2(serviceFee),
+    advanceInterest: round2(advanceInterest),
+    netProceeds: round2(loanableAmount - serviceFee - advanceInterest),
+    monthlyAmortization,
+    termMonths: rules.termMonths,
+    moratoriumMonths: 0,
+    annualRatePct,
+  };
+}
+
+// SSS Emergency Loan: a share (50% or 100%) of the average regular SS MSC, rounded up to the
+// nearest 1,000. No service fee, a 6-month payment moratorium, then 24 monthly payments at 7%.
+// ASSUMPTION: interest keeps accruing during the moratorium and is added to the balance before
+// amortizing; the circulars reviewed do not state how it is treated.
+export function computeSssEmergencyLoan(averageMsc: number, share: 0.5 | 1) {
+  const rules = PH_RULES.sssLoans.emergencyLoan;
+  const avg = isPositive(averageMsc) ? Math.min(averageMsc, rules.regularMscCap) : 0;
+  const loanableAmount = Math.min(Math.ceil((avg * share) / rules.roundUpTo) * rules.roundUpTo, rules.regularMscCap);
+  const r = rules.annualRate / 100 / 12;
+  const balanceAfterMoratorium = loanableAmount * Math.pow(1 + r, rules.moratoriumMonths);
+  const monthlyAmortization = loanableAmount > 0
+    ? computeAmortization(balanceAfterMoratorium, rules.annualRate, rules.termMonths).payment
+    : 0;
+  return {
+    loanableAmount: round2(loanableAmount),
+    serviceFee: 0,
+    advanceInterest: 0,
+    netProceeds: round2(loanableAmount),
+    interestDuringMoratorium: round2(balanceAfterMoratorium - loanableAmount),
+    monthlyAmortization,
+    termMonths: rules.termMonths,
+    moratoriumMonths: rules.moratoriumMonths,
+    annualRatePct: rules.annualRate,
+  };
 }
