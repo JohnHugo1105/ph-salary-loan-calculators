@@ -1,27 +1,65 @@
-# PhCalculators
+# PH Calculators
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.17.
+Free Philippine salary, tax, contribution and loan calculators (phcalculators.com). Built with Angular 21,
+server-side prerendered and hosted on Azure Static Web Apps.
 
-## Development server
+## Commands
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+| Command | What it does |
+| --- | --- |
+| `npm start` | Dev server on http://localhost:4200 |
+| `npm run build` | Production build with prerendering into `dist/ph-calculators/browser` |
+| `npm test` | Unit tests (Karma + Jasmine, needs Chrome) |
+| `node scripts/check-contrast.js` | Checks the design tokens against WCAG contrast minimums |
 
-## Code scaffolding
+## Where things live
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+```
+src/styles/               Design system: tokens, base, layout, components, prose
+src/app/core/config/      tools.ts: the catalog that drives the menu, homepage, footer and search
+src/app/layout/           App shell: header, footer, search palette, cookie notice, toast
+src/app/shared/ui/        Reusable UI: field, segmented control, breakdown, callout, charts, ...
+src/app/shared/utils/     ph-rules.ts (all rates), ph-calculators.util.ts (formulas), explain.ts
+src/app/features/         One folder per page
+```
 
-## Build
+## Rates and rules
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Every government rate and limit lives in **`src/app/shared/utils/ph-rules.ts`** with its effective date and
+source. The calculators, the guides' worked examples, the tax tables and the **Rates & sources** page all read
+from it, so they cannot disagree.
 
-## Running unit tests
+To update a rate:
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+1. Change the value (and `effective` / `source`) in `ph-rules.ts` and update `PH_RULES_LAST_REVIEWED`.
+2. Update the expectations in `ph-calculators.util.spec.ts`. They are checked against official worked examples
+   and bracket boundaries, so a wrong edit fails loudly.
+3. If a rule rests on secondary sources, keep its `status: 'confirm'` on the Rates page
+   (`features/rates/rates.component.ts`).
 
-## Running end-to-end tests
+## Design system
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+- **Themes:** light by default; dark follows the OS unless the visitor picks one (`data-theme` on `<html>`,
+  stored in `localStorage` as `theme`). All colours are CSS custom properties in `src/styles/_tokens.scss`.
+  After changing a colour, run `node scripts/check-contrast.js`.
+- **Layout:** every calculator uses the same shape: inputs on the left, results on the right (stacked on phones
+  with a sticky result bar). Results show the working: use `app-breakdown` rows with a `formula`.
+- **Forms:** use `app-field` around a native `<input>`/`<select>`. It wires up the label, hint, error and ARIA
+  attributes. Use `app-segmented` for 2-4 mutually exclusive choices.
+- **Charts:** small SVG components in `shared/ui/charts`. Series colours are `--series-1..3`, validated for
+  colour-blind separation. Every chart has a table view and keyboard support.
+- **Icons:** one inline SVG sprite (`shared/ui/icon-sprite.component.html`), used through `<app-icon name="...">`.
+- **Sponsored content:** `app-sponsored`, always labelled, never placed between inputs and results.
 
-## Further help
+## Adding a calculator
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+1. Put the formula in `shared/utils` (pure, with tests) and any rates in `ph-rules.ts`.
+2. Create `features/<name>/` using `app-page-header`, the `.tool` layout, `app-field`, `app-breakdown`.
+3. Add it to `TOOLS` in `core/config/tools.ts`, a route in `app.routes.ts`, and `src/sitemap.xml`.
+4. Add its rules to `features/rates/rates.component.ts`.
+5. Support sharing with `SaveShareService.restoreInto(form, ...)` and `app-result-actions`.
+
+## Deployment notes
+
+`src/404.html` is served with a real 404 status by `staticwebapp.config.json` (every real route is prerendered,
+so there is no SPA fallback). Check `/does-not-exist` after deploying.
