@@ -1,22 +1,5 @@
 {
   "trailingSlash": "never",
-  "navigationFallback": {
-    "rewrite": "/index.html",
-    "exclude": [
-      "/assets/*",
-      "/*.css",
-      "/*.js",
-      "/*.png",
-      "/*.jpg",
-      "/*.jpeg",
-      "/*.gif",
-      "/*.svg",
-      "/*.ico",
-      "/*.webmanifest",
-      "/sitemap.xml",
-      "/robots.txt"
-    ]
-  },
   "routes": [
     {
       "route": "/assets/*",
@@ -27,9 +10,7 @@
   ],
   "responseOverrides": {
     "404": {
-      "rewrite": "/index.html",
-      "statusCode": 200
+      "rewrite": "/404.html"
     }
   }
 }
-

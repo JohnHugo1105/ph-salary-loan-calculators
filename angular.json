@@ -29,6 +29,7 @@
               "src/favicon.ico",
               "src/web.config",
               "src/staticwebapp.config.json",
+              "src/404.html",
               {
                 "glob": "indexnow*.txt",
                 "input": "src",
