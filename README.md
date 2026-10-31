@@ -19,6 +19,7 @@ server-side prerendered and hosted on Azure Static Web Apps.
 
 ```
 branding/                 Source logos: the icon and the full logo (not published; see brand-assets.js)
+branding/drafts/          Earlier logo concepts (v2, v3) and the design notes for each version; v4 is the one in use
 src/styles/               Design system: tokens, base, layout, components, prose
 src/app/core/config/      tools.ts: the catalog that drives the menu, homepage, footer and search
 src/app/layout/           App shell: header, footer, search palette, cookie notice, toast
