@@ -1,58 +1,120 @@
-import { Injectable, Inject, DOCUMENT } from '@angular/core';
+import { DOCUMENT, Injectable, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
+import { ActivatedRouteSnapshot, RouterStateSnapshot, TitleStrategy } from '@angular/router';
 
-import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
-import { filter } from 'rxjs/operators';
+export const SITE = {
+  name: 'PH Calculators',
+  origin: 'https://www.phcalculators.com',
+  defaultDescription:
+    'Free Philippine calculators for net pay, withholding tax, SSS, PhilHealth and Pag-IBIG contributions, 13th month pay, MP2 and loan amortization.',
+  defaultImage: '/assets/og/default.png',
+};
 
+// Search results show about 60 characters of a title, so the brand is added only when it fits.
+const MAX_TITLE = 60;
+const INDEXABLE = 'index, follow, max-image-preview:large, max-snippet:-1';
+
+export interface PageArticle {
+  published: string;
+  modified: string;
+}
+
+// Route data read here: `description`, `robots` (e.g. 'noindex, follow'), `image` (path under the site root),
+// `article` (dates for guides) and `crumb` (short breadcrumb name when the title is long).
+// Registered as the router's TitleStrategy, so it runs once per navigation with the final snapshot,
+// after the page component has been created.
 @Injectable({ providedIn: 'root' })
-export class SeoService {
-  private readonly siteName = 'PH Salary & Loan Calculators';
-  private readonly defaultDescription = 'Free Philippines calculators for SSS, Pag-IBIG, PhilHealth, MPF contributions, salary net pay, tax, 13th month, and loan amortization.';
-  private readonly image = '/favicon-512x512.png';
+export class SeoService extends TitleStrategy {
+  private readonly meta = inject(Meta);
+  private readonly title = inject(Title);
+  private readonly doc = inject(DOCUMENT);
+  // Set by the page being activated; written (or removed) when its navigation completes.
+  private pageSchema: object | object[] | null = null;
 
-  constructor(private meta: Meta, private title: Title, private router: Router, private route: ActivatedRoute, @Inject(DOCUMENT) private doc: Document) {
-    this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => {
-      const deepest = this.getDeepest(this.route);
-      const data = deepest?.snapshot?.data || {};
-      const pageTitle: string = data['title'] || this.title.getTitle() || this.siteName;
-      const fullTitle = pageTitle.includes(this.siteName) ? pageTitle : `${pageTitle} • ${this.siteName}`;
-      this.title.setTitle(fullTitle);
+  override updateTitle(snapshot: RouterStateSnapshot): void {
+    let route: ActivatedRouteSnapshot = snapshot.root;
+    while (route.firstChild) route = route.firstChild;
+    const data = route.data;
 
-      const desc: string = data['description'] || this.defaultDescription;
-      const url = this.getCanonicalUrl();
+    const pageTitle = this.buildTitle(snapshot) ?? SITE.name;
+    const fullTitle = withBrand(pageTitle);
+    const description: string = data['description'] || SITE.defaultDescription;
+    const path = canonicalPath(snapshot.url);
+    const url = `${SITE.origin}${path}`;
+    const image = `${SITE.origin}${data['image'] || SITE.defaultImage}`;
+    const article: PageArticle | undefined = data['article'];
 
-      this.setTag('name', 'description', desc);
-      this.setTag('property', 'og:title', fullTitle);
-      this.setTag('property', 'og:description', desc);
-      this.setTag('property', 'og:type', 'website');
-      this.setTag('property', 'og:url', url);
-      this.setTag('property', 'og:image', this.image);
+    this.title.setTitle(fullTitle);
+    this.setTag('name', 'description', description);
+    this.setTag('name', 'robots', data['robots'] || INDEXABLE);
 
-      this.setTag('name', 'twitter:card', 'summary_large_image');
-      this.setTag('name', 'twitter:title', fullTitle);
-      this.setTag('name', 'twitter:description', desc);
-      this.setTag('name', 'twitter:image', this.image);
+    this.setTag('property', 'og:title', fullTitle);
+    this.setTag('property', 'og:description', description);
+    this.setTag('property', 'og:type', article ? 'article' : 'website');
+    this.setTag('property', 'og:url', url);
+    this.setTag('property', 'og:image', image);
+    this.setTag('name', 'twitter:title', fullTitle);
+    this.setTag('name', 'twitter:description', description);
+    this.setTag('name', 'twitter:image', image);
 
-      this.updateCanonical(url);
+    this.setCanonical(url);
 
-
-    });
+    const crumbs = breadcrumbs(path, data['crumb'] || pageTitle);
+    const graph: object[] = [];
+    if (crumbs.length > 1) {
+      graph.push({
+        '@type': 'BreadcrumbList',
+        itemListElement: crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: `${SITE.origin}${c.path}` })),
+      });
+    }
+    if (article) {
+      graph.push({
+        '@type': 'Article',
+        headline: pageTitle,
+        description,
+        image,
+        datePublished: article.published,
+        dateModified: article.modified,
+        inLanguage: 'en-PH',
+        mainEntityOfPage: url,
+        author: { '@id': `${SITE.origin}/#organization` },
+        publisher: { '@id': `${SITE.origin}/#organization` },
+      });
+    }
+    this.setJsonLd('ld-route', graph.length ? { '@context': 'https://schema.org', '@graph': graph } : null);
+    this.setJsonLd('ld-page', this.pageSchema);
+    this.pageSchema = null;
   }
 
-  private getDeepest(route: ActivatedRoute): ActivatedRoute | null {
-    let r: ActivatedRoute | null = route;
-    while (r?.firstChild) r = r.firstChild;
-    return r;
+  /**
+   * Page-specific JSON-LD (calculator, FAQ). Call it from the page component's constructor: the router creates the
+   * component before the navigation completes, so the schema is written then and dropped on the next page unless set again.
+   */
+  setSchema(data: object | object[] | null) {
+    this.pageSchema = data;
   }
 
-  private setTag(selectorKey: 'name' | 'property', selectorVal: string, content: string) {
-    const selector: any = {};
-    selector[selectorKey] = selectorVal;
-    this.meta.updateTag({ ...selector, content });
+  private setJsonLd(id: string, data: object | null) {
+    let script = this.doc.getElementById(id) as HTMLScriptElement | null;
+    if (!data) {
+      script?.remove();
+      return;
+    }
+    if (!script) {
+      script = this.doc.createElement('script');
+      script.id = id;
+      script.type = 'application/ld+json';
+      this.doc.head.appendChild(script);
+    }
+    script.textContent = JSON.stringify(data);
   }
 
-  private updateCanonical(url: string) {
-    let link: HTMLLinkElement | null = this.doc.querySelector("link[rel='canonical']");
+  private setTag(key: 'name' | 'property', value: string, content: string) {
+    this.meta.updateTag({ [key]: value, content });
+  }
+
+  private setCanonical(url: string) {
+    let link = this.doc.head.querySelector<HTMLLinkElement>("link[rel='canonical']");
     if (!link) {
       link = this.doc.createElement('link');
       link.setAttribute('rel', 'canonical');
@@ -60,38 +122,24 @@ export class SeoService {
     }
     link.setAttribute('href', url);
   }
+}
 
-  private getCanonicalUrl(): string {
-    try {
-      const { origin, hostname } = this.doc.location;
+export function withBrand(title: string): string {
+  if (title.includes(SITE.name)) return title;
+  const branded = `${title} | ${SITE.name}`;
+  return branded.length <= MAX_TITLE ? branded : title;
+}
 
-      // Enforce production domain if not on localhost
-      const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
-      // FIX: Force WWW for production to consolidate signals
-      const canonicalOrigin = isLocal ? origin : 'https://www.phcalculators.com';
+// Query strings (shared results, ?q= search) and fragments never change the canonical page.
+export function canonicalPath(url: string): string {
+  const path = url.split(/[?#]/)[0] || '/';
+  return path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path;
+}
 
-      // Use router URL for accurate path during prerendering
-      let cleanPath = this.router.url.split('?')[0] || '/';
-      if (cleanPath.length > 1 && cleanPath.endsWith('/')) {
-        cleanPath = cleanPath.slice(0, -1);
-      }
-
-      return `${canonicalOrigin}${cleanPath}`;
-    } catch {
-      return 'https://www.phcalculators.com/';
-    }
-  }
-
-  /**
-   * Inject JSON-LD Structured Data
-   */
-  setSchema(data: any) {
-    let script: HTMLScriptElement | null = this.doc.querySelector("script[type='application/ld+json']");
-    if (!script) {
-      script = this.doc.createElement('script');
-      script.setAttribute('type', 'application/ld+json');
-      this.doc.head.appendChild(script);
-    }
-    script.text = JSON.stringify(data);
-  }
+function breadcrumbs(path: string, name: string): { name: string; path: string }[] {
+  if (path === '/') return [{ name: 'Home', path: '/' }];
+  const crumbs = [{ name: 'Home', path: '/' }];
+  if (path.startsWith('/articles/')) crumbs.push({ name: 'Guides', path: '/articles' });
+  crumbs.push({ name, path });
+  return crumbs;
 }

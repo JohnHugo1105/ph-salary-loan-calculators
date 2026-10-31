@@ -1,5 +1,7 @@
 <div class="container">
-  <app-page-header title="Pag-IBIG vs MPF explained" section="Guides" />
+  <app-page-header title="Pag-IBIG vs MPF explained" section="Guides">
+    <span class="badge">Updated {{ updated }}</span>
+  </app-page-header>
   <article class="prose">
     <p>
       Pag-IBIG (HDMF) and the SSS Mandatory Provident Fund (MPF) are both savings components attached to employment,
@@ -35,4 +37,6 @@
     </p>
     <p class="note">Disclaimer: For guidance only. Always verify with official sources.</p>
   </article>
+
+  <app-related route="/articles/pagibig-vs-mpf" />
 </div>

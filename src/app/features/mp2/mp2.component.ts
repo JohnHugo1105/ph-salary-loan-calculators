@@ -13,6 +13,7 @@ import { SplitBarComponent } from '../../shared/ui/charts/split-bar.component';
 import { StackedColumnsComponent } from '../../shared/ui/charts/stacked-columns.component';
 import { FieldComponent } from '../../shared/ui/field.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
+import { RelatedComponent } from '../../shared/ui/related.component';
 import { ResultActionsComponent } from '../../shared/ui/result-actions.component';
 import { ResultBarComponent } from '../../shared/ui/result-bar.component';
 import { SegmentedComponent } from '../../shared/ui/segmented.component';
@@ -26,7 +27,7 @@ import { PH_RULES } from '../../shared/utils/ph-rules';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule, DecimalPipe, RouterLink, ThousandsSeparatorDirective, FieldComponent, SegmentedComponent, CalloutComponent,
-    PageHeaderComponent, ResultActionsComponent, ResultBarComponent, SponsoredComponent, StackedColumnsComponent,
+    PageHeaderComponent, ResultActionsComponent, ResultBarComponent, SponsoredComponent, StackedColumnsComponent, RelatedComponent,
   ],
   templateUrl: './mp2.component.html',
 })

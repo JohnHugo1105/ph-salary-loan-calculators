@@ -1,32 +1,117 @@
 <div class="container">
-  <app-page-header title="How loan amortization works in the Philippines" section="Guides" />
+  <app-page-header title="How loan amortization works in the Philippines" section="Guides"
+    lede="The formula behind every fixed monthly payment, how each payment splits into interest and principal, and how to compare loan offers.">
+    <span class="badge">Updated {{ updated }}</span>
+  </app-page-header>
   <article class="prose">
     <p>
       Most housing, car, and salary loans in the Philippines use fixed monthly amortization. Each payment has two parts:
       interest (cost of borrowing) and principal (the amount that reduces your outstanding balance). Over time, the
       interest portion declines while the principal portion grows.
     </p>
+
     <h2>The payment formula</h2>
     <p>
       Monthly payment depends on loan amount, term (months), and monthly interest rate. With a fixed-rate loan, the payment
-      is constant and can be computed using the standard annuity formula used by banks and calculators.
+      is constant and is computed with the standard annuity formula used by banks, Pag-IBIG and our calculators:
     </p>
+    <div class="formula-box">
+      <h3>Monthly amortization</h3>
+      <strong>M = P × r × (1 + r)<sup>n</sup> ÷ ((1 + r)<sup>n</sup> − 1)</strong>
+      <ul>
+        <li><strong>M</strong>: the fixed monthly payment</li>
+        <li><strong>P</strong>: the amount borrowed (principal)</li>
+        <li><strong>r</strong>: the monthly interest rate, which is the annual rate ÷ 12</li>
+        <li><strong>n</strong>: the number of monthly payments (years × 12)</li>
+      </ul>
+    </div>
+
+    <h2>Worked example: a {{ example.amount }} housing loan</h2>
+    <p>
+      Say you borrow {{ example.amount }} from Pag-IBIG for {{ example.years }} years at {{ example.rate }} a year (its rate
+      for a 3-year repricing period). The monthly rate is {{ example.rate }} ÷ 12 = {{ example.monthlyRate }}, and there are
+      {{ example.months }} payments. Putting those into the formula gives a monthly amortization of
+      <strong>{{ example.payment }}</strong>.
+    </p>
+    <p>
+      Over the full term you pay {{ example.totalPaid }}, so the loan costs you {{ example.totalInterest }} in interest,
+      assuming the rate stays the same after each repricing.
+    </p>
+
     <h2>Reading a schedule</h2>
     <p>
       In the first months, interest is higher because it’s computed on a larger balance. As you pay down the principal,
-      the interest portion shrinks. The final balance reaches zero if you make all payments on schedule.
+      the interest portion shrinks. The final balance reaches zero if you make all payments on schedule. Here is the start
+      and end of the schedule for the example above:
     </p>
+    <div class="table-responsive" tabindex="0" role="region" aria-label="Sample amortization schedule">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th scope="col">Month</th>
+            <th scope="col">Interest</th>
+            <th scope="col">Principal</th>
+            <th scope="col">Balance after payment</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of example.rows; track row.period) {
+            @if (row.period === example.months) {
+              <tr><td colspan="4">…</td></tr>
+            }
+            <tr>
+              <td>{{ row.period }}</td>
+              <td>{{ row.interest }}</td>
+              <td>{{ row.principal }}</td>
+              <td>{{ row.balance }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Month 1’s interest is simply the balance times the monthly rate: {{ example.amount }} × {{ example.monthlyRate }} =
+      {{ example.firstInterest }}. Whatever is left of the payment reduces the balance.
+    </p>
+
+    <h2>Add-on rate vs diminishing balance</h2>
+    <p>
+      Some car loans, appliance plans and salary loans quote an <strong>add-on rate</strong>. Interest is charged on the
+      original amount for the whole term, even though you repay part of it every month. The same quoted rate therefore costs
+      far more than a diminishing-balance loan.
+    </p>
+    <ul>
+      <li>
+        {{ addOn.amount }} for {{ addOn.years }} years at {{ addOn.rate }} add-on: interest is {{ addOn.amount }} ×
+        {{ addOn.rate }} × {{ addOn.years }} = {{ addOn.interest }}, so you pay {{ addOn.payment }} a month.
+      </li>
+      <li>
+        The same loan at {{ addOn.rate }} on a diminishing balance: {{ addOn.diminishingPayment }} a month and
+        {{ addOn.diminishingInterest }} in total interest.
+      </li>
+      <li>
+        The add-on loan is equivalent to about <strong>{{ addOn.equivalent }} a year</strong> on a diminishing balance.
+      </li>
+    </ul>
+    <p>
+      When a lender quotes an add-on or “flat” rate, ask for the effective annual rate or compare the monthly payments
+      directly in the <a routerLink="/amortization">loan amortization calculator</a>.
+    </p>
+
     <h2>Practical tips</h2>
     <ul>
       <li>Compare APR across lenders, not just monthly payments.</li>
       <li>Check for prepayment penalties and fees.</li>
       <li>Run “what-if” scenarios: longer term lowers payment but increases total interest.</li>
+      <li>For loans that reprice, plan for the payment to change at each repricing date.</li>
     </ul>
     <p>
-      Use our <a routerLink="/amortization">General Amortization Calculator</a> to experiment with different amounts, terms, and rates. 
-      For specific government loans, try our new <a routerLink="/sss-salary-loan">SSS Salary Loan Calculator</a> and 
-      <a routerLink="/pagibig-housing-loan">Pag-IBIG Housing Loan Calculator</a> tailored for 2026 rates and rules.
+      Use our <a routerLink="/amortization">loan amortization calculator</a> to experiment with different amounts, terms and
+      rates. For government loans, try the <a routerLink="/sss-salary-loan">SSS salary loan calculator</a> and the
+      <a routerLink="/pagibig-housing-loan">Pag-IBIG housing loan calculator</a>, which use current rates and rules.
     </p>
     <p class="note">Disclaimer: For guidance only. Always verify with official loan agreements.</p>
   </article>
+
+  <app-related route="/articles/loan-amortization-ph" />
 </div>

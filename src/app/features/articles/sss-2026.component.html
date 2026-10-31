@@ -1,40 +1,158 @@
 <div class="container">
-  <app-page-header title="SSS Updates 2026: Pension Hikes, Loans, and More" section="Guides" />
+  <app-page-header title="How to compute your SSS contribution in 2026" section="Guides"
+    lede="Four steps from your monthly salary to the amount on your payslip, with worked examples from the same engine as our calculators.">
+    <span class="badge">Updated {{ updated }}</span>
+    <span class="badge badge--brand">SSS {{ r.total }} schedule</span>
+    <a class="badge" routerLink="/rates">Rates &amp; sources</a>
+  </app-page-header>
+
   <article class="prose">
     <p>
-      The Social Security System (SSS) has rolled out major policy changes and relief packages in the first half of 2026. Here is a breakdown of the most significant updates that affect members and pensioners.
+      In 2026 the SSS contribution is <strong>{{ r.total }} of your Monthly Salary Credit (MSC)</strong>. You pay
+      {{ r.employee }} and your employer pays {{ r.employer }}, plus a small Employees’ Compensation (EC) premium that
+      only the employer pays. This is the final step of the rate increases under the Social Security Act of 2018
+      (RA 11199), in effect since January 2025.
     </p>
 
-    <h2>1) Early Pension Hike (June 2026)</h2>
+    <div class="example-box">
+      <h3>The short version</h3>
+      <ol>
+        <li>Round your monthly salary to the nearest {{ r.step }} to get your MSC (minimum {{ r.mscMin }}, maximum {{ r.mscMax }}).</li>
+        <li>Multiply the MSC by {{ r.employee }} for your share and by {{ r.employer }} for your employer’s share.</li>
+        <li>The part computed on the MSC above {{ r.regularMax }} is your MPF (WISP) savings; the rest is regular SSS.</li>
+        <li>Your employer adds an EC premium: {{ r.ecLow }} if the MSC is below {{ r.ecThreshold }}, otherwise {{ r.ecHigh }}.</li>
+      </ol>
+    </div>
+
     <p>
-      SSS is advancing the release of its planned 10% pension increase. Originally scheduled for September 2026, pensioners will now start receiving the increased amount three months earlier, beginning in June. Additionally, death and survivor benefits were raised by 5%.
+      Want the answer without the arithmetic? Enter your salary in the
+      <a routerLink="/contributions">SSS, PhilHealth &amp; Pag-IBIG contribution calculator</a> and it shows each step.
     </p>
 
-    <h2>2) Eased Emergency Loan Requirements</h2>
+    <h2>Step 1: Find your Monthly Salary Credit</h2>
     <p>
-      The eligibility rules for the SSS Emergency Loan Program have been significantly relaxed. Members now only need <strong>18 months</strong> of posted contributions (down from 36 months), provided at least 6 were made in the last 12 months. Eligible members can borrow up to ₱20,000 at a reduced 7% annual interest rate, which includes a six-month payment moratorium.
+      SSS does not charge a percentage of your exact salary. It first converts your salary into a Monthly Salary Credit:
+      salaries are grouped into brackets {{ r.step }} wide, and each bracket has one MSC. In practice that means rounding
+      to the nearest {{ r.step }}: a salary within {{ r.half }} of an MSC uses that MSC.
     </p>
+    <ul>
+      <li>Below the lowest bracket, the MSC is {{ r.mscMin }}.</li>
+      <li>Above the highest bracket, the MSC stays at {{ r.mscMax }}, so contributions stop growing past that point.</li>
+    </ul>
     <p>
-      You can compute your expected loan proceeds using our updated <a routerLink="/sss-salary-loan">SSS Salary & Emergency Loan Calculator</a>.
-    </p>
-
-    <h2>3) Penalty Condonation Program</h2>
-    <p>
-      For members with past-due short-term member loans, SSS is offering a penalty condonation program. If you pay the principal and interest, all accrued penalties can be fully waived. You can pay this off in full or via installment plans stretching up to 60 months.
-    </p>
-
-    <h2>4) Facial Authentication for Pensioners</h2>
-    <p>
-      To make the Annual Confirmation of Pensioners (ACOP) easier, SSS launched a digital facial authentication system with biometric liveness checks. Pensioners can now comply without physically visiting a branch, ensuring continuous receipt of their benefits.
+      <strong>Example:</strong> a monthly salary of {{ walk.salary }} falls in the bracket whose MSC is {{ walk.msc }}.
     </p>
 
-    <h2>5) Contribution Computation</h2>
+    <h2>Step 2: Apply the {{ r.total }} rate</h2>
     <p>
-      The official SSS contribution schedule based on Monthly Salary Credit (MSC) continues to apply. The combined SSS contribution is split between employee and employer. Employers also pay an EC (Employee’s Compensation) premium.
+      Multiply the MSC by the rate for each side. With an MSC of {{ walk.msc }}, you pay {{ r.employee }} ({{ walk.employee }})
+      and your employer pays {{ r.employer }} ({{ walk.employerSss }} before EC). Your employer deducts only your share from
+      your pay; their share is an extra cost to them.
+    </p>
+
+    <h2>Step 3: Split regular SSS and MPF</h2>
+    <p>
+      The Mandatory Provident Fund (MPF, also called the Workers’ Investment and Savings Program or WISP) is a savings
+      account inside SSS. It receives the part of the contribution computed on the MSC above {{ r.regularMax }}. Everything
+      on the first {{ r.regularMax }} goes to the regular SSS program that pays for pension, sickness, maternity and other
+      benefits.
     </p>
     <p>
-      For quick forecasts of your monthly deductions, try our <a routerLink="/contributions">Contributions calculator</a> and enter your monthly salary.
+      An MSC of {{ walk.msc }} is below {{ r.regularMax }}, so the MPF part is {{ walk.employeeMpf }}. Read how the MPF
+      compares with Pag-IBIG savings in <a routerLink="/articles/pagibig-vs-mpf">Pag-IBIG vs MPF</a>.
     </p>
-    <p class="note">Disclaimer: For guidance only. Always verify with official SSS sources.</p>
+
+    <h2>Step 4: Add the EC premium (employer only)</h2>
+    <p>
+      Employees’ Compensation covers work-related injury and illness. The employer pays {{ r.ecLow }} a month when the MSC
+      is below {{ r.ecThreshold }} and {{ r.ecHigh }} from {{ r.ecThreshold }} up. It is never deducted from your salary.
+      For an MSC of {{ walk.msc }} it is {{ walk.ec }}, so the employer’s total is {{ walk.employer }}.
+    </p>
+
+    <h2>Worked examples</h2>
+    <div class="table-responsive" tabindex="0" role="region" aria-label="SSS contribution examples">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th scope="col">Monthly salary</th>
+            <th scope="col">MSC</th>
+            <th scope="col">You pay (SSS + MPF)</th>
+            <th scope="col">Employer pays (incl. EC)</th>
+            <th scope="col">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (e of examples; track e.salary) {
+            <tr>
+              <td>{{ e.salary }}</td>
+              <td>{{ e.msc }}</td>
+              <td>{{ e.employee }}<br><small style="color: var(--text-2)">SSS {{ e.employeeSss }} + MPF {{ e.employeeMpf }}</small></td>
+              <td>{{ e.employer }}<br><small style="color: var(--text-2)">incl. EC {{ e.ec }}</small></td>
+              <td><strong>{{ e.total }}</strong></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <p>
+      The full bracket-by-bracket schedule is on the <a routerLink="/tax-tables">tax &amp; SSS tables</a> page.
+    </p>
+
+    <h2>Self-employed and voluntary members</h2>
+    <p>
+      Without an employer to share the cost, self-employed and voluntary members pay both shares, so the full {{ r.total }}
+      of the MSC they declare. The same MSC brackets and the same {{ r.regularMax }} split between regular SSS and MPF apply.
+      Check the minimum MSC for your membership type with SSS before you pay.
+    </p>
+
+    <h2>How to check what was actually posted</h2>
+    <p>
+      Log in to My.SSS on the SSS website or the SSS mobile app and open your contribution records. If a month is missing or
+      lower than expected, ask your HR or payroll team first: employers remit on your behalf, and late or short remittances can
+      affect your loan and benefit eligibility.
+    </p>
+
+    <h2>Other SSS changes in 2026</h2>
+    <p>
+      SSS also rolled out policy changes and relief measures in the first half of 2026 that affect members and pensioners.
+    </p>
+    <h3>Earlier pension increase (June 2026)</h3>
+    <p>
+      SSS advanced the release of its planned 10% pension increase. Originally scheduled for September 2026, pensioners
+      started receiving the increased amount three months earlier, beginning in June. Death and survivor benefits were also
+      raised by 5%.
+    </p>
+    <h3>Easier emergency loan requirements</h3>
+    <p>
+      Members now need <strong>18 months</strong> of posted contributions (down from 36), provided at least 6 were made in the
+      last 12 months. Eligible members can borrow up to ₱20,000 at a reduced 7% annual interest rate, which includes a
+      six-month payment moratorium. Compute your proceeds with the
+      <a routerLink="/sss-salary-loan">SSS salary &amp; emergency loan calculator</a>.
+    </p>
+    <h3>Penalty condonation</h3>
+    <p>
+      Members with past-due short-term loans can have all accrued penalties waived by paying the principal and interest, in
+      full or in installments of up to 60 months.
+    </p>
+    <h3>Facial authentication for pensioners</h3>
+    <p>
+      Pensioners can now complete the Annual Confirmation of Pensioners (ACOP) online through facial authentication with a
+      liveness check, without visiting a branch.
+    </p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq-section">
+      @for (f of faq; track f.q) {
+        <h3>{{ f.q }}</h3>
+        <p>{{ f.a }}</p>
+      }
+    </div>
+
+    <p class="note">
+      For guidance only. Figures follow the SSS schedule effective January 2025 as listed on our
+      <a routerLink="/rates">rates &amp; sources</a> page. Always confirm with SSS or your employer.
+    </p>
   </article>
+
+  <app-related route="/articles/sss-contribution-2026" />
 </div>

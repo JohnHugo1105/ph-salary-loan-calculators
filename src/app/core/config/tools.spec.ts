@@ -1,4 +1,4 @@
-import { GUIDES, REFERENCE_PAGES, TOOLS, TOOL_GROUPS, searchCatalog } from './tools';
+import { GUIDES, REFERENCE_PAGES, TOOLS, TOOL_GROUPS, catalogItem, searchCatalog } from './tools';
 
 describe('tool catalog', () => {
   it('puts every tool in a known group with a unique route', () => {
@@ -12,6 +12,22 @@ describe('tool catalog', () => {
     const routes = TOOLS.map((t) => t.route);
     for (const r of ['/net-pay', '/13th-month-pay', '/contributions', '/amortization', '/sss-salary-loan', '/pagibig-housing-loan', '/sss-maternity-benefit', '/mp2-calculator', '/tax-tables']) {
       expect(routes).toContain(r);
+    }
+  });
+
+  it('links related pages that exist, never the page itself', () => {
+    for (const item of [...TOOLS, ...GUIDES]) {
+      for (const r of item.related ?? []) {
+        expect(catalogItem(r)).withContext(`${item.route} -> ${r}`).toBeDefined();
+        expect(r).not.toBe(item.route);
+      }
+    }
+  });
+
+  it('dates every guide', () => {
+    for (const g of GUIDES) {
+      expect(g.published).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(g.updated >= g.published).withContext(g.route).toBeTrue();
     }
   });
 

@@ -16,6 +16,14 @@ export interface CatalogItem {
   route: string;
   icon: IconName;
   keywords: string;
+  // Routes of the calculators and guides suggested at the end of this page.
+  related?: string[];
+}
+
+export interface Guide extends CatalogItem {
+  // ISO dates for the article's structured data and its "Updated" line.
+  published: string;
+  updated: string;
 }
 
 export interface Tool extends CatalogItem {
@@ -41,6 +49,7 @@ export const TOOLS: Tool[] = [
     icon: 'banknote',
     keywords: 'salary take home pay tax withholding payslip gross net overtime holiday reverse',
     popular: true,
+    related: ['/contributions', '/13th-month-pay', '/tax-tables', '/articles/sss-contribution-2026'],
   },
   {
     id: '13th-month',
@@ -51,6 +60,7 @@ export const TOOLS: Tool[] = [
     icon: 'gift',
     keywords: 'bonus december pro-rated tax exempt 90000',
     popular: true,
+    related: ['/net-pay', '/tax-tables', '/mp2-calculator'],
   },
   {
     id: 'tax-tables',
@@ -60,6 +70,7 @@ export const TOOLS: Tool[] = [
     route: '/tax-tables',
     icon: 'table',
     keywords: 'bir train law brackets schedule reference income tax',
+    related: ['/net-pay', '/contributions', '/13th-month-pay', '/articles/sss-contribution-2026'],
   },
   {
     id: 'contributions',
@@ -70,6 +81,7 @@ export const TOOLS: Tool[] = [
     icon: 'shield',
     keywords: 'sss philhealth pag-ibig hdmf mpf wisp msc employer share contributions',
     popular: true,
+    related: ['/net-pay', '/sss-maternity-benefit', '/sss-salary-loan', '/articles/sss-contribution-2026', '/articles/pagibig-vs-mpf'],
   },
   {
     id: 'maternity',
@@ -79,6 +91,7 @@ export const TOOLS: Tool[] = [
     route: '/sss-maternity-benefit',
     icon: 'heart',
     keywords: 'maternity leave allowance baby delivery miscarriage solo parent ra 11210',
+    related: ['/contributions', '/sss-salary-loan', '/net-pay', '/articles/sss-contribution-2026'],
   },
   {
     id: 'amortization',
@@ -89,6 +102,7 @@ export const TOOLS: Tool[] = [
     icon: 'calculator',
     keywords: 'loan car housing personal diminishing balance schedule monthly payment interest',
     popular: true,
+    related: ['/pagibig-housing-loan', '/sss-salary-loan', '/mp2-calculator', '/articles/loan-amortization-ph'],
   },
   {
     id: 'sss-loan',
@@ -98,6 +112,7 @@ export const TOOLS: Tool[] = [
     route: '/sss-salary-loan',
     icon: 'landmark',
     keywords: 'sss salary loan emergency loan calamity net proceeds service fee',
+    related: ['/amortization', '/contributions', '/pagibig-housing-loan', '/articles/loan-amortization-ph'],
   },
   {
     id: 'housing-loan',
@@ -107,6 +122,7 @@ export const TOOLS: Tool[] = [
     route: '/pagibig-housing-loan',
     icon: 'home',
     keywords: 'pag-ibig housing loan house mortgage repricing required income',
+    related: ['/amortization', '/mp2-calculator', '/sss-salary-loan', '/articles/loan-amortization-ph'],
   },
   {
     id: 'mp2',
@@ -116,16 +132,20 @@ export const TOOLS: Tool[] = [
     route: '/mp2-calculator',
     icon: 'coins',
     keywords: 'mp2 modified pag-ibig 2 savings dividend investment',
+    related: ['/pagibig-housing-loan', '/contributions', '/13th-month-pay', '/articles/pagibig-vs-mpf'],
   },
 ];
 
-export const GUIDES: CatalogItem[] = [
+export const GUIDES: Guide[] = [
   {
     title: 'How to compute your SSS contribution',
-    description: 'Step-by-step guide to your SSS contribution under the current schedule.',
+    description: 'Find your Monthly Salary Credit, apply the 15% rate and split it with your employer, with worked examples.',
     route: '/articles/sss-contribution-2026',
     icon: 'file-text',
-    keywords: 'sss msc contribution guide',
+    keywords: 'sss msc monthly salary credit contribution table guide employer share',
+    published: '2026-05-30',
+    updated: '2026-10-31',
+    related: ['/contributions', '/net-pay', '/sss-maternity-benefit', '/sss-salary-loan'],
   },
   {
     title: 'Pag-IBIG vs MPF explained',
@@ -133,6 +153,9 @@ export const GUIDES: CatalogItem[] = [
     route: '/articles/pagibig-vs-mpf',
     icon: 'file-text',
     keywords: 'pag-ibig mpf wisp comparison',
+    published: '2025-09-10',
+    updated: '2026-10-29',
+    related: ['/contributions', '/mp2-calculator', '/pagibig-housing-loan'],
   },
   {
     title: 'Loan amortization 101',
@@ -140,6 +163,9 @@ export const GUIDES: CatalogItem[] = [
     route: '/articles/loan-amortization-ph',
     icon: 'file-text',
     keywords: 'loan amortization basics diminishing balance',
+    published: '2025-09-10',
+    updated: '2026-10-31',
+    related: ['/amortization', '/pagibig-housing-loan', '/sss-salary-loan'],
   },
 ];
 
@@ -185,4 +211,14 @@ export function searchCatalog(query: string, limit = 8): SearchHit[] {
     .sort((a, b) => b.score - a.score)
     .slice(0, limit)
     .map((r) => r.item);
+}
+
+const BY_ROUTE = new Map<string, CatalogItem>([...TOOLS, ...GUIDES, ...REFERENCE_PAGES].map((i) => [i.route, i]));
+
+export function catalogItem(route: string): CatalogItem | undefined {
+  return BY_ROUTE.get(route);
+}
+
+export function guideFor(route: string): Guide | undefined {
+  return GUIDES.find((g) => g.route === route);
 }

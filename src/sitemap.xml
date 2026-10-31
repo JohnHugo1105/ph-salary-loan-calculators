@@ -2,102 +2,82 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.phcalculators.com/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://www.phcalculators.com/contributions</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-10-31</lastmod>
   </url>
   <url>
     <loc>https://www.phcalculators.com/net-pay</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.phcalculators.com/amortization</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <lastmod>2026-10-31</lastmod>
   </url>
   <url>
     <loc>https://www.phcalculators.com/13th-month-pay</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.phcalculators.com/mp2-calculator</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.phcalculators.com/articles</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.phcalculators.com/articles/sss-contribution-2026</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.phcalculators.com/articles/pagibig-vs-mpf</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.phcalculators.com/articles/loan-amortization-ph</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <lastmod>2026-10-31</lastmod>
   </url>
   <url>
     <loc>https://www.phcalculators.com/tax-tables</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <lastmod>2026-10-31</lastmod>
   </url>
   <url>
-    <loc>https://www.phcalculators.com/about</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.4</priority>
-  </url>
-  <url>
-    <loc>https://www.phcalculators.com/contact</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.4</priority>
-  </url>
-  <url>
-    <loc>https://www.phcalculators.com/privacy-policy</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
-  </url>
-  <url>
-    <loc>https://www.phcalculators.com/terms</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
-  </url>
-  <url>
-    <loc>https://www.phcalculators.com/disclaimer</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
-  </url>
-  <url>
-    <loc>https://www.phcalculators.com/sss-salary-loan</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.phcalculators.com/pagibig-housing-loan</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://www.phcalculators.com/contributions</loc>
+    <lastmod>2026-10-31</lastmod>
   </url>
   <url>
     <loc>https://www.phcalculators.com/sss-maternity-benefit</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-10-31</lastmod>
+  </url>
+  <url>
+    <loc>https://www.phcalculators.com/amortization</loc>
+    <lastmod>2026-10-31</lastmod>
+  </url>
+  <url>
+    <loc>https://www.phcalculators.com/sss-salary-loan</loc>
+    <lastmod>2026-10-31</lastmod>
+  </url>
+  <url>
+    <loc>https://www.phcalculators.com/pagibig-housing-loan</loc>
+    <lastmod>2026-10-31</lastmod>
+  </url>
+  <url>
+    <loc>https://www.phcalculators.com/mp2-calculator</loc>
+    <lastmod>2026-10-31</lastmod>
   </url>
   <url>
     <loc>https://www.phcalculators.com/rates</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-10-31</lastmod>
+  </url>
+  <url>
+    <loc>https://www.phcalculators.com/articles</loc>
+    <lastmod>2026-10-31</lastmod>
+  </url>
+  <url>
+    <loc>https://www.phcalculators.com/articles/sss-contribution-2026</loc>
+    <lastmod>2026-10-31</lastmod>
+  </url>
+  <url>
+    <loc>https://www.phcalculators.com/articles/pagibig-vs-mpf</loc>
+    <lastmod>2026-10-31</lastmod>
+  </url>
+  <url>
+    <loc>https://www.phcalculators.com/articles/loan-amortization-ph</loc>
+    <lastmod>2026-10-31</lastmod>
+  </url>
+  <url>
+    <loc>https://www.phcalculators.com/about</loc>
+    <lastmod>2026-10-31</lastmod>
+  </url>
+  <url>
+    <loc>https://www.phcalculators.com/contact</loc>
+    <lastmod>2026-10-31</lastmod>
+  </url>
+  <url>
+    <loc>https://www.phcalculators.com/privacy-policy</loc>
+    <lastmod>2026-10-31</lastmod>
+  </url>
+  <url>
+    <loc>https://www.phcalculators.com/terms</loc>
+    <lastmod>2026-10-31</lastmod>
+  </url>
+  <url>
+    <loc>https://www.phcalculators.com/disclaimer</loc>
+    <lastmod>2026-10-31</lastmod>
   </url>
 </urlset>

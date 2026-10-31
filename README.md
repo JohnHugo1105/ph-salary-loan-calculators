@@ -11,6 +11,8 @@ server-side prerendered and hosted on Azure Static Web Apps.
 | `npm run build` | Production build with prerendering into `dist/ph-calculators/browser` |
 | `npm test` | Unit tests (Karma + Jasmine, needs Chrome) |
 | `node scripts/check-contrast.js` | Checks the design tokens against WCAG contrast minimums |
+| `node scripts/check-seo.js` | After a build: checks every prerendered page's title, description, canonical, social tags, h1, JSON-LD, links and sitemap entry |
+| `node scripts/og-images.js` | Renders the 1200x630 share images in `src/assets/og/` from the catalog (needs Chrome or Edge) |
 
 ## Where things live
 
@@ -55,9 +57,21 @@ To update a rate:
 
 1. Put the formula in `shared/utils` (pure, with tests) and any rates in `ph-rules.ts`.
 2. Create `features/<name>/` using `app-page-header`, the `.tool` layout, `app-field`, `app-breakdown`.
-3. Add it to `TOOLS` in `core/config/tools.ts`, a route in `app.routes.ts`, and `src/sitemap.xml`.
+3. Add it to `TOOLS` in `core/config/tools.ts` (with `related` pages), a route in `app.routes.ts`, and `src/sitemap.xml`.
 4. Add its rules to `features/rates/rates.component.ts`.
 5. Support sharing with `SaveShareService.restoreInto(form, ...)` and `app-result-actions`.
+6. End the page with `<app-related route="..." />`, run `node scripts/og-images.js`, then build and run `node scripts/check-seo.js`.
+
+## SEO
+
+- **Titles and meta:** `SeoService` is the router's `TitleStrategy`. Each route sets `title` (search phrase first; " | PH Calculators"
+  is added when it fits in 60 characters) and `data.description`, plus optional `data.image`, `data.crumb`, `data.robots`
+  and `data.article`. It writes the description, robots, canonical, Open Graph/Twitter tags and BreadcrumbList/Article JSON-LD.
+- **Page JSON-LD:** calculators and guides call `seo.setSchema(...)` in their constructor (calculator and FAQ schema). Keep FAQ
+  schema identical to the FAQ text on the page. Site-wide WebSite/Organization JSON-LD is in `src/index.html`.
+- **Guides** carry `published`/`updated` dates in `GUIDES`; bump `updated` and the sitemap `lastmod` when the content changes.
+- **Not indexed:** `/saved` and unknown URLs (`noindex`), `/?q=` searches (robots.txt). Shared results (`?data=`) canonicalise
+  to the calculator page.
 
 ## Deployment notes
 

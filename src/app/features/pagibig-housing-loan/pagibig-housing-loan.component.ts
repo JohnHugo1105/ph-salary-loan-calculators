@@ -11,6 +11,7 @@ import { BreakdownComponent, BreakdownRow } from '../../shared/ui/breakdown.comp
 import { CalloutComponent } from '../../shared/ui/callout.component';
 import { FieldComponent } from '../../shared/ui/field.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
+import { RelatedComponent } from '../../shared/ui/related.component';
 import { ResultActionsComponent } from '../../shared/ui/result-actions.component';
 import { ResultBarComponent } from '../../shared/ui/result-bar.component';
 import { SponsoredComponent } from '../../shared/ui/sponsored.component';
@@ -22,7 +23,7 @@ import { PH_RULES } from '../../shared/utils/ph-rules';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule, DecimalPipe, RouterLink, ThousandsSeparatorDirective, FieldComponent,
-    BreakdownComponent, CalloutComponent, PageHeaderComponent, ResultActionsComponent, ResultBarComponent, SponsoredComponent,
+    BreakdownComponent, CalloutComponent, PageHeaderComponent, ResultActionsComponent, ResultBarComponent, SponsoredComponent, RelatedComponent,
   ],
   templateUrl: './pagibig-housing-loan.component.html',
 })

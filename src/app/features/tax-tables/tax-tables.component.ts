@@ -4,12 +4,13 @@ import { DecimalPipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { SeoService } from '../../core/services/seo.service';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
+import { RelatedComponent } from '../../shared/ui/related.component';
 import { computeMPF, computeSSS, computeSssMsc, round2 } from '../../shared/utils/ph-calculators.util';
 import { PH_RULES } from '../../shared/utils/ph-rules';
 
 @Component({
     selector: 'app-tax-tables',
-    imports: [DecimalPipe, RouterModule, PageHeaderComponent],
+    imports: [DecimalPipe, RouterModule, PageHeaderComponent, RelatedComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
     templateUrl: './tax-tables.component.html'
 })
@@ -31,16 +32,6 @@ export class TaxTablesComponent {
 
     constructor(private seo: SeoService) {
         this.seo.setSchema([
-            {
-                '@context': 'https://schema.org',
-                '@type': 'Article',
-                'headline': 'Philippine Tax Tables and SSS Contributions 2026',
-                'description': 'Updated 2026 BIR Withholding Tax Tables and SSS Contribution Schedule.',
-                'author': {
-                    '@type': 'Organization',
-                    'name': 'PH Calculators'
-                }
-            },
             {
                 '@context': 'https://schema.org',
                 '@type': 'FAQPage',

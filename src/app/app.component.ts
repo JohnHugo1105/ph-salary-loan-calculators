@@ -3,7 +3,6 @@ import { isPlatformBrowser } from '@angular/common';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { SeoService } from './core/services/seo.service';
 import { ConsentComponent } from './layout/consent.component';
 import { SearchPaletteComponent } from './layout/search-palette.component';
 import { SearchService } from './layout/search.service';
@@ -38,7 +37,7 @@ export class AppComponent {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private firstNavigation = true;
 
-  constructor(_seo: SeoService, router: Router) {
+  constructor(router: Router) {
     // After a route change, move focus to the new page so keyboard and screen reader users start there.
     router.events.pipe(filter((e) => e instanceof NavigationEnd), takeUntilDestroyed()).subscribe(() => {
       if (!this.isBrowser) return;
