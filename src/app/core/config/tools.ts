@@ -148,13 +148,13 @@ export const GUIDES: Guide[] = [
     related: ['/contributions', '/net-pay', '/sss-maternity-benefit', '/sss-salary-loan'],
   },
   {
-    title: 'Pag-IBIG vs MPF explained',
-    description: 'How regular Pag-IBIG savings and the SSS MPF differ on your payslip.',
+    title: 'What is MPF on your payslip?',
+    description: 'What the SSS MPF deduction is, when it starts and how it differs from Pag-IBIG.',
     route: '/articles/pagibig-vs-mpf',
     icon: 'file-text',
-    keywords: 'pag-ibig mpf wisp comparison',
+    keywords: 'pag-ibig mpf wisp comparison payslip deduction meaning provident fund',
     published: '2025-09-10',
-    updated: '2026-10-29',
+    updated: '2026-11-01',
     related: ['/contributions', '/mp2-calculator', '/pagibig-housing-loan'],
   },
   {

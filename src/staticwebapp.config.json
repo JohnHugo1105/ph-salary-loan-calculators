@@ -2,6 +2,11 @@
   "trailingSlash": "never",
   "routes": [
     {
+      "route": "/articles/sss-contribution-2025",
+      "redirect": "/articles/sss-contribution-2026",
+      "statusCode": 301
+    },
+    {
       "route": "/assets/*",
       "headers": {
         "cache-control": "public, max-age=31536000, immutable"

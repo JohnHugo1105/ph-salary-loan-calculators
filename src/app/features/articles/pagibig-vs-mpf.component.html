@@ -1,41 +1,110 @@
 <div class="container">
-  <app-page-header title="Pag-IBIG vs MPF explained" section="Guides">
+  <app-page-header title="What is MPF on your payslip?" section="Guides"
+    lede="It is your SSS Mandatory Provident Fund savings: part of your SSS contribution, not an extra deduction and not Pag-IBIG.">
     <span class="badge">Updated {{ updated }}</span>
+    <a class="badge" routerLink="/rates">Rates &amp; sources</a>
   </app-page-header>
+
   <article class="prose">
+    <div class="example-box">
+      <h3>The short answer</h3>
+      <p>
+        MPF stands for the SSS <strong>Mandatory Provident Fund</strong>, also called the Workers’ Investment and Savings
+        Program (WISP). The MPF line on your payslip is the part of your SSS contribution computed on your Monthly Salary
+        Credit (MSC) above {{ r.regularMax }}. It goes into your own retirement savings account inside SSS, separate from the
+        regular SSS program that pays pensions and other benefits.
+      </p>
+      <ul>
+        <li>It is part of your SSS deduction, not an extra charge.</li>
+        <li>It only appears when your MSC is above {{ r.regularMax }}, from a monthly salary of about {{ r.mpfFrom }}.</li>
+        <li>It is not Pag-IBIG. Pag-IBIG (HDMF) has its own line on your payslip.</li>
+      </ul>
+    </div>
+
+    <h2>Example: the SSS and MPF lines on a {{ example.salary }} salary</h2>
     <p>
-      Pag-IBIG (HDMF) and the SSS Mandatory Provident Fund (MPF) are both savings components attached to employment,
-      but they serve different roles. This guide clarifies the differences so you can read your payslip with confidence.
+      A {{ example.salary }} monthly salary has an MSC of {{ example.salary }}. SSS charges you {{ r.sssEmployee }} of it,
+      {{ example.total }}, and splits that in two:
     </p>
-    <h2>Pag-IBIG basics</h2>
-    <p>
-      Pag-IBIG contributions are based on a capped monthly fund salary (₱10,000 since February 2024). Employees
-      contribute 1% if the monthly salary is ₱1,500 or below, otherwise 2% (up to ₱200 a month). Employers contribute
-      2%. Funds can be used for loans and long-term savings programs.
-    </p>
-    <h2>MPF basics</h2>
-    <p>
-      The SSS MPF (also called WISP) is the provident savings part of your SSS contribution. SSS collects 15% of your
-      Monthly Salary Credit (MSC, up to ₱35,000). The regular pension fund receives the part on the MSC up to ₱20,000,
-      and the MPF receives the part on the MSC above ₱20,000: 5% from the employee and 10% from the employer. If the MSC
-      is ₱20,000 or below, the MPF is zero. It is not charged in addition to SSS: it is included in the SSS total.
-    </p>
-    <h2>What you’ll notice on payslips</h2>
     <ul>
-      <li>Pag-IBIG employee share is small due to the ₱10,000 cap (at most ₱200), but appears monthly.</li>
-      <li>MPF may be zero at lower salaries and increases with higher MSCs.</li>
-      <li>Employers shoulder a larger share for both, especially MPF.</li>
+      <li><strong>SSS {{ example.sss }}</strong>: {{ r.sssEmployee }} of the first {{ r.regularMax }}, for the regular SSS program.</li>
+      <li><strong>MPF {{ example.mpf }}</strong>: {{ r.sssEmployee }} of the part above {{ r.regularMax }}, for your MPF savings.</li>
     </ul>
+    <p>
+      Your employer adds {{ r.sssEmployer }} on the same split, so more of your MPF savings come from them than from you.
+      On a {{ low.salary }} salary the MPF is {{ low.mpf }}, and at the MSC cap of {{ r.mscMax }} it reaches {{ max.mpf }}
+      a month. The <a routerLink="/articles/sss-contribution-2026">SSS contribution guide</a> walks through the MSC
+      brackets step by step.
+    </p>
+
+    <h2>MPF vs Pag-IBIG at a glance</h2>
+    <div class="table-responsive" tabindex="0" role="region" aria-label="MPF compared with Pag-IBIG">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">SSS MPF (WISP)</th>
+            <th scope="col">Pag-IBIG (HDMF)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Run by</th>
+            <td>Social Security System</td>
+            <td>Home Development Mutual Fund</td>
+          </tr>
+          <tr>
+            <th scope="row">You pay</th>
+            <td>{{ r.sssEmployee }} of the MSC above {{ r.regularMax }}</td>
+            <td>{{ r.pagibigEmployee }} of your salary, counted up to {{ r.pagibigCap }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Your employer pays</th>
+            <td>{{ r.sssEmployer }} of the MSC above {{ r.regularMax }}</td>
+            <td>{{ r.pagibigEmployer }} of your salary, counted up to {{ r.pagibigCap }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Most you pay a month</th>
+            <td>{{ max.mpf }}</td>
+            <td>{{ max.pagibig }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Who has it</th>
+            <td>Members with an MSC above {{ r.regularMax }}</td>
+            <td>Every member</td>
+          </tr>
+          <tr>
+            <th scope="row">What it is for</th>
+            <td>Retirement savings on top of your SSS pension</td>
+            <td>Savings, plus access to housing and short-term loans</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <h2>Which is “better”?</h2>
     <p>
-      They’re complementary. Pag-IBIG provides accessible housing/short-term loans and savings options. MPF is a
-      retirement-oriented top-up under SSS. Both contribute to long-term financial security. Your employer’s adherence
-      to current rules is what matters for actual deductions.
+      You don’t choose between them: both are mandatory, and they do different jobs. Pag-IBIG gives you access to housing
+      and short-term loans, and it runs the voluntary <a routerLink="/mp2-calculator">MP2 savings program</a>. The MPF is a
+      retirement top-up under SSS for higher earners. What matters is that your employer deducts and remits both correctly.
     </p>
     <p>
-      Use our <a routerLink="/contributions">Contributions calculator</a> to see how Pag-IBIG and MPF change at different salary levels.
+      Use the <a routerLink="/contributions">contributions calculator</a> to see your SSS, MPF, PhilHealth and Pag-IBIG
+      lines for any salary.
     </p>
-    <p class="note">Disclaimer: For guidance only. Always verify with official sources.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq-section">
+      @for (f of faq; track f.q) {
+        <h3>{{ f.q }}</h3>
+        <p>{{ f.a }}</p>
+      }
+    </div>
+
+    <p class="note">
+      For guidance only. Figures follow the SSS and Pag-IBIG rates on our <a routerLink="/rates">rates &amp; sources</a>
+      page. Always confirm with SSS, Pag-IBIG or your employer.
+    </p>
   </article>
 
   <app-related route="/articles/pagibig-vs-mpf" />

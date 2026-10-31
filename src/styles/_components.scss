@@ -1153,9 +1153,11 @@ dialog.palette {
   }
 }
 
+// Covers the page below the header while the menu is open; a click on it closes the menu.
 .mega-backdrop {
   position: fixed;
   inset: var(--header-h) 0 0;
+  z-index: 39;
   background: var(--overlay);
 }
 .mega {

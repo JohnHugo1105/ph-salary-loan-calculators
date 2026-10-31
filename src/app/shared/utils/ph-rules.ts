@@ -91,9 +91,10 @@ export const PH_RULES = {
   },
 
   // Pag-IBIG MP2 savings: latest declared annual dividend. Future rates are not guaranteed.
+  // Pag-IBIG declares each year's rate early in the following year; `announced` is when this one was declared.
   mp2: {
     source: 'https://www.pagibigfund.gov.ph/',
-    latestDeclared: { year: 2025, ratePct: 7.12 },
+    latestDeclared: { year: 2025, ratePct: 7.12, announced: '2026-02-27' },
   },
 
   // SSS maternity benefit (RA 11210). Only the regular SS portion of the MSC counts.

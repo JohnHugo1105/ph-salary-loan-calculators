@@ -44,7 +44,6 @@ import { SearchService } from './search.service';
       </div>
 
       @if (menuOpen()) {
-        <div class="mega-backdrop" (click)="close()"></div>
         <div class="mega" id="mega">
           <div class="container mega__inner">
             @for (g of groups; track g.id) {
@@ -71,6 +70,10 @@ import { SearchService } from './search.service';
         </div>
       }
     </header>
+    <!-- Outside the header: its backdrop-filter would make it the box a fixed child is positioned in, not the viewport. -->
+    @if (menuOpen()) {
+      <div class="mega-backdrop" (click)="close()"></div>
+    }
   `,
 })
 export class SiteHeaderComponent {

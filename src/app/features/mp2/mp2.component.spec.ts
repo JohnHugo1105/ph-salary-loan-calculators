@@ -38,10 +38,15 @@ describe('Mp2Component', () => {
     expect(component.model().accumulated).toBeLessThan(compounded);
   });
 
-  it('generates the guide example from the engine', () => {
-    expect(component.example.compounded.dividends).toBeCloseTo(5_712.09, 2);
-    expect(component.example.annual.dividends).toBe(5_250);
-    expect(fixture.nativeElement.textContent).toContain('5,712.09');
+  it('generates the guide figures from the engine at the declared rate', () => {
+    expect(component.walk.year1).toBe('₱427.20');
+    expect(component.walk.carriedDividend).toBe('₱884.82');
+    expect(component.walk.year2).toBe('₱1,312.02');
+    const thousand = component.fiveYears[1];
+    expect(thousand).toEqual({ monthly: '₱1,000', saved: '₱60,000', reinvested: '₱11,636.90', maturity: '₱71,636.90', yearly: '₱10,680.00' });
+    const text = fixture.nativeElement.textContent;
+    expect(text).toContain('₱71,636.90');
+    expect(text).toContain('When will the 2026 MP2 dividend rate be announced?');
   });
 
   it('renders the chart with a table twin', () => {

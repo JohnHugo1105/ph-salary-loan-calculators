@@ -4,7 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SeoService } from '../../core/services/seo.service';
-import { formatPeso, formatPercent } from '../../shared/format';
+import { formatDate, formatPeso, formatPercent } from '../../shared/format';
 import { SaveShareService } from '../../shared/services/save-share.service';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
 import { CalloutComponent } from '../../shared/ui/callout.component';
@@ -19,7 +19,7 @@ import { ResultBarComponent } from '../../shared/ui/result-bar.component';
 import { SegmentedComponent } from '../../shared/ui/segmented.component';
 import { SponsoredComponent } from '../../shared/ui/sponsored.component';
 import { APP_CONSTANTS } from '../../core/config/app.constants';
-import { calculateMP2, round2 } from '../../shared/utils/ph-calculators.util';
+import { MP2Row, calculateMP2, round2 } from '../../shared/utils/ph-calculators.util';
 import { PH_RULES } from '../../shared/utils/ph-rules';
 
 @Component({
@@ -97,59 +97,82 @@ export class Mp2Component {
     ].join('\n');
   });
 
-  // Worked example for the guide below, generated from the same engine as the calculator.
-  readonly example = (() => {
-    const run = (mode: 'compounded' | 'annual') => {
-      const rows = calculateMP2(500, 7, mode);
-      const contributed = rows[rows.length - 1].cumulativeContrib;
-      const dividends = mode === 'compounded' ? round2(rows[rows.length - 1].totalAccumulated - contributed) : round2(rows.reduce((a, r) => a + r.annualDividend, 0));
-      return { contributed, dividends };
+  // Figures for the guide below, from the same engine and declared rate as the calculator.
+  readonly rate = formatPercent(this.latestDeclared.ratePct);
+  readonly nextYear = this.latestDeclared.year + 1;
+  readonly announced = formatDate(this.latestDeclared.announced);
+  readonly fiveYears = [500, 1_000, 2_000, 5_000, 10_000].map((monthly) => {
+    const sum = (rows: MP2Row[]) => round2(rows.reduce((a, r) => a + r.annualDividend, 0));
+    const reinvested = calculateMP2(monthly, this.latestDeclared.ratePct, 'compounded');
+    const saved = reinvested[reinvested.length - 1].cumulativeContrib;
+    return {
+      monthly: formatPeso(monthly, 0),
+      saved: formatPeso(saved, 0),
+      reinvested: formatPeso(sum(reinvested)),
+      maturity: formatPeso(saved + sum(reinvested)),
+      yearly: formatPeso(sum(calculateMP2(monthly, this.latestDeclared.ratePct, 'annual'))),
     };
-    return { compounded: run('compounded'), annual: run('annual') };
+  });
+  // Walk-through of the first two years at ₱1,000 a month, dividends reinvested.
+  readonly walk = (() => {
+    const monthly = 1_000;
+    const rows = calculateMP2(monthly, this.latestDeclared.ratePct, 'compounded');
+    const carried = rows[0].totalAccumulated;
+    return {
+      monthly: formatPeso(monthly, 0),
+      yearSaved: formatPeso(monthly * 12, 0),
+      average: formatPeso(monthly * 6, 0),
+      year1: formatPeso(rows[0].annualDividend),
+      carried: formatPeso(carried),
+      carriedDividend: formatPeso(round2((carried * this.latestDeclared.ratePct) / 100)),
+      year2: formatPeso(rows[1].annualDividend),
+    };
   })();
+
+  readonly faq = [
+    {
+      q: `When will the ${this.nextYear} MP2 dividend rate be announced?`,
+      a: `Pag-IBIG declares each year’s MP2 rate early the following year. The ${this.latestDeclared.year} rate of ${this.rate} was announced on ${this.announced}, so expect the ${this.nextYear} rate around February or March ${this.nextYear + 1}. Until then, the calculator uses ${this.rate}; you can change the rate to try others.`,
+    },
+    {
+      q: 'How much will I earn if I save ₱1,000 a month in MP2?',
+      a: `At the ${this.latestDeclared.year} rate of ${this.rate}, saving ₱1,000 a month for 5 years puts in ${this.fiveYears[1].saved} and earns about ${this.fiveYears[1].reinvested} in dividends if you reinvest them, for ${this.fiveYears[1].maturity} at maturity. Taking the dividends every year earns about ${this.fiveYears[1].yearly} instead. Actual dividends depend on the rates Pag-IBIG declares.`,
+    },
+    {
+      q: 'Can OFWs save in MP2?',
+      a: 'Yes. MP2 is open to Pag-IBIG members, including OFWs. You can enroll online through Virtual Pag-IBIG and pay your savings online, so you can keep saving while you work abroad.',
+    },
+    {
+      q: 'Can I withdraw my MP2 savings before 5 years?',
+      a: 'Yes. Early withdrawal is allowed without penalty for specific reasons, such as total disability or insanity, separation from work for health reasons, retirement, or permanent departure from the Philippines. If you withdraw early for any other reason, you receive only 50% of the dividends you have earned.',
+    },
+    {
+      q: 'Is there a limit to how much I can save in MP2?',
+      a: 'Under Circular No. 487 (effective February 2026), your total MP2 savings are capped at ₱20,000,000, and any excess is refunded. A one-time payment above ₱500,000 also needs proof of where the money came from, under the Anti-Money Laundering Act. At maturity you can choose a one-time automatic rollover into a new 5-year term.',
+    },
+    {
+      q: 'Can I open more than one MP2 account?',
+      a: 'Yes. You can keep several MP2 accounts at once, which helps if you want to set money aside for different goals, such as one account for a car down payment and another for a child’s tuition.',
+    },
+  ];
 
   constructor() {
     this.share.restoreInto(this.form, inject(ActivatedRoute).snapshot.queryParamMap.get('data'));
     this.seo.setSchema([
-          {
-            '@context': 'https://schema.org',
-            '@type': 'SoftwareApplication',
-            'name': 'Pag-IBIG MP2 Calculator Philippines',
-            'operatingSystem': 'Web',
-            'applicationCategory': 'FinanceApplication',
-            'url': 'https://www.phcalculators.com/mp2-calculator',
-            'featureList': 'Result projection with 5-year compounding or annual payout'
-          },
-          {
-            '@context': 'https://schema.org',
-            '@type': 'FAQPage',
-            'mainEntity': [
-              {
-                '@type': 'Question',
-                'name': 'Can I withdraw my MP2 savings before 5 years?',
-                'acceptedAnswer': {
-                  '@type': 'Answer',
-                  'text': 'Yes, but generally only for valid reasons (medical emergencies, total disability, unemployment) without penalty. If you apply for voluntary early withdrawal for non-critical reasons, you will only receive 50% of your total earned dividends.'
-                }
-              },
-              {
-                '@type': 'Question',
-                'name': 'Is there a limit to how much I can save in MP2?',
-                'acceptedAnswer': {
-                  '@type': 'Answer',
-                  'text': 'Under Circular No. 487 (effective Feb 2026), the maximum limit for total aggregated MP2 principal savings is ₱20,000,000. Any excess beyond this is refunded. For one-time remittances exceeding ₱500,000, you are still legally required by Pag-IBIG to present proof of your income source.'
-                }
-              },
-              {
-                '@type': 'Question',
-                'name': 'Can I open multiple MP2 accounts at the same time?',
-                'acceptedAnswer': {
-                  '@type': 'Answer',
-                  'text': 'Yes! Pag-IBIG allows members to open and maintain multiple MP2 accounts simultaneously. This is highly useful if you want to earmark different accounts for different financial goals (e.g., one account for a car fund, another for a child\'s education).'
-                }
-              }
-            ]
-          }
-        ]);
+      {
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        'name': 'Pag-IBIG MP2 Calculator Philippines',
+        'operatingSystem': 'Web',
+        'applicationCategory': 'FinanceApplication',
+        'url': 'https://www.phcalculators.com/mp2-calculator',
+        'featureList': 'Result projection with 5-year compounding or annual payout'
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: this.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      },
+    ]);
   }
 }

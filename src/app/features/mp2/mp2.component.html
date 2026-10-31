@@ -81,131 +81,103 @@
   </div>
 
   <article class="prose section" aria-label="Guide to Pag-IBIG MP2 savings">
-    <h2>The Complete Pag-IBIG MP2 Investment Guide (2026)</h2>
+    <h2>How Pag-IBIG MP2 savings work</h2>
     <p>
-      The <strong>Modified Pag-IBIG 2 (MP2)</strong> Savings is a special, voluntary savings facility with a
-      strict 5-year maturity period, designed explicitly for active Pag-IBIG Fund members who wish to save more
-      and earn higher dividends compared to the regular Pag-IBIG Savings Program.
+      The <strong>Modified Pag-IBIG 2 (MP2)</strong> program is a voluntary savings account for Pag-IBIG members with a
+      5-year term. It pays a higher dividend than regular Pag-IBIG savings, the savings are government-guaranteed, and the
+      dividends are tax-free. That is why many Filipinos, at home and abroad, use it in place of a bank time deposit.
     </p>
     <p>
-      Because it is government-guaranteed and entirely <strong>tax-free</strong>, it has become one of the most
-      popular, risk-free investment vehicles for Filipinos, often beating commercial bank time deposits and
-      traditional savings accounts.
+      MP2 is not the same as the <strong>MPF</strong> line on your payslip, which is retirement savings under SSS. See
+      <a routerLink="/articles/pagibig-vs-mpf">what MPF on your payslip means</a>.
     </p>
 
-    <h3>How MP2 Dividends are Computed</h3>
+    <h2>How MP2 dividends are computed</h2>
+    <div class="formula-box">Dividend for the year = average monthly balance × declared dividend rate</div>
     <p>
-      Your dividends are calculated based on your <strong>Average Monthly Balance (AMB)</strong> multiplied by the
-      dividend rate declared by Pag-IBIG for that specific year.
+      Pag-IBIG declares the rate once a year, after the year ends, and applies it to your average balance over that year.
+      Money you add during the year only counts for the months it was in the fund, so monthly savings earn about half the
+      rate in the year you put them in. Savings carried over from earlier years earn the full rate.
     </p>
-    <ul class="styled-list">
-      <li><strong>The AMB Rule:</strong> For your very first year, your monthly contributions slowly accumulate. A
-      ₱1,000 contribution made in January earns interest for 12 months, but a ₱1,000 contribution made in
-      December only earns interest for 1 month. Therefore, a lump sum payment at the start of the year will
-    always yield higher returns than staggered monthly payments.</li>
-    <li><strong>Years 2 to 5:</strong> If you chose Compound Savings, your entire Capital + Earned Dividends
-    from the previous year becomes your new starting Capital. This total amount earns the full annual
-  dividend rate for the entire year because it sits untouched in the fund.</li>
-</ul>
+    <div class="example-box">
+      <h3>Example: {{ walk.monthly }} a month at {{ rate }}, dividends reinvested</h3>
+      <ul>
+        <li><strong>Year 1:</strong> you save {{ walk.yearSaved }}. Spread across the year, your average balance is about
+          {{ walk.average }}, so the dividend is about {{ walk.average }} × {{ rate }} = {{ walk.year1 }}.</li>
+        <li><strong>Year 2:</strong> the {{ walk.carried }} you ended year 1 with earns the full rate, {{ walk.carriedDividend }}.
+          This year’s {{ walk.yearSaved }} earns about {{ walk.year1 }} again, so the dividend is {{ walk.year2 }}.</li>
+        <li><strong>Years 3 to 5</strong> repeat this, with a bigger carried balance each year.</li>
+      </ul>
+    </div>
+    <p>
+      The calculator assumes you save evenly through the year. Pag-IBIG uses the dates your savings are actually posted, so
+      your dividends will differ a little: paying earlier in the year, or as a lump sum at the start, earns more.
+    </p>
 
-<h2>Understanding the Power of Compounding</h2>
-<div class="example-box">
-  <h3>Scenario: ₱500 Monthly (Compounded vs. Annual Payout)</h3>
-  <p>Assuming a constant 7.00% dividend rate over 5 years.</p>
+    <h2>MP2 after 5 years: what common amounts earn</h2>
+    <p>At the {{ latestDeclared.year }} rate of {{ rate }}, held for the full 5-year term:</p>
+    <div class="table-responsive" tabindex="0" role="region" aria-label="MP2 results after 5 years">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th scope="col">Monthly savings</th>
+            <th scope="col">You save</th>
+            <th scope="col">Dividends, reinvested</th>
+            <th scope="col">Value at maturity</th>
+            <th scope="col">Dividends, taken yearly</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of fiveYears; track r.monthly) {
+            <tr>
+              <th scope="row">{{ r.monthly }}</th>
+              <td>{{ r.saved }}</td>
+              <td>{{ r.reinvested }}</td>
+              <td><strong>{{ r.maturity }}</strong></td>
+              <td>{{ r.yearly }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <strong>Reinvesting</strong> adds each year’s dividend to your balance, so it earns dividends too, and you receive
+      everything at maturity. <strong>Taking dividends yearly</strong> pays them to your bank account every year: you earn
+      less in total but get cash each year. Use the calculator above for any other amount or rate.
+    </p>
 
-  <h4>Option A: Compounded Earnings (Re-invested)</h4>
-  <ul>
-    <li>Total Capital Contributed: ₱30,000</li>
-    <li><strong>Total Dividends Earned: ₱{{ example.compounded.dividends | number: '1.2-2' }}</strong></li>
-    <li><em>Why?</em> Because the dividends you earn in Year 1 are added to your principal, meaning you earn
-    "interest on top of your interest" in Years 2, 3, 4, and 5. This is highly recommended for wealth
-  building.</li>
-</ul>
+    <h2>MP2 dividend rates by year</h2>
+    <p>
+      The rate changes every year with Pag-IBIG’s income: by law, at least 70% of its net income goes back to members as
+      dividends. The {{ nextYear }} rate is expected in early {{ nextYear + 1 }}. Past rates do not guarantee future ones.
+    </p>
+    <div class="table-responsive" tabindex="0" role="region" aria-label="MP2 dividend rates by year">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th scope="col">Year</th>
+            <th scope="col">Dividend rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">2025</th><td>7.12%</td></tr>
+          <tr><th scope="row">2024</th><td>7.10%</td></tr>
+          <tr><th scope="row">2023</th><td>7.05%</td></tr>
+          <tr><th scope="row">2022</th><td>7.03%</td></tr>
+          <tr><th scope="row">2021</th><td>6.00%</td></tr>
+          <tr><th scope="row">2020</th><td>6.12%</td></tr>
+          <tr><th scope="row">2019</th><td>7.23%</td></tr>
+        </tbody>
+      </table>
+    </div>
 
-<h4>Option B: Annual Payout (Withdrawn Yearly)</h4>
-<ul>
-  <li>Total Capital Contributed: ₱30,000</li>
-  <li><strong>Total Dividends Earned: ₱{{ example.annual.dividends | number: '1.2-2' }}</strong></li>
-  <li><em>Why?</em> Because you withdraw your earnings every year through your enrolled bank account
-  (Loyalty Card Plus), your principal never grows beyond your monthly deposits. You lose the snowball
-effect of compounding interest, but gain immediate annual passive cash flow.</li>
-</ul>
-</div>
-
-<h3>Historical MP2 Dividend Rates</h3>
-<p>
-  The dividend rate changes annually based on Pag-IBIG's net income for the year. By law, Pag-IBIG must return
-  at least 70% of its annual net income to its members in the form of dividends. While past performance is not
-  a guarantee of future returns, MP2 has consistently outperformed inflation.
-</p>
-<div class="table-responsive" tabindex="0" role="region" aria-label="Historical MP2 dividend rates">
-  <table class="data-table">
-    <thead>
-      <tr>
-        <th>Year</th>
-        <th>Dividend Rate</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><strong>2025</strong></td>
-        <td>7.12%</td>
-      </tr>
-      <tr>
-        <td><strong>2024</strong></td>
-        <td>7.10%</td>
-      </tr>
-      <tr>
-        <td><strong>2023</strong></td>
-        <td>7.05%</td>
-      </tr>
-      <tr>
-        <td><strong>2022</strong></td>
-        <td>7.03%</td>
-      </tr>
-      <tr>
-        <td><strong>2021</strong></td>
-        <td>6.00%</td>
-      </tr>
-      <tr>
-        <td><strong>2020</strong></td>
-        <td>6.12%</td>
-      </tr>
-      <tr>
-        <td><strong>2019</strong></td>
-        <td>7.23%</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<hr>
-
-<h2>Frequently Asked Questions (FAQs)</h2>
-<div class="faq-section">
-  <h3>Can I withdraw my MP2 savings before 5 years?</h3>
-  <p>Yes, but early withdrawal is completely unrestricted only for valid, critical reasons (e.g., total
-    disability, insanity, termination from employment due to health, retirement, or expatriation). If you
-    insist on a voluntary early withdrawal for non-critical reasons, you will incur a massive penalty: you
-  will only receive 50% of your total earned dividends.</p>
-
-  <h3>Is there a limit to how much I can save in MP2?</h3>
-  <p>Under <strong>Circular No. 487 (effective Feb 2026)</strong>, the maximum limit for total aggregated MP2 principal savings is <strong>₱20,000,000</strong>. Any excess beyond this is refunded to the member. You also now have the option to opt into a one-time <strong>automatic rollover</strong> of your principal savings and dividends upon maturity, rolling the funds directly into another 5-year cycle.</p>
-  <p>Please note: For one-time remittances or lump sums exceeding ₱500,000, you are legally required by Pag-IBIG to
-    present proof of your income source (e.g., land title deed of sale, official payslips, inheritance
-  documents) to strictly comply with the Anti-Money Laundering Act (AMLA).</p>
-
-  <h3>Can I open multiple MP2 accounts at the same time?</h3>
-  <p>Yes! Pag-IBIG allows members to open and simultaneously maintain multiple MP2 accounts. This feature is
-    highly utilized by financially savvy Filipinos to earmark different accounts for distinct, time-bound
-    financial goals (e.g., maintaining one account for a future car downpayment, and a separate account for
-  a child's college tuition).</p>
-</div>
-
-<div class="cta-wrapper">
-  <a class="btn" routerLink="/articles/pagibig-vs-mpf">Read more: Pag-IBIG vs SSS
-  MPF</a>
-</div>
+    <h2>Frequently asked questions</h2>
+    <div class="faq-section">
+      @for (f of faq; track f.q) {
+        <h3>{{ f.q }}</h3>
+        <p>{{ f.a }}</p>
+      }
+    </div>
   </article>
 
   <app-related route="/mp2-calculator" />
