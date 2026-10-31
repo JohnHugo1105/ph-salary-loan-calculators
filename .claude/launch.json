@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "ph-calculators-ssr",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["dist/ph-calculators/server/server.mjs"],
+      "port": 4000
+    }
+  ]
+}

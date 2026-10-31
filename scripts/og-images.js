@@ -11,7 +11,8 @@ const { execFileSync } = require('child_process');
 const root = path.join(__dirname, '..');
 const outDir = path.join(root, 'src', 'assets', 'og');
 const catalog = fs.readFileSync(path.join(root, 'src', 'app', 'core', 'config', 'tools.ts'), 'utf8');
-const logo = fs.readFileSync(path.join(root, 'src', 'assets', 'favicon-512x512.png')).toString('base64');
+// The full logo with its descriptor line, built by scripts/brand-assets.js.
+const logo = fs.readFileSync(path.join(root, 'src', 'assets', 'logo', 'ph-calculators-logo.png')).toString('base64');
 
 const browser = [
   process.env.CHROME_PATH,
@@ -43,19 +44,18 @@ const html = (p) => `<!doctype html><html><head><meta charset="utf-8"><style>
   * { box-sizing: border-box; margin: 0; }
   html, body { width: 1200px; height: 630px; overflow: hidden; }
   body { font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; color: #0e1520;
-    background: #f5f6f8; display: flex; flex-direction: column; padding: 64px 72px 0; position: relative; }
+    background: #f5f6f8; display: flex; flex-direction: column; padding: 56px 72px 0; position: relative; }
   body::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 14px;
     background: linear-gradient(90deg, #1b4dd6 0 70%, #f2c200 70% 85%, #d0312d 85%); }
-  .brand { display: flex; align-items: center; gap: 18px; font-size: 30px; font-weight: 700; color: #1b4dd6; }
-  .brand img { width: 72px; height: 72px; }
-  .kind { margin-top: 56px; font-size: 26px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #435063; }
+  .brand { display: block; height: 96px; width: auto; align-self: flex-start; }
+  .kind { margin-top: 40px; font-size: 26px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #435063; }
   h1 { margin-top: 12px; font-size: ${p.title.length > 34 ? 66 : 80}px; line-height: 1.08; letter-spacing: -.025em; max-width: 1000px; }
   p { margin-top: 24px; font-size: 32px; line-height: 1.35; color: #435063; max-width: 980px; }
   footer { margin-top: auto; height: 84px; display: flex; align-items: center; justify-content: space-between;
     border-top: 2px solid #e0e5ec; font-size: 26px; color: #435063; }
   footer strong { color: #0e1520; }
 </style></head><body>
-  <div class="brand"><img src="data:image/png;base64,${logo}" alt="">PH Salary &amp; Loan Calculators</div>
+  <img class="brand" src="data:image/png;base64,${logo}" alt="PH Calculators">
   <div class="kind">${esc(p.kind)}</div>
   <h1>${esc(p.title)}</h1>
   <p>${esc(p.text)}</p>

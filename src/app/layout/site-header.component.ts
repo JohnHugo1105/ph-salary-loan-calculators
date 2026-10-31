@@ -17,8 +17,8 @@ import { SearchService } from './search.service';
     <header class="site-header">
       <div class="container site-header__inner">
         <a class="brand" routerLink="/" (click)="close()">
-          <img class="brand__icon" src="/favicon-48x48.png" alt="" width="28" height="28" />
-          <span class="brand__text">PH Salary &amp; Loan Calculators</span>
+          <img class="brand__logo brand__logo--light" src="/assets/logo/logo-header.webp" alt="PH Calculators" width="164" height="36" />
+          <img class="brand__logo brand__logo--dark" src="/assets/logo/logo-header-dark.webp" alt="PH Calculators" width="164" height="36" />
         </a>
 
         <nav class="nav" aria-label="Main">

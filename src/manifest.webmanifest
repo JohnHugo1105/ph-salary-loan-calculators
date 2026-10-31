@@ -24,6 +24,12 @@
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any"
+    },
+    {
+      "src": "/favicon-maskable-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
   ],
   "lang": "en-PH"

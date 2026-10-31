@@ -699,36 +699,37 @@ details.disclosure {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  min-width: 0;
+  flex-shrink: 0;
   margin-right: auto;
-  color: var(--text);
-  text-decoration: none;
-  &:hover {
-    color: var(--text);
-    text-decoration: none;
-  }
-  // The original logo: the favicon image followed by the full site name.
-  &__icon {
-    flex: 0 0 auto;
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-    box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
-  }
-  &__text {
-    font-weight: 700;
-    letter-spacing: 0.2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  @media (max-width: 599px) {
-    max-width: 52vw;
-    .brand__text {
-      font-size: 14px;
+  // The logo image (built by scripts/brand-assets.js). Its lettering comes in a light and a dark version;
+  // only the one for the current theme is shown.
+  &__logo {
+    display: block;
+    width: auto;
+    height: 36px;
+    @media (max-width: 599px) {
+      height: 30px;
     }
   }
+  &__logo--dark {
+    display: none;
+  }
+}
+@mixin dark-logo {
+  .brand__logo--light {
+    display: none;
+  }
+  .brand__logo--dark {
+    display: block;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    @include dark-logo;
+  }
+}
+:root[data-theme='dark'] {
+  @include dark-logo;
 }
 .nav {
   display: none;

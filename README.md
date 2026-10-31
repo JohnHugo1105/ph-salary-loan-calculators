@@ -13,10 +13,12 @@ server-side prerendered and hosted on Azure Static Web Apps.
 | `node scripts/check-contrast.js` | Checks the design tokens against WCAG contrast minimums |
 | `node scripts/check-seo.js` | After a build: checks every prerendered page's title, description, canonical, social tags, h1, JSON-LD, links and sitemap entry |
 | `node scripts/og-images.js` | Renders the 1200x630 share images in `src/assets/og/` from the catalog (needs Chrome or Edge) |
+| `node scripts/brand-assets.js` | Builds favicon.ico, the favicon/app-icon PNGs, the header logo (light and dark) and the full logo from the source logos in `branding/` (needs Chrome or Edge). Run `og-images.js` after it |
 
 ## Where things live
 
 ```
+branding/                 Source logos: the icon and the full logo (not published; see brand-assets.js)
 src/styles/               Design system: tokens, base, layout, components, prose
 src/app/core/config/      tools.ts: the catalog that drives the menu, homepage, footer and search
 src/app/layout/           App shell: header, footer, search palette, cookie notice, toast
