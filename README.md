@@ -54,7 +54,6 @@ To update a rate:
 - **Charts:** small SVG components in `shared/ui/charts`. Series colours are `--series-1..3`, validated for
   colour-blind separation. Every chart has a table view and keyboard support.
 - **Icons:** one inline SVG sprite (`shared/ui/icon-sprite.component.html`), used through `<app-icon name="...">`.
-- **Sponsored content:** `app-sponsored`, always labelled, never placed between inputs and results.
 
 ## Adding a calculator
 

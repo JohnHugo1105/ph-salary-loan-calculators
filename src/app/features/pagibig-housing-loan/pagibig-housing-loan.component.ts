@@ -14,7 +14,6 @@ import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { RelatedComponent } from '../../shared/ui/related.component';
 import { ResultActionsComponent } from '../../shared/ui/result-actions.component';
 import { ResultBarComponent } from '../../shared/ui/result-bar.component';
-import { SponsoredComponent } from '../../shared/ui/sponsored.component';
 import { computeAmortization, round2 } from '../../shared/utils/ph-calculators.util';
 import { PH_RULES } from '../../shared/utils/ph-rules';
 
@@ -23,7 +22,7 @@ import { PH_RULES } from '../../shared/utils/ph-rules';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule, DecimalPipe, RouterLink, ThousandsSeparatorDirective, FieldComponent,
-    BreakdownComponent, CalloutComponent, PageHeaderComponent, ResultActionsComponent, ResultBarComponent, SponsoredComponent, RelatedComponent,
+    BreakdownComponent, CalloutComponent, PageHeaderComponent, ResultActionsComponent, ResultBarComponent, RelatedComponent,
   ],
   templateUrl: './pagibig-housing-loan.component.html',
 })

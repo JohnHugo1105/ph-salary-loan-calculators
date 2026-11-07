@@ -15,7 +15,6 @@ import { RelatedComponent } from '../../shared/ui/related.component';
 import { ResultActionsComponent } from '../../shared/ui/result-actions.component';
 import { ResultBarComponent } from '../../shared/ui/result-bar.component';
 import { SegmentedComponent } from '../../shared/ui/segmented.component';
-import { SponsoredComponent } from '../../shared/ui/sponsored.component';
 import { explainContributions, explainWithholding } from '../../shared/utils/explain';
 import {
   computeContributions,
@@ -34,7 +33,7 @@ import { PH_RULES } from '../../shared/utils/ph-rules';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule, DecimalPipe, RouterLink, ThousandsSeparatorDirective, FieldComponent, SegmentedComponent,
-    BreakdownComponent, CalloutComponent, PageHeaderComponent, ResultActionsComponent, ResultBarComponent, SponsoredComponent, RelatedComponent,
+    BreakdownComponent, CalloutComponent, PageHeaderComponent, ResultActionsComponent, ResultBarComponent, RelatedComponent,
   ],
   templateUrl: './net-pay.component.html',
 })

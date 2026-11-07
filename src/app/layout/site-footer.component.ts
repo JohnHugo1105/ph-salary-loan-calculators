@@ -52,10 +52,6 @@ import { PH_RULES_LAST_REVIEWED } from '../shared/utils/ph-rules';
             and may differ from your payslip or an agency's own computation. Confirm important figures with your employer,
             SSS, PhilHealth, Pag-IBIG or the BIR. Rates last reviewed {{ reviewed }}.
           </p>
-          <p>
-            phcalculators.com may earn a commission if you apply for loans or services through sponsored links. Sponsored
-            offers are labelled and are never part of a calculation.
-          </p>
         </div>
       </div>
     </footer>

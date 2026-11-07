@@ -17,7 +17,6 @@ import { RelatedComponent } from '../../shared/ui/related.component';
 import { ResultActionsComponent } from '../../shared/ui/result-actions.component';
 import { ResultBarComponent } from '../../shared/ui/result-bar.component';
 import { SegmentedComponent } from '../../shared/ui/segmented.component';
-import { SponsoredComponent } from '../../shared/ui/sponsored.component';
 import { computeAmortization, round2 } from '../../shared/utils/ph-calculators.util';
 
 interface YearRow { year: number; payments: number; interest: number; principal: number; balance: number }
@@ -37,7 +36,7 @@ function summarize(amount: number, annualRatePct: number, months: number) {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule, DecimalPipe, RouterLink, ThousandsSeparatorDirective, FieldComponent, SegmentedComponent, CalloutComponent,
-    PageHeaderComponent, ResultActionsComponent, ResultBarComponent, SponsoredComponent, LineAreaChartComponent, SplitBarComponent, RelatedComponent,
+    PageHeaderComponent, ResultActionsComponent, ResultBarComponent, LineAreaChartComponent, SplitBarComponent, RelatedComponent,
   ],
   templateUrl: './amortization.component.html',
 })

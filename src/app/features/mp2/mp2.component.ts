@@ -17,7 +17,6 @@ import { RelatedComponent } from '../../shared/ui/related.component';
 import { ResultActionsComponent } from '../../shared/ui/result-actions.component';
 import { ResultBarComponent } from '../../shared/ui/result-bar.component';
 import { SegmentedComponent } from '../../shared/ui/segmented.component';
-import { SponsoredComponent } from '../../shared/ui/sponsored.component';
 import { APP_CONSTANTS } from '../../core/config/app.constants';
 import { MP2Row, calculateMP2, round2 } from '../../shared/utils/ph-calculators.util';
 import { PH_RULES } from '../../shared/utils/ph-rules';
@@ -27,7 +26,7 @@ import { PH_RULES } from '../../shared/utils/ph-rules';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule, DecimalPipe, RouterLink, ThousandsSeparatorDirective, FieldComponent, SegmentedComponent, CalloutComponent,
-    PageHeaderComponent, ResultActionsComponent, ResultBarComponent, SponsoredComponent, StackedColumnsComponent, RelatedComponent,
+    PageHeaderComponent, ResultActionsComponent, ResultBarComponent, StackedColumnsComponent, RelatedComponent,
   ],
   templateUrl: './mp2.component.html',
 })

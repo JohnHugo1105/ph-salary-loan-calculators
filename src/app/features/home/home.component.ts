@@ -4,13 +4,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GUIDES, TOOLS, TOOL_GROUPS, searchCatalog } from '../../core/config/tools';
 import { BreakdownComponent, BreakdownRow } from '../../shared/ui/breakdown.component';
 import { IconComponent } from '../../shared/ui/icon.component';
-import { SponsoredComponent } from '../../shared/ui/sponsored.component';
 import { ToolCardComponent } from '../../shared/ui/tool-card.component';
 import { computeContributions, computeWithholdingTax, round2 } from '../../shared/utils/ph-calculators.util';
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, IconComponent, ToolCardComponent, SponsoredComponent, BreakdownComponent],
+  imports: [RouterLink, IconComponent, ToolCardComponent, BreakdownComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './home.component.html',
 })
