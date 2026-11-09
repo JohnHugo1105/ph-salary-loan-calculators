@@ -114,15 +114,20 @@ const GROUPS: RateGroup[] = [
     id: 'sssloans',
     title: 'SSS salary and emergency loans',
     status: 'confirm',
-    effective: 'Salary loan: Circular 2025-004. Emergency loan: per SSS guidelines as reported',
+    effective: 'Salary loan: Circular No. 2025-004. Emergency loan: Circular No. 2026-003',
     rows: [
       { label: 'Salary loan rate', value: `${r.sssLoans.salaryLoan.annualRate}% a year; ${r.sssLoans.salaryLoan.annualRateAfterCondonation}% for renewals within 5 years of a penalty condonation` },
       { label: 'Salary loan fee and term', value: `${pct(r.sssLoans.salaryLoan.serviceFeeRate)} service fee, ${r.sssLoans.salaryLoan.termMonths} monthly payments` },
       { label: 'Salary loan limit used', value: `Average regular MSC up to ${peso(r.sssLoans.salaryLoan.regularMscCap)}, times 1 or 2 months` },
       { label: 'Emergency loan', value: `${r.sssLoans.emergencyLoan.annualRate}% a year, no service fee, ${r.sssLoans.emergencyLoan.moratoriumMonths}-month moratorium, then ${r.sssLoans.emergencyLoan.termMonths} payments` },
     ],
-    sources: [{ label: 'SSS salary loan', url: r.sssLoans.source }],
-    note: 'Loan limits and the emergency loan terms come from secondary sources and change by circular. Confirm them with SSS.',
+    sources: [
+      { label: 'SSS salary loan page', url: r.sssLoans.source },
+      { label: 'SSS Circular No. 2025-004', url: 'https://www.sss.gov.ph/wp-content/uploads/2025/06/CI-2025-004-External.pdf' },
+      { label: 'SSS Circular No. 2026-003', url: 'https://www.sss.gov.ph/wp-content/uploads/2026/04/CI2026-003-External.pdf' },
+      { label: 'SSS Emergency Loan Program', url: 'https://www.sss.gov.ph/sss-emergency-loan-program/' },
+    ],
+    note: 'Salary-loan rate, 1% fee, and 24-month term follow Circular No. 2025-004. The advance-interest line is a one-month estimate; the circular prorates by days ÷ 365. Emergency-loan amount, 7% rate, and moratorium follow Circular No. 2026-003, but this calculator compounds moratorium interest onto the balance. The circular spreads that interest across the 24 payments and does not charge interest on it. The 10% emergency rate after a recent condonation is not in the calculator. Confirm the disclosure in My.SSS.',
   },
   {
     id: 'housing',
@@ -134,8 +139,11 @@ const GROUPS: RateGroup[] = [
       { label: 'Income test', value: `Monthly amortization at most ${pct(r.housingLoan.maxIncomeShare)} of gross income` },
       ...Object.entries(r.housingLoan.ratesByRepricingYears).map(([y, rate]) => ({ label: `${y}-year repricing`, value: `${rate}% a year` })),
     ],
-    sources: [{ label: 'Pag-IBIG Fund', url: r.housingLoan.source }],
-    note: 'Pag-IBIG revises these rates. Confirm the current schedule with Pag-IBIG before you apply.',
+    sources: [
+      { label: 'Pag-IBIG Fund', url: r.housingLoan.source },
+      { label: 'Philstar, 21 June 2026, on promotional rates', url: 'https://www.philstar.com/headlines/2026/06/21/2536690/pag-ibig-offers-promo-housing-loan-rates' },
+    ],
+    note: 'The fixing-period rates in the table are the ones this calculator stores. On 10 Nov 2026 we could not re-read Pag-IBIG’s own rate schedule (the fund’s site blocked the check), so confirm every rate with Pag-IBIG. Philstar’s 21 June 2026 report described 4.5% and 5.75% promotional rates fixed for three years on applications through 31 December 2026. Those promotional rates are not in this table, and later reports disagree on the peso ceiling for the 4.5% band. Confirm that ceiling with the agency.',
   },
   {
     id: 'mp2',

@@ -5,9 +5,11 @@
   </app-page-header>
 
   <p class="prose" style="margin-bottom: var(--space-5)">
-    Rates were reviewed against published schedules and independent reports. Rule sets marked
-    <span class="badge badge--warn">Confirm with agency</span> depend on secondary sources or on rules that change often, so check
-    them before you rely on them. If you spot a rate that has changed, please <a routerLink="/contact">tell us</a>.
+    Each block is read from the same rules the calculators run. Where we could open an agency page or a numbered
+    circular, that link is the source. A block marked
+    <span class="badge badge--warn">Confirm with agency</span> is one we could not re-check against the agency’s current
+    schedule, or one where this site’s formula does not match the circular on a point the note names. If a rate has
+    changed, <a routerLink="/contact">tell us</a> and point at the circular.
   </p>
 
   <div class="stack stack--l">
@@ -91,4 +93,27 @@
       </section>
     }
   </div>
+
+  <article class="prose section" id="how-we-check" aria-labelledby="method-title">
+    <h2 id="method-title">How we check our numbers</h2>
+    <p>
+      The calculators do not look up a rate when you press the button. Every percentage, peso cap, and day count is a
+      value in one source file, <code>src/app/shared/utils/ph-rules.ts</code>. The functions in
+      <code>ph-calculators.util.ts</code> read that file. A guide that shows a worked example calls the same function
+      the form calls, so the sentence and the result cannot drift apart. Money is rounded to the centavo with
+      half-up rounding after the line is computed. Where a total is a sum of rounded lines, the lines are rounded
+      first, which is why a semi-monthly payslip is not always a perfect half of the monthly one.
+    </p>
+    <p>
+      A review means a person opens the circular or the agency page named on the block and compares it with the file.
+      The “last reviewed” date is that comparison. It is not a claim that the agency republished the rate on that day.
+      Nothing here is scraped from a member portal, and nothing is filled in from a competing calculator.
+    </p>
+    <p>
+      Two blocks stay marked confirm-with-the-agency after the {{ reviewed }} review. The Pag-IBIG housing rates could
+      not be re-read from the fund’s site. The SSS emergency-loan payment compounds interest during the moratorium,
+      and Circular No. 2026-003 says that interest is spread across the later payments instead. Both are described in
+      the notes above rather than quietly treated as settled.
+    </p>
+  </article>
 </div>

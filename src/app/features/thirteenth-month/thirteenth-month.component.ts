@@ -4,7 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SeoService } from '../../core/services/seo.service';
-import { formatPeso } from '../../shared/format';
+import { formatDate, formatPeso } from '../../shared/format';
 import { SaveShareService } from '../../shared/services/save-share.service';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
 import { BreakdownComponent, BreakdownRow } from '../../shared/ui/breakdown.component';
@@ -15,8 +15,8 @@ import { RelatedComponent } from '../../shared/ui/related.component';
 import { ResultActionsComponent } from '../../shared/ui/result-actions.component';
 import { ResultBarComponent } from '../../shared/ui/result-bar.component';
 import { SegmentedComponent } from '../../shared/ui/segmented.component';
-import { compute13thMonthProRated, round2, split13thMonthTaxability } from '../../shared/utils/ph-calculators.util';
-import { PH_RULES } from '../../shared/utils/ph-rules';
+import { compute13thMonthProRated, estimate13thMonthPay, round2, split13thMonthTaxability } from '../../shared/utils/ph-calculators.util';
+import { PH_RULES, PH_RULES_LAST_REVIEWED } from '../../shared/utils/ph-rules';
 
 @Component({
   selector: 'app-thirteenth-month',
@@ -47,6 +47,50 @@ export class ThirteenthMonthComponent {
   });
 
   readonly exemptionCap = PH_RULES.thirteenthMonthExemption;
+  readonly reviewed = formatDate(PH_RULES_LAST_REVIEWED);
+
+  readonly fullYear = (() => {
+    const gross = estimate13thMonthPay(30_000, 12);
+    return { basic: 30_000, months: 12, gross, ...split13thMonthTaxability(gross) };
+  })();
+  readonly hired = (() => {
+    const gross = estimate13thMonthPay(25_000, 5);
+    return { basic: 25_000, months: 5, gross, ...split13thMonthTaxability(gross) };
+  })();
+  readonly absence = (() => {
+    const months = [...Array(11).fill(40_000), 20_000];
+    const gross = compute13thMonthProRated(months);
+    return { gross, earned: 40_000 * 11 + 20_000, ...split13thMonthTaxability(gross) };
+  })();
+  readonly sharedCap = (() => {
+    const gross = 80_000;
+    const other = 30_000;
+    const left = Math.max(0, this.exemptionCap - other);
+    const split = split13thMonthTaxability(gross, left);
+    const tax = round2(split.taxable * 0.2);
+    return { gross, other, left, tax, net: round2(gross - tax), rate: 20, ...split };
+  })();
+  readonly aboveCap = (() => {
+    const gross = 120_000;
+    const split = split13thMonthTaxability(gross);
+    const tax = round2(split.taxable * 0.25);
+    return { gross, tax, net: round2(gross - tax), rate: 25, ...split };
+  })();
+
+  readonly faq = [
+    {
+      q: 'Is 13th-month pay part of final pay when I resign?',
+      a: `The pro-rated amount is part of what you earned. This calculator gets it by dividing basic pay actually earned by 12. Five months at ${formatPeso(this.hired.basic, 0)} is ${formatPeso(this.hired.gross)}, and that whole amount is inside the ${formatPeso(this.exemptionCap, 0)} exemption if no other benefits have used the cap. When the employer releases it — with final pay, or on the company’s December schedule — is a payroll practice to confirm with the employer. This page does not set a number of days.`,
+    },
+    {
+      q: 'What happens when 13th-month pay and other benefits share the ₱90,000 cap?',
+      a: `The cap is one bucket. Other benefits already received use it up before the 13th-month cheque is tested. ${formatPeso(this.sharedCap.other, 0)} of other benefits leaves ${formatPeso(this.sharedCap.left, 0)} of room. An ${formatPeso(this.sharedCap.gross, 0)} 13th-month payment then has ${formatPeso(this.sharedCap.nonTaxable, 0)} exempt and ${formatPeso(this.sharedCap.taxable, 0)} taxable. The tax box on this page is a rate you type, not a BIR assessment. At the 20% placeholder, tax is ${formatPeso(this.sharedCap.tax)} and you receive ${formatPeso(this.sharedCap.net)}.`,
+    },
+    {
+      q: 'Why is the tax a percentage I type instead of a bracket?',
+      a: `Withholding on the excess depends on your other taxable pay for the year. This form does not know that pay, so it applies the rate you enter to the amount above the cap and nothing else. A ${formatPeso(this.aboveCap.gross, 0)} 13th-month payment with no other benefits has ${formatPeso(this.aboveCap.taxable, 0)} taxable. At 25% that tax is ${formatPeso(this.aboveCap.tax)} and the cheque is ${formatPeso(this.aboveCap.net)}. A different rate is a different cheque. Your payroll’s annualized tax can differ from both.`,
+    },
+  ];
   readonly formValue = toSignal(this.form.valueChanges, { initialValue: this.form.getRawValue() });
 
   readonly result = computed(() => {
@@ -120,32 +164,7 @@ export class ThirteenthMonthComponent {
           {
             '@context': 'https://schema.org',
             '@type': 'FAQPage',
-            'mainEntity': [
-              {
-                '@type': 'Question',
-                'name': 'Are managers or supervisory employees entitled to 13th-month pay?',
-                'acceptedAnswer': {
-                  '@type': 'Answer',
-                  'text': 'Under Presidential Decree No. 851, only rank-and-file employees are legally entitled to 13th-month pay. However, many employers in the Philippines choose to grant it to managerial and supervisory employees as well, through established company policy or practice.'
-                }
-              },
-              {
-                '@type': 'Question',
-                'name': 'What happens if my 13th-month pay exceeds ₱90,000?',
-                'acceptedAnswer': {
-                  '@type': 'Answer',
-                  'text': 'Under the TRAIN Law, the 13th-month pay and other benefits are tax-exempt up to the ₱90,000 limit. Any amount exceeding this ₱90,000 threshold must be added to your regular gross income, making it subject to the standard graduated income tax rates.'
-                }
-              },
-              {
-                '@type': 'Question',
-                'name': 'How is a pro-rated 13th-month pay calculated for new or resigned employees?',
-                'acceptedAnswer': {
-                  '@type': 'Answer',
-                  'text': 'Pro-rated 13th-month pay is calculated by summing up your total basic salary earned during the calendar year and dividing it by 12. If you worked for 4 months and earned ₱20,000 per month, your pro-rated 13th month is (₱20,000 * 4) / 12 = ₱6,666.67.'
-                }
-              }
-            ]
+            mainEntity: this.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
           }
         ]);
   }

@@ -19,7 +19,7 @@ import { ResultBarComponent } from '../../shared/ui/result-bar.component';
 import { SegmentedComponent } from '../../shared/ui/segmented.component';
 import { APP_CONSTANTS } from '../../core/config/app.constants';
 import { MP2Row, calculateMP2, round2 } from '../../shared/utils/ph-calculators.util';
-import { PH_RULES } from '../../shared/utils/ph-rules';
+import { PH_RULES, PH_RULES_LAST_REVIEWED } from '../../shared/utils/ph-rules';
 
 @Component({
   selector: 'app-mp2',
@@ -37,6 +37,7 @@ export class Mp2Component {
 
   readonly latestDeclared = PH_RULES.mp2.latestDeclared;
   readonly maxMonthly = APP_CONSTANTS.MP2_MAX_MONTHLY_CONTRIBUTION;
+  readonly reviewed = formatDate(PH_RULES_LAST_REVIEWED);
   readonly modes = [
     { value: 'compounded', label: 'Reinvest dividends' },
     { value: 'annual', label: 'Take dividends yearly' },

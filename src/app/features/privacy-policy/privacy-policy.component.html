@@ -1,43 +1,67 @@
 <div class="container">
-  <app-page-header title="Privacy Policy" lede="Last updated: {{ year }}" />
+  <app-page-header title="Privacy Policy" lede="Last updated: {{ updated }}" />
   <article class="prose">
     <p>
-      We respect your privacy. PH Calculators does not require login and does not sell personal data.
-      The calculators run entirely in your browser. We may use analytics and advertising cookies to help
-      improve the site and keep it free.
+      PH Calculators does not ask you to create an account, and it does not sell personal information. The calculators
+      run in your browser. What leaves your device is described below, and it is narrower than a typical “analytics and
+      advertising” policy because this site’s code does not include a separate analytics product.
     </p>
-    <h2>Information we collect</h2>
-    <ul>
-      <li><strong>Usage data:</strong> pages visited, approximate device/browser data (via analytics).</li>
-      <li><strong>Ad data:</strong> if/when ads are enabled, third-party ad networks may use cookies or similar technologies to deliver and measure ads. See their policies for details.</li>
-    </ul>
-    <h2>Local Storage & Calculation Data</h2>
+
+    <h2>What the calculators keep on your device</h2>
     <p>
-      When you use our calculators or the "Save Calculation" feature, your financial inputs and results are processed and stored <strong>strictly locally on your device</strong> using your browser's Local Storage. 
-      <strong>We do not transmit, collect, or store any of your personal financial data on our servers.</strong>
+      Salary figures, loan amounts, and results are processed in the browser. Saving a calculation writes it to this
+      browser’s local storage under a key this site uses. We do not receive that save, and clearing site data removes
+      it. A share link encodes the inputs in the URL so someone else can open the same estimate. Following that link
+      sends the URL to whatever host delivers the page. It is not stored in a database of ours.
     </p>
     <p>
-      When you use the "Generate Share Link" feature, your inputs are mathematically encoded directly into the URL link. This allows you to share your computation with others without us ever saving the data to a database.
+      Your theme (light, dark, or system) and whether you dismissed the cookie notice are also in local storage, so the
+      next visit can remember them.
     </p>
-    <h2>Advertising and cookies</h2>
+
+    <h2>Advertising</h2>
     <p>
-      We use third-party vendors, including Google, which use cookies to serve ads based on a user's prior visits to our
-      website or other websites.
+      The site is supported by Google AdSense automatic ads. The only advertising script in this project is the AdSense
+      loader. It is not placed on the saved-calculations page, and the standalone “page not found” file does not include
+      it. We do not add other ad networks, and we do not paste manual ad units into the articles.
     </p>
     <p>
-      Google's use of advertising cookies enables it and its partners to serve ads to your users based on their visit to
-      your sites and/or other sites on the Internet.
+      Google uses cookies to serve and measure ads to visitors of this site, based on visits here and on other sites
+      that use Google’s services. That is a description of what can happen when you browse phcalculators.com. It is not
+      a publisher’s instruction about “your users” or “your sites”.
     </p>
     <p>
-      Users may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads"
-        target="_blank" rel="noopener">Ads Settings</a>.
+      Google explains this in
+      <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener">How Google uses information from sites or apps that use our services</a>.
+      You can control personalized ads in
+      <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener">Google’s Ads Settings</a>.
     </p>
-    <h2>Settings stored in your browser</h2>
+
+    <h2>Analytics</h2>
     <p>
-      Your theme choice (light, dark or system) and whether you have dismissed the cookie notice are also saved in your
-      browser's Local Storage so the site remembers them. You can clear them at any time from your browser settings.
+      As of {{ updated }}, the site’s code does not load Google Analytics, Matomo, Plausible, or any other analytics
+      tag. The usage we can see is what the host and Google’s ad systems record in the course of delivering the page
+      and the ads. We do not run a first-party analytics account against your calculator inputs, because those inputs
+      are not sent to us as form data.
     </p>
+
+    <h2>Email you send us</h2>
+    <p>
+      If you write to the address on the <a routerLink="/contact">contact page</a>, we use the message to answer it
+      and, when you are reporting a rate, to compare it with the circular you cite. We do not add that address to a
+      mailing list. The message sits in the mailbox that receives it.
+    </p>
+
+    <h2>The Data Privacy Act</h2>
+    <p>
+      Republic Act No. 10173, the Data Privacy Act of 2012, is the Philippine law on personal information. This site is
+      operated from the Philippines, as stated on the <a routerLink="/about">About</a> page. We do not ask for your
+      name, government number, or salary in order to use a calculator. This page does not publish a data-protection
+      officer or a registration number, because those details are not established in the site. If you need them,
+      <a routerLink="/contact">ask the operator</a>. Do not treat this policy as a registration certificate.
+    </p>
+
     <h2>Contact</h2>
-    <p>Questions? Email <a href="mailto:johnayossulit&#64;gmail.com">contact&#64;phcalculators.com</a>.</p>
+    <p>Questions about this policy: <a href="mailto:johnayossulit&#64;gmail.com">contact&#64;phcalculators.com</a>.</p>
   </article>
 </div>

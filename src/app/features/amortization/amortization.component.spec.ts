@@ -36,16 +36,17 @@ describe('AmortizationComponent', () => {
     expect(component.model().payment).toBeGreaterThan(8_364.4);
   });
 
-  it('generates the guide scenarios from the engine, not hardcoded text', () => {
-    expect(component.scenarioA.payment).toBe(20_276.39);
-    expect(component.scenarioA.totalInterest).toBe(216_583.66);
-    expect(component.scenarioB.payment).toBe(8_364.4);
-    expect(component.scenarioB.totalInterest).toBe(1_007_456.17);
+  it('generates the guide comparison from the engine, not hardcoded text', () => {
+    expect(component.illustrationRate).toBe(6.5);
+    expect(component.dim5.payment).toBe(19_566.15);
+    expect(component.dim5.totalInterest).toBe(173_968.89);
+    expect(component.add5.payment).toBe(22_083.33);
+    expect(component.add5.interest).toBe(325_000);
     const text = fixture.nativeElement.textContent;
-    expect(text).toContain('20,276.39');
-    expect(text).toContain('216,583.66');
-    expect(text).toContain('1,007,456.17');
-    expect(text).not.toContain('216,583.74');
+    expect(text).toContain('19,566.15');
+    expect(text).toContain('173,968.89');
+    expect(text).toContain('22,083.33');
+    expect(text).not.toContain('20,276.39');
   });
 
   it('sums a zero-interest loan exactly', () => {

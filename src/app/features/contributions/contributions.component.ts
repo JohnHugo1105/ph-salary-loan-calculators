@@ -4,7 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SeoService } from '../../core/services/seo.service';
-import { formatPeso } from '../../shared/format';
+import { formatDate, formatPeso } from '../../shared/format';
 import { SaveShareService } from '../../shared/services/save-share.service';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
 import { CalloutComponent } from '../../shared/ui/callout.component';
@@ -15,7 +15,7 @@ import { ResultActionsComponent } from '../../shared/ui/result-actions.component
 import { ResultBarComponent } from '../../shared/ui/result-bar.component';
 import { explainContributions } from '../../shared/utils/explain';
 import { computeContributions, computeSssMsc } from '../../shared/utils/ph-calculators.util';
-import { PH_RULES } from '../../shared/utils/ph-rules';
+import { PH_RULES, PH_RULES_LAST_REVIEWED } from '../../shared/utils/ph-rules';
 
 @Component({
   selector: 'app-contributions',
@@ -42,6 +42,7 @@ export class ContributionsComponent {
   readonly msc = computed(() => computeSssMsc(this.salary()));
   readonly why = computed(() => explainContributions(this.salary()));
   readonly regularCap = PH_RULES.sss.regularMscMax;
+  readonly reviewed = formatDate(PH_RULES_LAST_REVIEWED);
 
   readonly shareData = computed(() => ({ ...this.formValue() }) as Record<string, unknown>);
   readonly summary = computed(() => {
@@ -58,7 +59,7 @@ export class ContributionsComponent {
   // Worked example for the guide below, generated from the same engine as the calculator.
   readonly example = (() => {
     const salary = 25_000;
-    const c = computeContributions(salary, { includeSSSEC: false });
+    const c = computeContributions(salary);
     const regularMsc = Math.min(computeSssMsc(salary), PH_RULES.sss.regularMscMax);
     const wispBase = computeSssMsc(salary) - regularMsc;
     return {
@@ -72,8 +73,44 @@ export class ContributionsComponent {
       philhealth: c.philhealth.employee,
       pagibig: c.pagibig.employee,
       total: c.totals.employee,
+      employer: c.totals.employer,
+      both: c.totals.total,
+      employerSss: c.sss.employer,
+      employerMpf: c.mpf.employer,
+      employerPhilhealth: c.philhealth.employer,
+      employerPagibig: c.pagibig.employer,
     };
   })();
+
+  readonly floor = (() => {
+    const salary = 8_000;
+    const c = computeContributions(salary);
+    return {
+      salary,
+      msc: computeSssMsc(salary),
+      you: c.totals.employee,
+      employer: c.totals.employer,
+      sss: c.sss.employee,
+      philhealth: c.philhealth.employee,
+      pagibig: c.pagibig.employee,
+      philhealthTotal: c.philhealth.total,
+    };
+  })();
+
+  readonly faq = [
+    {
+      q: 'Why is my deduction smaller than my employer’s?',
+      a: `On a salary of ${formatPeso(this.example.salary, 0)} the employee side is ${formatPeso(this.example.total)} and the employer side is ${formatPeso(this.example.employer)}, including the EC premium. SSS is 5% against the employer’s 10% of the same salary credit, PhilHealth is split in half, and Pag-IBIG is 2% each up to the fund-salary cap. The employer’s larger SSS share never appears as a deduction on your payslip.`,
+    },
+    {
+      q: 'What do I pay with no employer?',
+      a: `Add the two columns. On ${formatPeso(this.example.salary, 0)} that sum is ${formatPeso(this.example.both)}, and it includes the EC premium this calculator treats as employer-only. Self-employed and voluntary members pay both the employee and employer shares of the salary credit they declare. Whether EC is part of your payment, and the minimum credit for your membership type, are points to confirm with SSS. PhilHealth without an employer is the full premium, not the half an employee sees deducted.`,
+    },
+    {
+      q: 'Does the EC premium come out of my salary?',
+      a: `Not in this calculator. Employees’ Compensation is an employer-only amount: ${formatPeso(PH_RULES.sss.ecLow, 0)} when the MSC is below ${formatPeso(PH_RULES.sss.ecMscThreshold, 0)}, otherwise ${formatPeso(PH_RULES.sss.ecHigh, 0)}. Uncheck “Include the employer’s EC premium” and your own column does not move. The employer column does.`,
+    },
+  ];
 
   constructor() {
     this.share.restoreInto(this.form, inject(ActivatedRoute).snapshot.queryParamMap.get('data'));
@@ -95,32 +132,7 @@ export class ContributionsComponent {
           {
             '@context': 'https://schema.org',
             '@type': 'FAQPage',
-            'mainEntity': [
-              {
-                '@type': 'Question',
-                'name': 'What is WISP in SSS?',
-                'acceptedAnswer': {
-                  '@type': 'Answer',
-                  'text': 'The Worker\'s Investment and Savings Program (WISP) is a mandatory provident fund managed by SSS. It serves as an additional retirement savings program on top of the regular SSS pension for members whose Monthly Salary Credit (MSC) exceeds ₱20,000.'
-                }
-              },
-              {
-                '@type': 'Question',
-                'name': 'What is the PhilHealth premium rate and income ceiling?',
-                'acceptedAnswer': {
-                  '@type': 'Answer',
-                  'text': 'Under the Universal Health Care (UHC) Law the PhilHealth premium is 5.0% of monthly basic salary, shared equally by employer and employee. The income floor is ₱10,000 and the ceiling is ₱100,000, so the total monthly premium ranges from ₱500 to ₱5,000.'
-                }
-              },
-              {
-                '@type': 'Question',
-                'name': 'Can I voluntarily pay more than the mandatory ₱200 Pag-IBIG contribution?',
-                'acceptedAnswer': {
-                  '@type': 'Answer',
-                  'text': 'Yes, you can opt to increase your monthly Pag-IBIG Regular Savings contribution beyond the mandatory ₱200 (2% of the ₱10,000 maximum fund salary) to save more. However, many Filipinos choose to enroll in the separate voluntary Modified Pag-IBIG II (MP2) program instead, as it traditionally yields higher dividends.'
-                }
-              }
-            ]
+            mainEntity: this.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
           }
         ]);
   }

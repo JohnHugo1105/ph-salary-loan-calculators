@@ -4,7 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SeoService } from '../../core/services/seo.service';
-import { formatPeso } from '../../shared/format';
+import { formatDate, formatPeso } from '../../shared/format';
 import { SaveShareService } from '../../shared/services/save-share.service';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
 import { BreakdownComponent, BreakdownRow } from '../../shared/ui/breakdown.component';
@@ -15,7 +15,7 @@ import { RelatedComponent } from '../../shared/ui/related.component';
 import { ResultActionsComponent } from '../../shared/ui/result-actions.component';
 import { ResultBarComponent } from '../../shared/ui/result-bar.component';
 import { computeAmortization, round2 } from '../../shared/utils/ph-calculators.util';
-import { PH_RULES } from '../../shared/utils/ph-rules';
+import { PH_RULES, PH_RULES_LAST_REVIEWED } from '../../shared/utils/ph-rules';
 
 @Component({
   selector: 'app-pagibig-housing-loan',
@@ -34,6 +34,47 @@ export class PagibigHousingLoanComponent {
   readonly rules = PH_RULES.housingLoan;
   readonly rates = PH_RULES.housingLoan.ratesByRepricingYears;
   readonly repricingOptions = Object.keys(PH_RULES.housingLoan.ratesByRepricingYears).map(Number);
+  readonly reviewed = formatDate(PH_RULES_LAST_REVIEWED);
+
+  private housingExample(amount: number, years: number, repricing: number) {
+    const rate = this.rates[repricing];
+    const n = years * 12;
+    const { payment, schedule } = computeAmortization(amount, rate, n);
+    const totalPaid = payment * n;
+    return {
+      amount,
+      years,
+      repricing,
+      rate,
+      n,
+      payment,
+      totalPaid,
+      totalInterest: totalPaid - amount,
+      requiredIncome: payment / PH_RULES.housingLoan.maxIncomeShare,
+      first: schedule[0],
+      last: schedule[n - 1],
+    };
+  }
+
+  // Same rate table and payment formula as the form. The rate is held for the full term.
+  readonly exA = this.housingExample(1_000_000, 20, 3);
+  readonly exB = this.housingExample(2_000_000, 30, 5);
+  readonly exC = this.housingExample(500_000, 15, 1);
+
+  readonly faq = [
+    {
+      q: 'Does the monthly payment stay the same for the whole term?',
+      a: `Only during the repricing period you choose. This calculator keeps the starting rate for every month of the term, so you can see the principal-and-interest cost of that one rate. After the fixing period, Pag-IBIG resets the rate and the payment can change. A ${formatPeso(this.exA.amount, 0)} loan at ${this.exA.rate}% shows ${formatPeso(this.exA.payment)} a month here for all ${this.exA.years} years. That figure will not match a statement issued after the ${this.exA.repricing}-year fixing period ends.`,
+    },
+    {
+      q: 'Why is the income figure 35% of the payment?',
+      a: `The calculator divides the monthly amortization by ${PH_RULES.housingLoan.maxIncomeShare}. On the ${formatPeso(this.exA.amount, 0)} example that is ${formatPeso(this.exA.payment)} ÷ ${PH_RULES.housingLoan.maxIncomeShare} = ${formatPeso(this.exA.requiredIncome)}. It is a capacity check stored in this site's rules, not an approval. Mortgage redemption insurance, fire insurance, and other debts are not in the payment, so the income Pag-IBIG asks for can be higher.`,
+    },
+    {
+      q: 'Are these Pag-IBIG\'s current interest rates?',
+      a: `They are the rates this calculator stores: ${this.repricingOptions.map((y) => `${y} year${y === 1 ? '' : 's'} at ${this.rates[y]}%`).join(', ')}. When this page was reviewed on ${this.reviewed}, Pag-IBIG's own rate schedule could not be re-read from the fund's website. Treat every rate as something to confirm with Pag-IBIG. A Philstar report on 21 June 2026 described promotional rates fixed for three years, 4.5% and 5.75% depending on loan size, available for applications until 31 December 2026. Those promotional rates are not what this calculator applies.`,
+    },
+  ];
 
   form = this.fb.group({
     amount: [1000000, [Validators.required, Validators.min(100000), Validators.max(PH_RULES.housingLoan.maxLoan)]],
@@ -78,12 +119,19 @@ export class PagibigHousingLoanComponent {
 
   constructor() {
     this.share.restoreInto(this.form, inject(ActivatedRoute).snapshot.queryParamMap.get('data'));
-    this.seo.setSchema([{
-          '@context': 'https://schema.org',
-          '@type': 'SoftwareApplication',
-          'name': 'Pag-IBIG Housing Loan Calculator 2026',
-          'operatingSystem': 'Web',
-          'applicationCategory': 'FinanceApplication'
-        }]);
+    this.seo.setSchema([
+      {
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        'name': 'Pag-IBIG Housing Loan Calculator 2026',
+        'operatingSystem': 'Web',
+        'applicationCategory': 'FinanceApplication',
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: this.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      },
+    ]);
   }
 }

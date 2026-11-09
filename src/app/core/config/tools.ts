@@ -144,7 +144,7 @@ export const GUIDES: Guide[] = [
     icon: 'file-text',
     keywords: 'sss msc monthly salary credit contribution table guide employer share',
     published: '2026-05-30',
-    updated: '2026-10-31',
+    updated: '2026-11-10',
     related: ['/contributions', '/net-pay', '/sss-maternity-benefit', '/sss-salary-loan'],
   },
   {

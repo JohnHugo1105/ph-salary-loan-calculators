@@ -3,10 +3,11 @@ import { DecimalPipe } from '@angular/common';
 
 import { RouterModule } from '@angular/router';
 import { SeoService } from '../../core/services/seo.service';
+import { formatDate } from '../../shared/format';
 import { PageHeaderComponent } from '../../shared/ui/page-header.component';
 import { RelatedComponent } from '../../shared/ui/related.component';
 import { computeMPF, computeSSS, computeSssMsc, round2 } from '../../shared/utils/ph-calculators.util';
-import { PH_RULES } from '../../shared/utils/ph-rules';
+import { PH_RULES, PH_RULES_LAST_REVIEWED } from '../../shared/utils/ph-rules';
 
 @Component({
     selector: 'app-tax-tables',
@@ -15,6 +16,7 @@ import { PH_RULES } from '../../shared/utils/ph-rules';
     templateUrl: './tax-tables.component.html'
 })
 export class TaxTablesComponent {
+    readonly reviewed = formatDate(PH_RULES_LAST_REVIEWED);
     // Tables below are generated from the same rules and formulas the calculators use.
     readonly sssRows = [5_000, 10_000, 20_000, 22_500, 25_000, 30_000, 35_000].map(msc => {
         const regular = computeSSS(msc, false).employee;

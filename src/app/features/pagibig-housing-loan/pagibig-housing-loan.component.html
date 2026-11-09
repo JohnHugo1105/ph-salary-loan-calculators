@@ -2,6 +2,7 @@
   <app-page-header title="Pag-IBIG housing loan calculator" section="Loans"
     lede="Estimate your monthly amortization and the income you would need, based on the repricing period you choose.">
     <span class="badge badge--brand">Up to ₱10,000,000</span>
+    <span class="badge">Last reviewed {{ reviewed }}</span>
     <a class="badge" routerLink="/rates">Rates &amp; sources</a>
   </app-page-header>
 
@@ -69,22 +70,107 @@
   </div>
 
   <article class="prose section" aria-label="How the Pag-IBIG housing loan works">
-    <h2>How the housing loan payment is worked out</h2>
+    <h2>One rate, held flat, on a diminishing balance</h2>
     <p>
-      A Pag-IBIG housing loan is repaid in equal monthly amortizations on a diminishing balance. The rate is fixed only for
-      the repricing period you choose (for example 3 or 5 years). After that, Pag-IBIG resets the rate for the remaining
-      term, so your payment can change. A longer repricing period gives you a steadier payment but usually a higher starting
-      rate.
+      The payment above is principal and interest only. Each month the interest is the remaining balance times the monthly
+      rate, and the rest of the payment reduces the balance. The monthly rate is the annual rate divided by 12. That is the
+      whole of <code>computeAmortization</code>, which this page shares with the
+      <a routerLink="/amortization">loan amortization calculator</a>. Nothing in the function adds mortgage redemption
+      insurance, fire insurance, or a processing fee. Pag-IBIG’s own statement will be higher once those are on it.
     </p>
-    <h3>Why the income needed matters</h3>
     <p>
-      Lenders check that your monthly amortization is affordable. This calculator shows the gross monthly income you would
-      need if the payment should be no more than 35% of it. Your own approval also depends on your credit and other
-      requirements, so treat it as a rough guide.
+      The rate is fixed only for the repricing period in the dropdown. This calculator then pretends that same rate lasts
+      until the last payment, because that is the only way to show a single schedule. When the fixing period ends, Pag-IBIG
+      sets a new rate for the next period and the payment changes. A 3-year fixing period on a 20-year loan is not a
+      20-year fixed rate. Budget for the payment to move, in either direction, at the reset.
     </p>
+    <p>
+      The rates in the dropdown are the ones stored for this calculator: 1 year at {{ rates[1] }}%, 3 years at
+      {{ rates[3] }}%, 5 at {{ rates[5] }}%, 10 at {{ rates[10] }}%, 15 at {{ rates[15] }}%, 20 at {{ rates[20] }}%,
+      25 at {{ rates[25] }}%, and 30 at {{ rates[30] }}%. On {{ reviewed }} we could not re-read Pag-IBIG’s current rate
+      schedule from the fund’s website, so every one of those figures is marked “confirm with the agency” on
+      <a routerLink="/rates">Rates &amp; sources</a>. Do not treat them as a quote.
+    </p>
+
+    <h2>Three schedules from those stored rates</h2>
+    <h3>₱1,000,000 for 20 years, 3-year rate of {{ exA.rate }}%</h3>
+    <p>
+      The payment is <strong>₱{{ exA.payment | number: '1.2-2' }}</strong> a month for {{ exA.n }} months, if
+      {{ exA.rate }}% never changes. The first month’s interest is ₱{{ exA.first.interest | number: '1.2-2' }} and only
+      ₱{{ exA.first.principal | number: '1.2-2' }} comes off the principal. The last month flips that: interest
+      ₱{{ exA.last.interest | number: '1.2-2' }}, principal ₱{{ exA.last.principal | number: '1.2-2' }}. Payments over the
+      full term are ₱{{ exA.totalPaid | number: '1.2-2' }}, so interest is ₱{{ exA.totalInterest | number: '1.2-2' }} on
+      top of the ₱1,000,000. Dividing the payment by 0.35 gives a gross monthly income of
+      <strong>₱{{ exA.requiredIncome | number: '1.2-2' }}</strong>. That 35% test is this site’s rule of thumb. It ignores
+      insurance and it is not a capacity letter from Pag-IBIG. Holding {{ exA.rate }}% for all 20 years is a picture of
+      that one rate, not a forecast of the reset.
+    </p>
+
+    <h3>₱2,000,000 for 30 years, 5-year rate of {{ exB.rate }}%</h3>
+    <p>
+      Payment <strong>₱{{ exB.payment | number: '1.2-2' }}</strong>. First month: interest
+      ₱{{ exB.first.interest | number: '1.2-2' }}, principal ₱{{ exB.first.principal | number: '1.2-2' }}. Across
+      {{ exB.n }} payments the interest is ₱{{ exB.totalInterest | number: '1.2-2' }}, more than the amount borrowed,
+      which is what a 30-year diminishing-balance loan does at this rate. The 35% income line is
+      <strong>₱{{ exB.requiredIncome | number: '1.2-2' }}</strong>. The calculator will accept a loan up to
+      ₱{{ rules.maxLoan | number: '1.0-0' }}. It will not tell you whether Pag-IBIG will lend ₱2,000,000 against a
+      particular property. Appraisal, loan-to-value, and the member’s age at the end of the term are Pag-IBIG’s tests,
+      and they are not in this function. Confirm them with the agency.
+    </p>
+
+    <h3>₱500,000 for 15 years, 1-year rate of {{ exC.rate }}%</h3>
+    <p>
+      Payment <strong>₱{{ exC.payment | number: '1.2-2' }}</strong>. Interest over the term
+      ₱{{ exC.totalInterest | number: '1.2-2' }}. Income line
+      <strong>₱{{ exC.requiredIncome | number: '1.2-2' }}</strong>. The first month still puts
+      ₱{{ exC.first.interest | number: '1.2-2' }} into interest and ₱{{ exC.first.principal | number: '1.2-2' }} into
+      principal. A one-year fixing period means the stored rate is the one you should trust for the shortest time. Twelve
+      months after release, the payment on this page and the payment on the statement can already be different numbers.
+    </p>
+
+    <h2>A promotional rate this calculator does not use</h2>
+    <p>
+      Philstar reported on 21 June 2026 that applications received until 31 December 2026 would be priced at 4.5% for
+      three years above the socialized-housing ceiling up to a low-cost ceiling the article put at ₱2.5 million, and at
+      5.75% for three years above that up to ₱10 million, then repriced
+      (<a href="https://www.philstar.com/headlines/2026/06/21/2536690/pag-ibig-offers-promo-housing-loan-rates" target="_blank" rel="noopener">Philstar, 21 June 2026</a>).
+      Later write-ups give a different peso ceiling for the 4.5% band. We did not get a Pag-IBIG circular to settle it,
+      so confirm the ceiling with the agency. This dropdown does not apply 4.5% and does not switch rates after year three.
+    </p>
+
+    <h2>Who this calculator cannot qualify</h2>
+    <p>
+      Posted savings, age at the end of the term, the property, and any co-borrower are decided on the application.
+      This page has none of those inputs. A payment inside the 35% line can still be refused. The
+      ₱{{ rules.maxLoan | number: '1.0-0' }} ceiling is only the largest amount the form lets you type.
+    </p>
+
+    <h2>How to check the figure in Virtual Pag-IBIG</h2>
+    <ol>
+      <li>Sign in to Virtual Pag-IBIG from the <a href="https://www.pagibigfund.gov.ph/" target="_blank" rel="noopener">Pag-IBIG Fund site</a> and open the housing-loan calculator or the application, not the MP2 savings screen.</li>
+      <li>Enter the same loan amount, term, and fixing period. Compare the principal-and-interest amortization only. If their rate is not the rate in our dropdown, their payment will not match, and their rate is the one that matters.</li>
+      <li>Add back, in your own budget, the insurance line they show. Our total interest does not include it.</li>
+      <li>If the application is under the 2026 promotional pricing, stop using the rate in our dropdown for the first three years. Ask Pag-IBIG which ceiling your loan falls under before you lock a fixing period.</li>
+    </ol>
+
+    <h2>Mistakes that make a housing estimate look cheaper than the loan</h2>
+    <ul>
+      <li>Reading a 3-year or 5-year rate as if it lasted the whole term. The examples do that on purpose, and they say so.</li>
+      <li>Comparing our payment with a quote that already includes insurance or a month of advance amortization. Those are extra cash.</li>
+      <li>Treating the income line as net pay, or stacking a second loan on the same 35%. Confirm which income Pag-IBIG counts.</li>
+      <li>Trusting the 1-year and 3-year stored rates. They are the ones we were least able to re-check. Confirm with the agency.</li>
+    </ul>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq-section">
+      @for (f of faq; track f.q) {
+        <h3>{{ f.q }}</h3>
+        <p>{{ f.a }}</p>
+      }
+    </div>
     <p class="note">
-      Not included: mortgage redemption insurance, fire insurance, processing and other fees. Compare any figure here with the
-      computation Pag-IBIG gives you.
+      Last reviewed {{ reviewed }}. Payment math is this site’s diminishing-balance function. Rates are the stored table,
+      not a Pag-IBIG quotation. The June 2026 promotional pricing is reported by Philstar and is not applied here.
     </p>
   </article>
 

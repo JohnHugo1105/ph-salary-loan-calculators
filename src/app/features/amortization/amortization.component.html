@@ -3,6 +3,7 @@
     lede="See your monthly payment, how much interest you will pay in total, and how your balance shrinks over time. Works for car, housing and personal loans.">
     <span class="badge badge--brand">Diminishing balance</span>
     <span class="badge">Equal monthly payments</span>
+    <span class="badge">Last reviewed {{ reviewed }}</span>
   </app-page-header>
 
   <div class="tool">
@@ -112,124 +113,83 @@
     }
   </section>
 
-  <article class="prose section" aria-label="Guide to loan amortization in the Philippines">
-    <h2>The Ultimate Guide to Loan Amortization in the Philippines (2026)</h2>
+  <article class="prose section" aria-label="Add-on interest and diminishing balance">
+    <h2>Two ways to turn one rate into a monthly payment</h2>
     <p>
-      Whether you are applying for a housing loan through Pag-IBIG or a commercial bank, financing a new car, or
-      taking out a salary loan for an emergency, understanding how your monthly amortization is computed is essential
-      for sound financial planning. This gives you foresight into exactly how much of your hard-earned money goes into
-      paying down your debt versus how much is lost to interest charges over time.
+      This calculator does only the second of them. A diminishing balance charges each month’s interest on whatever
+      principal is still unpaid. The payment stays the same, so as the balance falls, more of each payment is
+      principal. An add-on rate does the opposite kind of arithmetic: it multiplies the original principal by the
+      stated annual rate and by the number of years, adds that interest to the principal, and divides by the number of
+      months. The interest never shrinks, because it was computed once, on the amount you borrowed on day one.
     </p>
     <p>
-      This calculator assumes a standard fixed-rate loan structure using the diminishing balance method—the standard
-      used by major Philippine banks like BDO, BPI, Metrobank, Security Bank, and government agencies like Pag-IBIG.
+      The comparison below uses {{ illustrationRate }}%. That number is the five-year rate stored for our
+      <a routerLink="/pagibig-housing-loan">Pag-IBIG housing calculator</a>. It is not a quote from a commercial bank,
+      and on <a routerLink="/rates">Rates &amp; sources</a> it is marked for you to confirm with Pag-IBIG. No other
+      rate is invented here to stand in for BDO, BPI, or anyone else. If you have a bank’s disclosure, type that
+      rate into the form. Do not assume {{ illustrationRate }}% is what they will charge.
     </p>
 
-    <h2>What is a Diminishing Balance Interest Rate?</h2>
+    <h2>₱1,000,000 at {{ illustrationRate }}% for five years</h2>
     <p>
-      Most formal, long-term loans in the Philippines use the <strong>Diminishing Balance</strong> method. This means
-      that your interest charge is calculated based on the <strong>remaining principal balance</strong> each month,
-      not on the original amount you borrowed.
+      Add-on interest is ₱1,000,000 × {{ illustrationRate }}% × 5 =
+      <strong>₱{{ add5.interest | number: '1.0-0' }}</strong>. Principal plus interest is
+      ₱{{ add5.total | number: '1.0-0' }}. Split over {{ add5.months }} months, the payment is
+      <strong>₱{{ add5.payment | number: '1.2-2' }}</strong>.
     </p>
     <p>
-      <strong>How the math works:</strong>
-    </p>
-    <ul class="styled-list">
-      <li>In the early years of your loan, a massive chunk of your monthly payment goes directly to
-        <strong>Interest</strong>.
-      </li>
-      <li>As you continue to make monthly payments, your principal balance decreases. Because the principal is
-      smaller, the interest charged computation also shrinks.</li>
-      <li>Towards the end of your loan term, almost your entire monthly payment goes towards wiping out the remaining
-        <strong>Principal</strong>.
-      </li>
-    </ul>
-    <p class="note">
-      <em>Note: This is vastly different from "Add-on Rate" loans (often used for quick cash loans, credit card
-        installment plans, or appliance financing), where the interest is fixed on the original principal amount for
-        the entire duration. The diminishing balance method is generally much fairer and cheaper for borrowers on
-      long-term loans.</em>
+      The diminishing-balance function on the same inputs pays
+      <strong>₱{{ dim5.payment | number: '1.2-2' }}</strong> a month. Total interest is
+      ₱{{ dim5.totalInterest | number: '1.2-2' }}, not ₱{{ add5.interest | number: '1.0-0' }}. The first month of that
+      schedule charges ₱{{ dim5.schedule[0].interest | number: '1.2-2' }} of interest and sends
+      ₱{{ dim5.schedule[0].principal | number: '1.2-2' }} to principal. The last month charges
+      ₱{{ dim5.schedule[59].interest | number: '1.2-2' }} of interest and
+      ₱{{ dim5.schedule[59].principal | number: '1.2-2' }} of principal. Same stated rate, smaller interest bill,
+      because the lender stopped charging interest on principal you had already returned.
     </p>
 
-    <h2>Practical Example: 5-Year Car Loan vs. 20-Year Housing Loan</h2>
-    <div class="example-box">
-      <h3>Scenario A: 5-Year Car Loan (₱1,000,000 at 8% per annum)</h3>
-      <ul>
-        <li><strong>Monthly Payment:</strong> ₱{{ scenarioA.payment | number: '1.2-2' }}</li>
-        <li><strong>Total Interest Paid over 5 Years:</strong> ₱{{ scenarioA.totalInterest | number: '1.2-2' }}</li>
-        <li><em>Notice how the monthly payment is high, but the total interest is kept
-        relatively low because the principal is paid off quickly over 60 months.</em></li>
-      </ul>
+    <h2>The same ₱1,000,000 stretched to 20 years</h2>
+    <p>
+      Add-on interest becomes ₱1,000,000 × {{ illustrationRate }}% × 20 =
+      <strong>₱{{ add20.interest | number: '1.0-0' }}</strong>, and the payment is
+      ₱{{ add20.payment | number: '1.2-2' }}. You would hand over more in interest than you borrowed, and the method
+      never gives you credit for paying the loan down.
+    </p>
+    <p>
+      Diminishing balance at the same rate pays <strong>₱{{ dim20.payment | number: '1.2-2' }}</strong> a month.
+      Interest over 240 months is ₱{{ dim20.totalInterest | number: '1.2-2' }}. The payment is lower than the
+      five-year diminishing payment because the principal is sliced thinner, and the interest is higher than the
+      five-year interest because the balance sits there longer. That trade-off is the term decision. It is not a
+      reason to prefer an add-on contract that quotes a lower “rate per month” without saying which method it uses.
+      Ask which method before you compare two offers. A lower add-on rate can still cost more than a higher
+      diminishing rate.
+    </p>
 
-      <h3>Scenario B: 20-Year Housing Loan (₱1,000,000 at 8% per annum)</h3>
-      <ul>
-        <li><strong>Monthly Payment:</strong> ₱{{ scenarioB.payment | number: '1.2-2' }}</li>
-        <li><strong>Total Interest Paid over 20 Years:</strong> ₱{{ scenarioB.totalInterest | number: '1.2-2' }}</li>
-        <li><em>Notice how the monthly payment is much more affordable. However, because
-          you are stretching the debt over 240 months, you end up paying more in interest than the actual principal
-        borrowed.</em></li>
-      </ul>
+    <h2>What a fixing period does to this schedule</h2>
+    <p>
+      The schedule on this page holds the rate you typed until the last row. A housing loan often promises the rate
+      only for a fixing period, then recomputes the payment on the balance that is left. The rows after that month
+      are a picture of the old rate, not a forecast. Our Pag-IBIG page says this in more detail and keeps its own
+      rate table. Neither page pulls a live bank board.
+    </p>
+    <p>
+      A payment you make on top of the amortization, if the contract applies it to principal, shortens the schedule
+      this table cannot redraw for you. The contract also decides whether that extra payment is allowed without a
+      fee. Read that clause. The calculator has no field for it.
+    </p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq-section">
+      @for (f of faq; track f.q) {
+        <h3>{{ f.q }}</h3>
+        <p>{{ f.a }}</p>
+      }
     </div>
-
-    <h2>Effective Strategies to Lower Your Monthly Amortization</h2>
-    <p>
-      If the calculated monthly payment looks too high for your current budget, here are practical, actionable ways to
-      lower it before signing the loan contract:
+    <p class="note">
+      Last reviewed {{ reviewed }}. Diminishing-balance figures come from this page’s payment function. Add-on figures
+      are the straight multiplication described above, shown so the two methods can be told apart.
+      {{ illustrationRate }}% is a stored Pag-IBIG input, flagged for confirmation, not a bank rate.
     </p>
-    <ul class="styled-list">
-      <li><strong>Extend the Loan Term:</strong> Stretching a housing loan from 10 years to 20 years will
-      significantly drop your monthly bill. Just remember the trade-off: you will pay significantly more total
-    interest over the life of the loan.</li>
-    <li><strong>Increase Your Downpayment:</strong> Paying 30% upfront instead of the minimum 20% drastically
-    reduces the principal amount you need to borrow, thus shrinking both your monthly payments and total interest.
-  </li>
-  <li><strong>Improve Your Credit Score for a Lower Rate:</strong> Banks reserve their lowest promotional rates
-for "prime" clients with excellent credit histories or those offering highly liquid collateral.</li>
-<li><strong>Compare Rates:</strong> Pag-IBIG frequently offers subsidized, lower interest rates for low-income
-earners compared to aggressive commercial banks. Always request sample computations from at least three
-institutions.</li>
-<li><strong>Make Advance Payments to Principal:</strong> Check your loan contract. If your bank allows it
-without heavy penalties, making lump-sum payments applied directly to the principal can drastically shorten
-your loan term and cut interest costs.</li>
-</ul>
-
-<h3>Understanding Fixing and Repricing Periods</h3>
-<p>
-  In the Philippines, very few housing loans offer a completely fixed rate for 20 years. Instead, banks offer a
-  "Fixing Period" or "Repricing Period."
-</p>
-<p>
-  For example, if you choose a <strong>3-year fixing period</strong> on a 15-year loan at 6.5%, that 6.5% rate is
-  guaranteed for the first 36 months. On your 37th month, the bank will "reprice" or adjust your rate based on
-  current BSP benchmark rates and market conditions. If inflation is high, your rate might jump to 8.0%, suddenly
-  increasing your monthly amortization. Always budget with a margin of safety for potential future rate hikes.
-</p>
-
-<hr>
-
-<h2>Frequently Asked Questions (FAQs)</h2>
-<div class="faq-section">
-  <h3>What is a diminishing balance interest rate?</h3>
-  <p>A diminishing balance interest rate means that the interest is calculated based on the remaining principal
-    balance of the loan each month, not the original borrowed amount. As you pay off the principal with every
-  monthly amortization, the interest portion of your payment steadily decreases.</p>
-
-  <h3>What is a repricing period for a housing loan?</h3>
-  <p>A repricing period (also known as a fixing period) is the duration for which your initial interest rate is
-    contractually guaranteed to stay the same. After this period (e.g., 1 year, 3 years, 5 years), the bank will
-    adjust or 'reprice' your interest rate based on current economic market conditions. This repricing can either
-  increase or decrease your required monthly amortization.</p>
-
-  <h3>Is it better to have a 5-year or 20-year loan term?</h3>
-  <p>It depends entirely on your monthly cash flow versus your long-term goals. A 5-year term will demand
-    significantly higher monthly payments, but you will pay drastically less total interest to the bank. A 20-year
-    term spreads the payments out to be much lower and more budget-friendly month-to-month, but yields much higher
-  total interest costs overall (often doubling the price of the property).</p>
-</div>
-
-<div class="cta-wrapper">
-  <a class="btn" routerLink="/articles">View All Financial Guides</a>
-</div>
   </article>
 
   <app-related route="/amortization" />

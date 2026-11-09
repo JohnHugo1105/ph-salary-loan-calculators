@@ -3,6 +3,7 @@
     lede="Estimate your loanable amount, the cash you actually receive, and your monthly payment.">
     <span class="badge badge--brand">Salary loan 8% or 10%</span>
     <span class="badge">Emergency loan 7%</span>
+    <span class="badge">Last reviewed {{ reviewed }}</span>
     <a class="badge" routerLink="/rates">Rates &amp; sources</a>
   </app-page-header>
 
@@ -67,14 +68,15 @@
 
         @if (isEmergency) {
           <app-callout kind="warn">
-            <strong>Check the terms.</strong> The emergency loan follows SSS guidelines as reported (7%, no service fee,
-            6-month moratorium, 24 monthly payments). The loan amount and eligibility are set by SSS and may change by
-            circular. Confirm in My.SSS before you borrow.
+            <strong>Confirm the moratorium interest.</strong> Circular No. 2026-003 charges 7% (10% after a recent penalty
+            condonation), takes no service fee, and spreads moratorium interest across the 24 payments without charging
+            interest on that interest. This calculator uses 7% only, and it compounds the six-month interest onto the
+            balance before amortizing. Read the disclosure in My.SSS before you borrow.
           </app-callout>
         } @else {
           <app-callout kind="note">
-            <strong>Estimate.</strong> SSS computes the exact loanable amount, the pro-rated interest and any balance of an
-            earlier loan when you apply. Loan limits and rates can change by circular, so confirm them in My.SSS.
+            <strong>Estimate.</strong> The advance interest here is one month. Circular No. 2025-004 prorates interest by
+            the day count divided by 365, and it deducts any earlier short-term loan. Confirm the net proceeds in My.SSS.
           </app-callout>
         }
 
@@ -84,26 +86,119 @@
   </div>
 
   <article class="prose section" aria-label="How SSS salary and emergency loans work">
-    <h2>How SSS loans are computed</h2>
+    <h2>Two loan programs, one average salary credit</h2>
     <p>
-      An SSS salary loan is based on the average of your latest 12 monthly salary credits. A one-month loan is about one
-      average MSC and a two-month loan about two, subject to SSS limits. SSS deducts a 1% service fee and the interest due
-      until your first payment, so the cash you receive is lower than the loan amount. The balance is repaid in 24 monthly
-      payments on a diminishing balance.
+      Both tools start from the average of your latest 12 regular salary credits and stop at
+      ₱{{ rules.salaryLoan.regularMscCap | number: '1.0-0' }}. The MPF portion above that is not loanable here.
+      A salary loan is Circular No. 2025-004. An emergency loan is Circular No. 2026-003. The form switches formulas
+      when you change type.
     </p>
     <div class="formula-box example-box">
-      <h3>The formula</h3>
-      <strong>You receive</strong> = loan amount − 1% service fee − advance interest<br>
-      <strong>Monthly payment</strong> = standard loan payment formula over 24 months at the annual rate
+      <h3>What the salary-loan function deducts</h3>
+      Loan amount = average regular MSC, rounded up to the next ₱{{ rules.salaryLoan.mscStep | number: '1.0-0' }}, times 1 or 2, and never above ₱{{ rules.salaryLoan.regularMscCap | number: '1.0-0' }} times that<br>
+      You receive = loan amount − 1% service fee − one month of interest (amount × rate ÷ 12)<br>
+      Monthly payment = diminishing-balance payment over {{ rules.salaryLoan.termMonths }} months
     </div>
-    <h3>Salary loan or emergency loan?</h3>
     <p>
-      The emergency loan is a separate program with its own eligibility, a lower interest rate, no service fee and a
-      payment moratorium before repayment starts. Use the loan type switch above to compare them.
+      That one-month interest is a shortcut. Circular No. 2025-004 prorates interest from the grant date through the end
+      of the month before the first amortization, using days divided by 365, and My.SSS also deducts any earlier
+      short-term loan. This page sees neither the day count nor that balance, so a renewal will show too much cash.
     </p>
+
+    <h2>Three salary-loan results</h2>
+    <h3>One month at a ₱15,000 average, 8%</h3>
+    <p>
+      The average is already on a ₱500 step, so the loan is ₱{{ exOne.loanableAmount | number: '1.2-2' }}. The service fee
+      is ₱{{ exOne.serviceFee | number: '1.2-2' }} and the one-month interest estimate is
+      ₱{{ exOne.advanceInterest | number: '1.2-2' }}. You receive
+      <strong>₱{{ exOne.netProceeds | number: '1.2-2' }}</strong>, then pay
+      ₱{{ exOne.monthlyAmortization | number: '1.2-2' }} for {{ exOne.termMonths }} months. Those payments add up to
+      ₱{{ exOne.totalRepaid | number: '1.2-2' }}, which is ₱{{ exOne.totalInterest | number: '1.2-2' }} more than the
+      amount borrowed. Circular No. 2025-004 requires 36 posted contributions for a one-month loan, six of them in the
+      12 months before the month you file.
+    </p>
+    <h3>Two months from a ₱18,300 average, 8%</h3>
+    <p>
+      ₱18,300 is not a salary-credit step. The function rounds the average up to the next ₱500 before it multiplies, so
+      the credit used is ₱18,500 and the loan is ₱{{ exTwo.loanableAmount | number: '1.2-2' }}. Fee
+      ₱{{ exTwo.serviceFee | number: '1.2-2' }}, advance-interest estimate ₱{{ exTwo.advanceInterest | number: '1.2-2' }},
+      cash received <strong>₱{{ exTwo.netProceeds | number: '1.2-2' }}</strong>, monthly payment
+      ₱{{ exTwo.monthlyAmortization | number: '1.2-2' }}. Repaid over 24 months:
+      ₱{{ exTwo.totalRepaid | number: '1.2-2' }}, of which ₱{{ exTwo.totalInterest | number: '1.2-2' }} is interest on
+      top of the principal. A two-month loan needs 72 posted contributions, six of them in the last 12 months. The form
+      still computes it if you have fewer. It does not check eligibility.
+    </p>
+    <h3>Two months at the ₱20,000 cap, 8% and 10%</h3>
+    <p>
+      The loan is ₱{{ exEight.loanableAmount | number: '1.2-2' }} either way, and the 1% fee stays
+      ₱{{ exEight.serviceFee | number: '1.2-2' }}. At 8% you receive <strong>₱{{ exEight.netProceeds | number: '1.2-2' }}</strong>
+      and pay ₱{{ exEight.monthlyAmortization | number: '1.2-2' }} a month (₱{{ exEight.totalInterest | number: '1.2-2' }}
+      of interest against the principal). At 10%, the rate Circular No. 2025-004 uses for a renewal within five years of
+      a penalty condonation, you receive <strong>₱{{ exTen.netProceeds | number: '1.2-2' }}</strong> and pay
+      ₱{{ exTen.monthlyAmortization | number: '1.2-2' }} (₱{{ exTen.totalInterest | number: '1.2-2' }} of interest).
+      That condonation is Circular No. 2022-022, the Conso Loan. SSS’s
+      <a href="https://www.sss.gov.ph/news-and-updates/sss-responds-to-economic-challenges-with-expanded-relief-programs-%e2%82%b160b-in-support-for-members-and-pensioners/" target="_blank" rel="noopener">16 April 2026 note</a>
+      still pointed members to it: penalties go as principal and interest are settled, at once or over up to 60 months
+      after a down payment of at least 10%. Filing alone does not waive them.
+    </p>
+
+    <h2>Where the emergency loan does not match this calculator</h2>
+    <p>
+      <a href="https://www.sss.gov.ph/wp-content/uploads/2026/04/CI2026-003-External.pdf" target="_blank" rel="noopener">Circular No. 2026-003</a>
+      asks for 18 posted contributions, six in the last 12. The
+      <a href="https://www.sss.gov.ph/sss-emergency-loan-program/" target="_blank" rel="noopener">program page</a>
+      caps the loan at ₱20,000: up to half the average credit with 18 to 35 contributions, and up to the full average
+      with 36 or more. Self-employed, voluntary, and land-based OFW members also need six contributions under their
+      current coverage. Employed members need an employer that is up to date, unless a payment moratorium covers them.
+      This form tests none of that.
+    </p>
+    <p>
+      There is no service fee, so a ₱20,000 full share releases
+      <strong>₱{{ exEmergency.netProceeds | number: '1.2-2' }}</strong>, and a ₱12,000 average at half share is already
+      a multiple of ₱1,000, so the loan and the cash are both
+      <strong>₱{{ exEmergencyHalf.loanableAmount | number: '1.2-2' }}</strong>. The payment is the part to confirm.
+      This calculator compounds 7% for six months, adding ₱{{ exEmergency.interestDuringMoratorium | number: '1.2-2' }}
+      on the ₱20,000 loan and then amortizing
+      <strong>₱{{ exEmergency.monthlyAmortization | number: '1.2-2' }}</strong> a month. The ₱6,000 loan becomes
+      ₱{{ exEmergencyHalf.monthlyAmortization | number: '1.2-2' }} after
+      ₱{{ exEmergencyHalf.interestDuringMoratorium | number: '1.2-2' }} of compounded interest. The circular spreads
+      moratorium interest across the 24 payments and does not charge interest on that interest, so its payment should
+      be lower. It also has a 10% emergency rate after a recent condonation, which this switch does not offer.
+      Confirm with the agency and use the My.SSS disclosure.
+    </p>
+
+    <h2>How to check it in My.SSS</h2>
+    <ol>
+      <li>Open the loan service and read the posted count and the average of the last 12 regular credits. If that average is not what you typed, the loan amount will not match.</li>
+      <li>Read the disclosure before you submit: approved amount, service fee, pro-rated interest, any previous loan deducted, and net proceeds.</li>
+      <li>A few pesos of difference in the interest line is the day-count. Thousands of pesos is an old balance or the wrong loan type. If the emergency disclosure spreads moratorium interest instead of folding it into the principal, this page’s monthly payment is the wrong shape.</li>
+    </ol>
+
+    <h2>Mistakes that make the estimate useless</h2>
+    <ul>
+      <li>Typing a ₱35,000 MSC. Only the regular credit up to ₱20,000 is loanable here. The MPF slice is not.</li>
+      <li>Forgetting the rounding: ₱18,300 becomes ₱18,500 before a salary loan is multiplied, while an emergency loan rounds the share up to the next ₱1,000.</li>
+      <li>Treating the advance-interest line as the interest for all 24 months. That line is only the stub period. The 24 payments still charge interest on the remaining balance.</li>
+      <li>Renewing and expecting the full proceeds. The old balance comes off first. A condonation inside five years also changes the rate, from 8% to 10% on a salary loan and from 7% to 10% on an emergency loan.</li>
+    </ul>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq-section">
+      @for (f of faq; track f.q) {
+        <h3>{{ f.q }}</h3>
+        <p>{{ f.a }}</p>
+      }
+    </div>
     <p class="note">
-      Rates, limits and eligibility are set by SSS circulars and can change. Treat this as a planning estimate and verify it
-      on the SSS website or My.SSS.
+      Last reviewed {{ reviewed }}. Salary-loan rules:
+      <a href="https://www.sss.gov.ph/wp-content/uploads/2025/06/CI-2025-004-External.pdf" target="_blank" rel="noopener">Circular No. 2025-004</a>
+      and the <a href="https://www.sss.gov.ph/salary-loan/" target="_blank" rel="noopener">SSS salary loan page</a>.
+      Emergency loan:
+      <a href="https://www.sss.gov.ph/wp-content/uploads/2026/04/CI2026-003-External.pdf" target="_blank" rel="noopener">Circular No. 2026-003</a>.
+      Penalty condonation:
+      <a href="https://www.sss.gov.ph/wp-content/uploads/2022/12/CI2022-022.pdf" target="_blank" rel="noopener">Circular No. 2022-022</a>
+      and the <a href="https://www.sss.gov.ph/sss-conso-loan-program/" target="_blank" rel="noopener">Conso Loan page</a>.
+      The compounded emergency-loan payment is this site’s assumption, not the circular’s.
     </p>
   </article>
 

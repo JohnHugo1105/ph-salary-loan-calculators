@@ -1,5 +1,19 @@
 <div class="container">
-  <app-page-header title="Guides &amp; articles" lede="Short, practical explainers to go with the calculators." />
+  <app-page-header title="Guides &amp; articles" lede="Three explainers, each tied to a calculator on this site." />
+  <article class="prose" style="margin-bottom: var(--space-6)">
+    <p>
+      These are not a magazine. There are three of them because there are three questions the calculators keep
+      raising and the result panel is too small to answer. One walks the SSS salary-credit steps the contribution
+      and net-pay tools use. One says what the MPF line on a payslip is, and what it is not, next to Pag-IBIG. One
+      shows how a diminishing-balance payment splits into interest and principal, which is the schedule behind the
+      loan calculators.
+    </p>
+    <p>
+      The peso figures in each guide are produced by the same functions as the forms. If a rate in
+      <a routerLink="/rates">Rates &amp; sources</a> changes, the guide’s examples have to change with it. We are not
+      adding parallel articles that restate the same deduction in a new city or a new year.
+    </p>
+  </article>
   <div class="grid grid--3">
     @for (g of guides; track g.route) {
       <app-tool-card [item]="g" cta="Read" />
