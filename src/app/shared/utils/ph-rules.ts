@@ -2,7 +2,7 @@
 // Every block records where the figures come from so they can be re-verified when a new
 // circular is released. Guides and calculators should read from here instead of hardcoding.
 
-export const PH_RULES_LAST_REVIEWED = '2026-10-29';
+export const PH_RULES_LAST_REVIEWED = '2026-11-10';
 
 export type TaxBracket = { over: number; base: number; rate: number };
 
@@ -106,8 +106,15 @@ export const PH_RULES = {
     days: { live: 105, soloParent: 120, miscarriage: 60 },
   },
 
-  // SSS short-term member loans. Peso limits and the emergency-loan terms were taken from
-  // secondary sources and should be checked against the SSS circulars before relying on them.
+  // SSS short-term member loans.
+  // Salary loan: Circular No. 2025-004 — 8% (or 10% after a penalty condonation in the past
+  // five years) on a diminishing balance, 1% service fee, 24 months. The advance-interest
+  // line in computeSssSalaryLoan is one month (amount × rate ÷ 12). The circular prorates
+  // by days ÷ 365, so My.SSS will not match that line to the centavo.
+  // Emergency loan: Circular No. 2026-003 — 7% (10% after a recent condonation), no service
+  // fee, six-month moratorium, then 24 payments, maximum ₱20,000. computeSssEmergencyLoan
+  // compounds moratorium interest onto the balance. The circular says that interest is
+  // spread across the 24 payments and does not itself earn interest.
   sssLoans: {
     source: 'https://www.sss.gov.ph/salary-loan/',
     salaryLoan: {

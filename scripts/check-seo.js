@@ -100,6 +100,13 @@ for (const { route, file } of all.sort((a, b) => a.route.localeCompare(b.route))
     }
   }
 
+  const hasAds = /pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js/.test(html);
+  if (route === '/saved') {
+    if (hasAds) err('AdSense loader must stay off /saved');
+  } else if (!hasAds) {
+    err('missing AdSense loader');
+  }
+
   const words = html.replace(/<(script|style)[\s\S]*?<\/\1>/gi, ' ').replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
   console.log(`${route.padEnd(40)} ${noindex ? 'noindex ' : ''}${title.length}t ${description.length}d ~${words}w  [${types.join(', ')}]`);
   for (const [level, m] of problems) {
@@ -114,6 +121,12 @@ for (const url of sitemapUrls) {
     console.log(`sitemap.xml lists ${url}, which was not prerendered`);
     errors++;
   }
+}
+
+const notFound = fs.readFileSync(path.join(root, '404.html'), 'utf8');
+if (/adsbygoogle|googlesyndication/.test(notFound)) {
+  console.log('ERROR 404.html must not load ads');
+  errors++;
 }
 
 console.log(`\n${all.length} pages, ${errors} errors, ${warnings} warnings`);

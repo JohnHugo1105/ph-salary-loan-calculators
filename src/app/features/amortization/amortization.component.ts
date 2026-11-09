@@ -4,7 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SeoService } from '../../core/services/seo.service';
-import { formatPeso, formatPercent } from '../../shared/format';
+import { formatDate, formatPeso, formatPercent } from '../../shared/format';
 import { SaveShareService } from '../../shared/services/save-share.service';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
 import { CalloutComponent } from '../../shared/ui/callout.component';
@@ -18,6 +18,7 @@ import { ResultActionsComponent } from '../../shared/ui/result-actions.component
 import { ResultBarComponent } from '../../shared/ui/result-bar.component';
 import { SegmentedComponent } from '../../shared/ui/segmented.component';
 import { computeAmortization, round2 } from '../../shared/utils/ph-calculators.util';
+import { PH_RULES, PH_RULES_LAST_REVIEWED } from '../../shared/utils/ph-rules';
 
 interface YearRow { year: number; payments: number; interest: number; principal: number; balance: number }
 
@@ -29,6 +30,15 @@ function summarize(amount: number, annualRatePct: number, months: number) {
   const exact = r === 0 ? amount / months : (amount * (r * Math.pow(1 + r, months))) / (Math.pow(1 + r, months) - 1);
   const totalPaid = round2(exact * months);
   return { payment, schedule, totalPaid, totalInterest: round2(totalPaid - amount) };
+}
+
+// Add-on interest is charged on the original principal for the whole term, then split into equal payments.
+// It is not a second mode of the calculator. The guide uses it only as a contrast.
+function addOn(amount: number, annualRatePct: number, years: number) {
+  const interest = amount * (annualRatePct / 100) * years;
+  const months = years * 12;
+  const total = amount + interest;
+  return { interest, total, months, payment: round2(total / months) };
 }
 
 @Component({
@@ -103,9 +113,28 @@ export class AmortizationComponent {
     ].join('\n');
   });
 
-  // Worked examples for the guide below, generated from the same engine as the calculator.
-  readonly scenarioA = summarize(1_000_000, 8, 60);
-  readonly scenarioB = summarize(1_000_000, 8, 240);
+  readonly reviewed = formatDate(PH_RULES_LAST_REVIEWED);
+  // 6.5% is the 5-year figure stored for the Pag-IBIG calculator. The guide uses it as arithmetic, not as a bank quote.
+  readonly illustrationRate = PH_RULES.housingLoan.ratesByRepricingYears[5];
+  readonly dim5 = summarize(1_000_000, this.illustrationRate, 60);
+  readonly dim20 = summarize(1_000_000, this.illustrationRate, 240);
+  readonly add5 = addOn(1_000_000, this.illustrationRate, 5);
+  readonly add20 = addOn(1_000_000, this.illustrationRate, 20);
+
+  readonly faq = [
+    {
+      q: 'How is add-on interest different from a diminishing balance?',
+      a: `Add-on interest multiplies the original principal by the annual rate and by the years, then splits principal plus that interest into equal payments. On ₱1,000,000 at ${this.illustrationRate}% for 5 years, that interest is ${formatPeso(this.add5.interest, 0)} and the payment is ${formatPeso(this.add5.payment)}. A diminishing balance, which is what this calculator computes, charges interest only on the amount still owed. The same inputs give a payment of ${formatPeso(this.dim5.payment)} and total interest of ${formatPeso(this.dim5.totalInterest)}. The ${this.illustrationRate}% figure is the 5-year rate stored for our Pag-IBIG calculator, used here so the two methods can be compared. It is not a commercial bank's published rate. Confirm the Pag-IBIG figure with the agency.`,
+    },
+    {
+      q: 'Why is the first payment mostly interest?',
+      a: `On a diminishing balance the interest for a month is the remaining principal times the monthly rate. Early on, the principal is still the full amount, so interest takes most of the payment. In the 20-year illustration at ${this.illustrationRate}%, the monthly payment is ${formatPeso(this.dim20.payment)} and the interest over 240 months is ${formatPeso(this.dim20.totalInterest)}. The same method over 5 years costs ${formatPeso(this.dim5.totalInterest)} of interest because the principal is gone sooner.`,
+    },
+    {
+      q: 'Does this page use a bank\'s current rate?',
+      a: `No. The form uses whatever annual rate you type. The worked comparison uses ${this.illustrationRate}% only because that number is already stored on this site for a 5-year Pag-IBIG fixing period, and even that stored rate is marked confirm-with-the-agency on the rates page. A fixing period is the time a lender promises not to change the rate. After it, the payment can be recomputed. This schedule does not model that reset.`,
+    },
+  ];
 
   constructor() {
     this.share.restoreInto(this.form, inject(ActivatedRoute).snapshot.queryParamMap.get('data'));
@@ -127,32 +156,7 @@ export class AmortizationComponent {
           {
             '@context': 'https://schema.org',
             '@type': 'FAQPage',
-            'mainEntity': [
-              {
-                '@type': 'Question',
-                'name': 'What is a diminishing balance interest rate?',
-                'acceptedAnswer': {
-                  '@type': 'Answer',
-                  'text': 'A diminishing balance interest rate means that the interest is calculated based on the remaining principal balance of the loan each month, not the original borrowed amount. As you pay off the principal, the interest portion of your monthly payment decreases.'
-                }
-              },
-              {
-                '@type': 'Question',
-                'name': 'What is a repricing period for a housing loan?',
-                'acceptedAnswer': {
-                  '@type': 'Answer',
-                  'text': 'A repricing period (or fixing period) is the duration for which your interest rate is guaranteed to stay the same. After this period (e.g., 1 year, 3 years, 5 years), the bank will adjust or \'reprice\' your interest rate based on current market conditions, which can increase or decrease your monthly amortization.'
-                }
-              },
-              {
-                '@type': 'Question',
-                'name': 'Is it better to have a 5-year or 20-year loan term?',
-                'acceptedAnswer': {
-                  '@type': 'Answer',
-                  'text': 'It depends on your cash flow. A 5-year term will have significantly higher monthly payments, but you will pay drastically less total interest over the life of the loan. A 20-year term spreads the payments out to be much lower and more affordable month-to-month, but yields much higher total interest costs overall.'
-                }
-              }
-            ]
+            mainEntity: this.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
           }
         ]);
   }

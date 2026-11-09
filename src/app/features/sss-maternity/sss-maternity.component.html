@@ -2,6 +2,7 @@
   <app-page-header title="SSS maternity benefit calculator" section="Government benefits"
     lede="Estimate your daily maternity allowance and total benefit under the Expanded Maternity Leave Law (RA 11210).">
     <span class="badge badge--brand">SSS salary credit up to ₱20,000</span>
+    <span class="badge">Last reviewed {{ reviewed }}</span>
     <a class="badge" routerLink="/rates">Rates &amp; sources</a>
   </app-page-header>
 
@@ -76,29 +77,120 @@
   </div>
 
   <article class="prose section" aria-label="How the SSS maternity benefit works">
-    <h2>How the SSS maternity benefit is computed</h2>
+    <h2>What this page is actually dividing</h2>
     <p>
-      The Expanded Maternity Leave Law (RA 11210) gives qualified female workers 105 days of paid maternity leave for a live
-      birth, 120 days for a solo parent, and 60 days for a miscarriage or emergency termination of pregnancy. SSS pays the
-      daily maternity allowance, and your employer is generally required to pay any difference between that and your full
-      salary.
+      The number at the top is not your salary and it is not your full leave pay. Republic Act No. 11210 sets the length of
+      maternity leave. SSS pays a cash allowance from your monthly salary credits. This calculator follows the rule stored
+      for that allowance: add the six highest credits, count each one only up to ₱{{ mscCap | number: '1.0-0' }}, divide by
+      {{ 180 }}, and multiply by the days of leave. The 180 is six blocks of 30 days. It is not the number of calendar days
+      you will be away from work, and it does not change for a caesarean delivery.
     </p>
     <div class="formula-box example-box">
-      <h3>The formula</h3>
-      <strong>Average daily salary credit</strong> = total of your six highest monthly salary credits ÷ 180<br>
-      <strong>Maternity benefit</strong> = average daily salary credit × days of leave
+      <h3>The formula this calculator runs</h3>
+      Average daily salary credit = total of the six highest MSCs (each capped at ₱{{ mscCap | number: '1.0-0' }}) ÷ 180<br>
+      Benefit = average daily salary credit × days of leave
     </div>
     <p>
-      For this benefit, SSS counts each monthly salary credit only up to ₱20,000, so the largest six-month total is ₱120,000.
-      That makes the largest regular benefit ₱70,000 for 105 days (₱80,000 for 120 days and ₱40,000 for 60 days).
+      Credits above ₱{{ mscCap | number: '1.0-0' }} are the MPF, or WISP, part of your SSS contribution. They raise the
+      contribution you and your employer pay. They do not raise this benefit. A member whose posted credit is ₱25,000 is
+      counted here as ₱{{ mscCap | number: '1.0-0' }}. The full SSS schedule, including that split, is on
+      <a routerLink="/rates">Rates &amp; sources</a> and in the
+      <a routerLink="/articles/sss-contribution-2026">SSS contribution guide</a>.
     </p>
-    <h3>Who qualifies</h3>
+    <p>
+      SSS pays the allowance. If your employer is required to advance your pay for the leave and then seek reimbursement,
+      the difference between this allowance and your actual salary is between you and your employer. This page does not
+      compute that difference.
+    </p>
+
+    <h2>Three results from the same function</h2>
+    <p>
+      Each example is <code>computeMaternityBenefit</code> in this project, which is the function the form above calls.
+      The daily credit is shown rounded to the centavo. The benefit is the unrounded credit times the days, then rounded.
+    </p>
+
+    <h3>Six months at ₱8,000, live birth</h3>
+    <p>
+      Six credits of ₱8,000 are ₱{{ exLow.countedTotal | number: '1.0-0' }}. Divided by 180, the daily credit is
+      ₱{{ exLow.adsc | number: '1.2-2' }}. For {{ exLow.days }} days the allowance is
+      <strong>₱{{ exLow.benefit | number: '1.2-2' }}</strong>. Nothing is capped, because ₱8,000 is under
+      ₱{{ mscCap | number: '1.0-0' }}. If one of those months was never posted, you cannot substitute the salary on the
+      payslip. The missing month drops out of both the total and the three-contribution test.
+    </p>
+
+    <h3>Six different credits that sum to ₱95,000</h3>
+    <p>
+      Take posted credits of ₱12,000, ₱18,000, ₱20,000, ₱20,000, ₱15,000 and ₱10,000. The total counted is
+      ₱{{ exMixed.countedTotal | number: '1.0-0' }}, the daily credit is ₱{{ exMixed.adsc | number: '1.2-2' }}, and a
+      live birth pays <strong>₱{{ exMixed.benefit | number: '1.2-2' }}</strong>. The same total pays
+      <strong>₱{{ exMixedSolo.benefit | number: '1.2-2' }}</strong> for {{ exMixedSolo.days }} days as a solo parent and
+      <strong>₱{{ exMixedEarly.benefit | number: '1.2-2' }}</strong> for {{ exMixedEarly.days }} days for a miscarriage
+      or emergency termination. The solo-parent day count is not something you select because the birth was difficult.
+      SSS has to recognise the status. If you are not sure, run the 105-day figure and treat 120 as the amount to confirm.
+    </p>
+
+    <h3>A ₱25,000 credit that the cap cuts back</h3>
+    <p>
+      Six months at ₱25,000 would be ₱150,000 if this benefit used the full MSC. It does not. The function stops at
+      ₱{{ exCap.countedTotal | number: '1.0-0' }} (six times ₱{{ mscCap | number: '1.0-0' }}), so the daily credit is
+      ₱{{ exCap.adsc | number: '1.2-2' }} and the 105-day allowance is
+      <strong>₱{{ exCap.benefit | number: '1.2-2' }}</strong>. That is the same result as six months already sitting on
+      the ₱{{ mscCap | number: '1.0-0' }} credit. The 120-day figure at that cap is
+      ₱{{ exCapSolo.benefit | number: '1.2-2' }}, and the 60-day figure is
+      ₱{{ exCapEarly.benefit | number: '1.2-2' }}.
+    </p>
+
+    <h2>Who qualifies, and which months count</h2>
+    <p>
+      You need at least three monthly contributions in the 12 months before the semester of the delivery or miscarriage,
+      and the six credits are the highest ones in that stretch. The semester is the two consecutive quarters ending in
+      the quarter of the contingency, not the six months before the due date, so two nearby due dates can average
+      different months. This calculator does not choose them. Confirm the window on the
+      <a href="https://www.sss.gov.ph/maternity-benefit/" target="_blank" rel="noopener">SSS maternity benefit page</a>,
+      then read which months were posted in My.SSS.
+    </p>
     <ul>
-      <li>You have paid at least 3 monthly contributions in the 12 months before the semester of your delivery or miscarriage.</li>
-      <li>You notified your employer (or SSS, if you are self-employed or voluntary) of your pregnancy.</li>
+      <li>Live birth, normal or caesarean: {{ leaveTypes[0].value }} days in this calculator.</li>
+      <li>Live birth as a solo parent: {{ leaveTypes[1].value }} days, if SSS accepts that status.</li>
+      <li>Miscarriage or emergency termination of pregnancy: {{ leaveTypes[2].value }} days.</li>
+      <li>Separated, self-employed, or voluntary members notify SSS. Employed members notify the employer, who deals with SSS. This page does not state a filing deadline. Confirm the timing for your case.</li>
     </ul>
+    <p>
+      A month your employer deducted and did not remit is not a posted contribution. The eligibility test and the average
+      both follow the posted record. If a month is missing, the argument with payroll has to happen before the average
+      will move.
+    </p>
+
+    <h2>How to check the figure in My.SSS</h2>
+    <ol>
+      <li>Sign in to My.SSS and open the posted contribution list, not the loan screen and not a payslip PDF.</li>
+      <li>Mark the semester of your delivery or miscarriage, then the 12 months before it. If you are unsure where the semester starts, stop and use the illustration SSS shows for your date rather than guessing the quarters.</li>
+      <li>From those 12 months, take the six highest regular salary credits. Ignore the portion above ₱{{ mscCap | number: '1.0-0' }}.</li>
+      <li>Add them and divide by 180, or paste the total into “Total of 6 MSCs” above. The benefit should match this page to the centavo if the six numbers match.</li>
+      <li>When you file, the claim screen is the award. If SSS drops a month or moves the semester, their total replaces this estimate. The reimbursement your employer receives can also differ from the allowance you were advanced.</li>
+    </ol>
+
+    <h2>Mistakes that change the result</h2>
+    <ul>
+      <li>Typing basic pay instead of the posted MSC. A ₱18,300 salary is not an ₱18,300 credit. Contributions round to a ₱500 step. This benefit then caps that credit at ₱{{ mscCap | number: '1.0-0' }}.</li>
+      <li>Adding the MPF line on top. It is already the part of the MSC above ₱{{ mscCap | number: '1.0-0' }}, and this formula throws that part away.</li>
+      <li>Dividing by 365, or by the number of leave days, instead of 180. The 105, 120 or 60 multiplies the daily credit. It is not the divisor.</li>
+      <li>Expecting a higher allowance for a caesarean. The day count in this calculator does not do that.</li>
+      <li>Counting a separated or voluntary member’s unposted months because contributions were “supposed” to be paid. Only posted months enter the total.</li>
+    </ul>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq-section">
+      @for (f of faq; track f.q) {
+        <h3>{{ f.q }}</h3>
+        <p>{{ f.a }}</p>
+      }
+    </div>
     <p class="note">
-      Rules and procedures change. Always confirm with SSS how your own contribution record and delivery date apply.
+      Last reviewed {{ reviewed }}. The day counts and the ₱{{ mscCap | number: '1.0-0' }} cap are the rules in this
+      site’s calculator, checked against <a href="https://www.sss.gov.ph/maternity-benefit/" target="_blank" rel="noopener">SSS’s maternity benefit page</a>
+      and Republic Act No. 11210. The semester window and any employer top-up are marked for you to confirm with the
+      agency or your employer. This is not an SSS award.
     </p>
   </article>
 

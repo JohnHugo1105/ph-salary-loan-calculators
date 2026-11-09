@@ -4,7 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SeoService } from '../../core/services/seo.service';
-import { formatPeso, formatPercent } from '../../shared/format';
+import { formatDate, formatPeso, formatPercent } from '../../shared/format';
 import { SaveShareService } from '../../shared/services/save-share.service';
 import { ThousandsSeparatorDirective } from '../../shared/thousands-separator.directive';
 import { BreakdownComponent, BreakdownRow } from '../../shared/ui/breakdown.component';
@@ -26,7 +26,7 @@ import {
   monthlyToSemiMonthly,
   round2,
 } from '../../shared/utils/ph-calculators.util';
-import { PH_RULES } from '../../shared/utils/ph-rules';
+import { PH_RULES, PH_RULES_LAST_REVIEWED } from '../../shared/utils/ph-rules';
 
 @Component({
   selector: 'app-net-pay',
@@ -72,6 +72,7 @@ export class NetPayComponent {
   readonly view = computed(() => this.compute(this.formValue()));
 
   readonly deMinimis = PH_RULES.deMinimis;
+  readonly reviewed = formatDate(PH_RULES_LAST_REVIEWED);
 
   // Worked example for the guide below, generated from the same engine as the calculator.
   readonly example = (() => {
@@ -84,8 +85,40 @@ export class NetPayComponent {
     const govt = round2(sss + mpf + philhealth + pagibig);
     const taxable = salary - govt;
     const tax = computeWithholdingTax(taxable);
-    return { salary, sss: round2(sss + mpf), philhealth, pagibig, govt, taxable, tax, net: round2(salary - govt - tax) };
+    return { salary, sss: round2(sss + mpf), sssOnly: sss, mpf, philhealth, pagibig, govt, taxable, tax, net: round2(salary - govt - tax) };
   })();
+
+  // Twice-a-month payslip for the same salary: each contribution line is halved, then tax uses the semi-monthly table.
+  readonly semi = (() => {
+    const salary = this.example.salary;
+    const c = computeContributions(salary);
+    const sss = round2(c.sss.employee / 2);
+    const mpf = round2(c.mpf.employee / 2);
+    const philhealth = round2(c.philhealth.employee / 2);
+    const pagibig = round2(c.pagibig.employee / 2);
+    const govt = round2(sss + mpf + philhealth + pagibig);
+    const basic = salary / 2;
+    const taxable = basic - govt;
+    const tax = computeWithholdingTax(taxable, 'semi-monthly');
+    return { basic, sss, mpf, philhealth, pagibig, govt, taxable, tax, net: round2(basic - govt - tax) };
+  })();
+
+  readonly reverseExample = computeGrossFromNet(25_000, 'monthly');
+
+  readonly faq = [
+    {
+      q: 'Which lines on a payslip does this calculator try to match?',
+      a: `Basic pay, then the employee shares of SSS, MPF/WISP, PhilHealth and Pag-IBIG, then withholding tax on what remains. On a ${formatPeso(this.example.salary, 0)} monthly basic with nothing else, those contributions are ${formatPeso(this.example.govt)} and the tax is ${formatPeso(this.example.tax)}, so take-home is ${formatPeso(this.example.net)}. A line for a company loan, tardiness, or a taxable allowance will not appear unless you type the allowance in. De minimis benefits under the ceilings on the rates page are left out of the taxable pay.`,
+    },
+    {
+      q: 'Why does net-to-gross miss my target by about a peso?',
+      a: `The reverse mode searches for a basic salary whose take-home is within about ₱1 of the target. Contribution steps and centavo rounding mean some targets are not reachable. Asking for ${formatPeso(25_000, 0)} a month produces a basic of ${formatPeso(this.reverseExample.monthlyBasic)}, and running that basic forward pays ${formatPeso(this.reverseExample.netPay)}. That is the match this calculator keeps.`,
+    },
+    {
+      q: 'Why is my semi-monthly take-home not half of the monthly figure?',
+      a: `Contributions are computed on the monthly basic and then split in half. Tax is not. It uses the semi-monthly withholding table on that payday's taxable pay. For ${formatPeso(this.example.salary, 0)} a month, one payday's basic is ${formatPeso(this.semi.basic)}, contributions are ${formatPeso(this.semi.govt)}, tax is ${formatPeso(this.semi.tax)}, and take-home is ${formatPeso(this.semi.net)}. Two of those paydays are ${formatPeso(round2(this.semi.net * 2))}, which is not the same as the monthly net of ${formatPeso(this.example.net)}, because the two tax tables do not halve.`,
+    },
+  ];
 
   constructor() {
     this.share.restoreInto(this.form, inject(ActivatedRoute).snapshot.queryParamMap.get('data'));
@@ -107,32 +140,7 @@ export class NetPayComponent {
           {
             '@context': 'https://schema.org',
             '@type': 'FAQPage',
-            'mainEntity': [
-              {
-                '@type': 'Question',
-                'name': 'What is the difference between Gross Pay and Net Pay in the Philippines?',
-                'acceptedAnswer': {
-                  '@type': 'Answer',
-                  'text': 'Gross pay is your total earnings before any deductions are made. Net pay (take-home pay) is the amount you actually receive after mandatory government contributions (SSS, PhilHealth, Pag-IBIG) and withholding taxes are deducted.'
-                }
-              },
-              {
-                '@type': 'Question',
-                'name': 'Are de minimis benefits taxable?',
-                'acceptedAnswer': {
-                  '@type': 'Answer',
-                  'text': 'No, de minimis benefits (like rice subsidy, clothing allowance, medical cash allowance) are reasonably small facilities or privileges furnished by an employer to its employees and are exempt from income tax.'
-                }
-              },
-              {
-                '@type': 'Question',
-                'name': 'Is holiday pay legally required in the Philippines?',
-                'acceptedAnswer': {
-                  '@type': 'Answer',
-                  'text': 'Yes, the Labor Code mandates holiday pay. If you do not work on a regular holiday, you still get 100% of your daily wage. If you work on a regular holiday, you get 200%. For special non-working days, the "no work, no pay" principle applies, but if you work, you get an additional 30% premium.'
-                }
-              }
-            ]
+            mainEntity: this.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
           }
         ]);
   }
